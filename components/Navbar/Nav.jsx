@@ -21,20 +21,17 @@ const Navbar = () => {
 
           <MenuItem>
             <MenuLink
-              to='/main'
+              to='/WeeklyProjections'
             >
-              Main
+              Weekly Projections
             </MenuLink>
           </MenuItem>
           <MenuItem>
             <MenuLink
-              to='/'
+              to='/PPR'
             >
               PPR
             </MenuLink>
-          </MenuItem>
-          <MenuItem to='/cart'>
-            <MenuLink>Cart</MenuLink>
           </MenuItem>
         </Menu>
       </Nav>

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Nav from '../components/Navbar/Nav.jsx';
 import Footer from '../components/Footer/Footer';
 import MainHero from '../components/MainHero/MainHero';
-import ExperiencePage from '../components/Experience/ExperiencePage.jsx';
+import FantasyFootballRanking from '../components/FantasyFootballRanking/FantasyFootballRanking';
+import WeeklyProjections from '../components/WeeklyProjections/WeeklyProjections';
+import PPR from '../components/PPR/PPR';
 import { Provider as StyletronProvider, DebugEngine } from 'styletron-react';
 import { Client as Styletron } from 'styletron-engine-atomic';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
@@ -18,7 +20,7 @@ const Homepage = (props) => {
           <GlobalStyle />
           <Nav />
           <MainHero />
-          <ExperiencePage />
+          <FantasyFootballRanking />
           <Footer />
         </Container>
   );
@@ -29,6 +31,12 @@ const App = () => (
       <Router location={history.location} navigator={history}>
         <Switch>
           <Route path='/' exact component={Homepage} />
+        </Switch>
+        <Switch>
+          <Route path='/WeeklyProjections' component={WeeklyProjections} />
+        </Switch>
+        <Switch>
+          <Route path='/PPR' component={PPR} />
         </Switch>
       </Router>
     </StyletronProvider>
