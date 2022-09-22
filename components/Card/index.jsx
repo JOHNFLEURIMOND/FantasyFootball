@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { fleurimondColors } from '../../utils/theme.js';
+import {fleurimondColors} from '../../utils/theme.js';
 
 export const Card = styled.article`
 border: 1px solid ${fleurimondColors.lightSmoke};

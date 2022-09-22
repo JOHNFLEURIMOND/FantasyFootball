@@ -1,8 +1,8 @@
-import { BiRestaurant } from 'react-icons/bi';
+import {BiRestaurant} from 'react-icons/bi';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
-import { fleurimondColors } from '../../utils/theme.js';
+import {fleurimondColors} from '../../utils/theme.js';
 
 export const Nav = styled.nav`
   top: 0;
@@ -71,7 +71,7 @@ export const Menu = styled.ul`
     height: 100vh;
     position: absolute;
     top: 80px;
-    left: ${({ click }) => (click ? '0' : '-100%')};
+    left: ${({click}) => (click ? '0' : '-100%')};
     background: ${fleurimondColors.midnight};
     transition: all 0.5s ease;
   }
@@ -102,13 +102,13 @@ export const MenuLink = styled(Link)`
   transition: all 0.2s ease;
   &:hover {
     border-color: white;
-    color: white ;
+    color: white;
     transform: traslateY(-3rem);
   }
   &:active {
     transform: traslateY(3rem);
     color: white;
-    border-color:  white ;
+    border-color: white;
   }
   &:hover,
   &:active,

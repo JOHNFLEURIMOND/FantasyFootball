@@ -1,6 +1,6 @@
-import styled, { css } from 'styled-components';
-import { fleurimondColors } from '../../utils/theme.js';
-import { Button } from 'semantic-ui-react';
+import styled, {css} from 'styled-components';
+import {fleurimondColors} from '../../utils/theme.js';
+import {Button} from 'semantic-ui-react';
 
 export const ProjectsSectionContainer = styled.div`
   width: 100%;
@@ -222,7 +222,7 @@ export const Title = styled.h1`
   @media (max-width: 800px) {
     font-size: 2rem;
     text-align: center;
-    grid-column: span 2;  
+    grid-column: span 2;
   }
   @media (max-width: 320px) {
     font-size: 2rem;

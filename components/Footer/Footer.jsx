@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import moment from 'moment';
-import { Footer, FooterLogo, Menu, MenuItem, MenuLink, MenuIcon} from './index';
+import {Footer, FooterLogo, Menu, MenuItem, MenuLink, MenuIcon} from './index';
 
 const JFFooter = (props) => {
   //click is the initial state and setclick will be the update state

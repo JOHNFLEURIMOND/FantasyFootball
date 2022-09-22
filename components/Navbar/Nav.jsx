@@ -1,6 +1,6 @@
-import { BiMenu, BiX } from 'react-icons/bi';
-import React, { useState } from 'react';
-import { Nav, NavLogo, Menu, MenuItem, MenuLink, MenuIcon } from './index';
+import {BiMenu, BiX} from 'react-icons/bi';
+import React, {useState} from 'react';
+import {Nav, NavLogo, Menu, MenuItem, MenuLink, MenuIcon} from './index';
 
 const Navbar = () => {
   const [click, setClick] = useState(false);
@@ -14,24 +14,14 @@ const Navbar = () => {
 
         <Menu>
           <MenuItem>
-            <MenuLink to='/'>
-              Home
-            </MenuLink>
+            <MenuLink to='/'>Home</MenuLink>
           </MenuItem>
 
           <MenuItem>
-            <MenuLink
-              to='/WeeklyProjections'
-            >
-              Weekly Projections
-            </MenuLink>
+            <MenuLink to='/WeeklyProjections'>Weekly Projections</MenuLink>
           </MenuItem>
           <MenuItem>
-            <MenuLink
-              to='/PPR'
-            >
-              PPR
-            </MenuLink>
+            <MenuLink to='/PPR'>PPR</MenuLink>
           </MenuItem>
         </Menu>
       </Nav>

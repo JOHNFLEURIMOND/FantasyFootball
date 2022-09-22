@@ -1,14 +1,8 @@
 import React from 'react';
-import { MainHero } from './index';
+import {MainHero} from './index';
 
 const SimplyPlantedHero = (props) => {
- 
-  return (
-
-      <MainHero>
-        
-      </MainHero>
-  );
+  return <MainHero></MainHero>;
 };
 
 export default SimplyPlantedHero;
