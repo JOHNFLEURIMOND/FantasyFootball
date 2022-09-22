@@ -1,23 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {
-  Card,
-  CardHeader,
-  YoutubeCardContent,
-  CardBody,
-  NameFieldset,
-  PriceFieldset,
-  AVideo,
-} from '../Card/index';
+import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, PriceFieldset, AVideo} from '../Card/index';
 import axios from 'axios';
 import {ProjectsSectionContainer, Title, CardDiv} from './index';
-import {
-  Icon,
-  Pagination,
-  Dimmer,
-  Loader,
-  Image,
-  Segment,
-} from 'semantic-ui-react';
+import {Icon, Pagination, Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
   const [card, flipCard] = useState(false);
@@ -46,11 +31,7 @@ const FantasyFootballRanking = () => {
 
       <>
         <h1>Search News</h1>
-        <input
-          type='text'
-          placeholder='Search For News'
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <input type='text' placeholder='Search For News' onChange={(e) => setSearch(e.target.value)} />
         <CardDiv>
           {loaded ? (
             <>
@@ -67,27 +48,20 @@ const FantasyFootballRanking = () => {
               .filter((value) => {
                 if (search === '') {
                   return value;
-                } else if (
-                  value.Content.toLowerCase().includes(search.toLowerCase())
-                ) {
+                } else if (value.Content.toLowerCase().includes(search.toLowerCase())) {
                   return value;
                 }
               })
+              .sort((a, b) => a - b)
               .map((d, index) => (
                 <div key={index}>
                   {card ? (
                     <Card>
                       <CardBody onClick={() => flipCard(false)}>
-                        <CardHeader
-                          role='img'
-                          aria-label='Description of the overall image'>
-                          <YoutubeCardContent aria-label='title'>
-                            {d.Content}
-                          </YoutubeCardContent>
+                        <CardHeader role='img' aria-label='Description of the overall image'>
+                          <YoutubeCardContent aria-label='title'>{d.Content}</YoutubeCardContent>
                         </CardHeader>
-                        <AVideo aria-label='description'>
-                          Posted: {d.TimeAgo}
-                        </AVideo>
+                        <AVideo aria-label='description'>Posted: {d.TimeAgo}</AVideo>
                       </CardBody>
                     </Card>
                   ) : (
@@ -97,16 +71,10 @@ const FantasyFootballRanking = () => {
                         role='contentInfo'
                         aria-pressed='false'
                         aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'>
-                        <CardHeader
-                          role='img'
-                          aria-label='Description of the Product image'>
-                          <NameFieldset aria-label='title'>
-                            Title: {d.Title}
-                          </NameFieldset>
+                        <CardHeader role='img' aria-label='Description of the Product image'>
+                          <NameFieldset aria-label='title'>Title: {d.Title}</NameFieldset>
                         </CardHeader>
-                        <NameFieldset aria-label='description'>
-                          Source: {d.Source}
-                        </NameFieldset>
+                        <NameFieldset aria-label='description'>Source: {d.Source}</NameFieldset>
                       </CardBody>
                     </Card>
                   )}

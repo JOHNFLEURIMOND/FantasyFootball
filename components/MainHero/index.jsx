@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { fleurimondColors } from '../../utils/theme.js';
+import {fleurimondColors} from '../../utils/theme.js';
 import img from '../../public/fantasyfootball.jpeg';
 
 export const MainHero = styled.div`
-background-position: center;
-background-repeat: no-repeat;
-background-size: cover;
-position: relative;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
   min-height: 100vh;
   box-sizing: border-box;
   font-size: 20px;
