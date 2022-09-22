@@ -12,31 +12,45 @@ import {
     CardBody,
     NameFieldset,
     PriceFieldset,
-    AVideo
-} from "../Card/index";
-import axios from "axios";
+    AVideo,
+} from '../Card/index';
+import axios from 'axios';
 import { GlobalStyle, Container } from '../CSS/global-style';
+import {
+    Icon,
+    Pagination,
+    Dimmer,
+    Loader,
+    Image,
+    Segment,
+} from 'semantic-ui-react';
+const key = process.env.REACT_APP_MY_API_KEY;
 
-const debug = process.env.NODE_ENV === 'production' ? void 0 : new DebugEngine();
+const debug =
+    process.env.NODE_ENV === 'production' ? void 0 : new DebugEngine();
 const engine = new Styletron();
-
 
 function WeeklyProjections() {
     const [card, flipCard] = useState(false);
     const [stats, setStats] = useState([]);
-    const [error, setError] = useState("");
-    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoaded] = useState(false);
+    const [search, setSearch] = useState('');
 
-    const getStats = async () => {
-        await axios
-            .get(
-                "https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=31c47054e334469486c840aee3f595b6"
-            )
-            .then(responses => { setStats(responses.data), console.log(responses.data); })
-            .catch(error => setError(error.message))
-            .finally(() => setLoaded(true));
-    };
     useEffect(() => {
+        setLoaded(true);
+        const getStats = async () => {
+            await axios
+                .get(
+                    `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=${key}`,
+                )
+                .then((responses) => {
+                    setStats(responses.data), console.log(responses.data);
+                })
+                .catch((error) => setError(error.message))
+                .finally(() => setLoaded(false));
+        };
+
         getStats();
     }, []);
     return (
@@ -46,63 +60,105 @@ function WeeklyProjections() {
             <MainHero />
             <ProjectsSectionContainer>
                 <Title>Fantasy Football News</Title>
+                <h1>Search Players</h1>
+                <input
+                    type='text'
+                    placeholder='Search For News'
+                    onChange={(e) => setSearch(e.target.value)}
+                />
                 <CardDiv>
-                    {stats.map((d, index) => (
-                        <div>
-                            {card ? (
 
-                                <Card key={d.PlayerID}>
-                                    <CardBody
-                                        onClick={() => flipCard(false)}
-                                        role="contentInfo"
-                                        aria-pressed="false"
-                                        aria-label="Product Card with a Image and a list of price, type of strain, thc and cbd levels."
-                                    >
-                                        <CardHeader
-                                            role="img"
-                                            aria-label="Description of the Product image"
-                                        >
-                                            <NameFieldset aria-label="title">
-                                                Active: {(d.Activated === 1) ? 'Active' : 'Not Active'}
-                                            </NameFieldset>
-                                        </CardHeader>
-                                        <NameFieldset aria-label="title">
-                                            Fantasy Points FanDuel: {d.FantasyPointsFanDuel}
-                                        </NameFieldset>
-                                        <NameFieldset aria-label="description">
-                                            Fantasy Points: {d.FantasyPoints}
-                                        </NameFieldset>
-                                        <NameFieldset aria-label="description">
-                                            FantasyPointsPPR: {d.FantasyPointsPPR}
-                                        </NameFieldset>
-                                    </CardBody>
-                                </Card>
+                    {loading ? (
+                        <Segment>
+                            <Dimmer active inverted>
+                                <Loader size='large'>Loading</Loader>
+                            </Dimmer>
 
-                            ) : (
-                                <Card key={d.PlayerID}>
-                                    <CardBody onClick={() => flipCard(true)}>
-                                        <CardHeader
-                                            role="img"
-                                            aria-label="Description of the overall image"
-                                        >
-                                            <YoutubeCardContent aria-label="title">
-                                                {d.Name} : {d.Position}
-                                            </YoutubeCardContent>
-                                        </CardHeader>
-                                        <AVideo aria-label="description">Players Team: {d.Team} VS: {d.Opponent} </AVideo>
-                                        <AVideo aria-label="description">{(d.HomeOrAway === "AWAY") ? 'Playing Away' : 'Playing At Home'}</AVideo>
-                                        <AVideo aria-label="description">Game Date: {d.GameDate}</AVideo>
-                                    </CardBody>
-                                </Card>
-                            )}
-                        </div>
-                    ))}
+                            <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+                        </Segment>
+                    ) : (
+                        stats
+                            .filter((value) => {
+                                if (search === '') {
+                                    return value;
+                                } else if (
+                                    value.Name.toLowerCase().includes(search.toLowerCase())
+                                ) {
+                                    return value;
+                                }
+                            })
+                            .map((d, index) => (
+                                <div>
+                                    {card ? (
+                                        <Card key={d.PlayerID}>
+                                            <CardBody
+                                                onClick={() => flipCard(false)}
+                                                role='contentInfo'
+                                                aria-pressed='false'
+                                                aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'>
+                                                <CardHeader
+                                                    role='img'
+                                                    aria-label='Description of the Product image'>
+                                                    <NameFieldset aria-label='title'>
+                                                        Active:{' '}
+                                                        {d.Activated === 1 ? 'Active' : 'Not Active'}
+                                                    </NameFieldset>
+                                                </CardHeader>
+                                                <NameFieldset aria-label='title'>
+                                                    Fantasy Points FanDuel: {d.FantasyPointsFanDuel}
+                                                </NameFieldset>
+                                                <NameFieldset aria-label='description'>
+                                                    Fantasy Points: {d.FantasyPoints}
+                                                </NameFieldset>
+                                                <NameFieldset aria-label='description'>
+                                                    FantasyPointsPPR: {d.FantasyPointsPPR}
+                                                </NameFieldset>
+                                            </CardBody>
+                                        </Card>
+                                    ) : (
+                                        <Card key={d.PlayerID}>
+                                            <CardBody onClick={() => flipCard(true)}>
+                                                <CardHeader
+                                                    role='img'
+                                                    aria-label='Description of the overall image'>
+                                                    <YoutubeCardContent aria-label='title'>
+                                                        {d.Name} : {d.Position}
+                                                    </YoutubeCardContent>
+                                                </CardHeader>
+                                                <AVideo aria-label='description'>
+                                                    Players Team: {d.Team} VS: {d.Opponent}{' '}
+                                                </AVideo>
+                                                <AVideo aria-label='description'>
+                                                    {d.HomeOrAway === 'AWAY'
+                                                        ? 'Playing Away'
+                                                        : 'Playing At Home'}
+                                                </AVideo>
+                                                <AVideo aria-label='description'>
+                                                    Game Date: {d.GameDate}
+                                                </AVideo>
+                                            </CardBody>
+                                        </Card>
+                                    )}
+                                </div>
+                            ))
+                    )}
                 </CardDiv>
+                <Pagination
+                    defaultActivePage={5}
+                    ellipsisItem={{
+                        content: <Icon name='ellipsis horizontal' />,
+                        icon: true,
+                    }}
+                    firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+                    lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+                    prevItem={{ content: <Icon name='angle left' />, icon: true }}
+                    nextItem={{ content: <Icon name='angle right' />, icon: true }}
+                    totalPages={10}
+                />
             </ProjectsSectionContainer>
-            <Footer />
+            s <Footer />
         </Container>
-
-    )
+    );
 }
 
-export default WeeklyProjections
+export default WeeklyProjections;
