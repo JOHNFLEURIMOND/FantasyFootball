@@ -1,5 +1,5 @@
-import { Card, YoutubeCardContent, CardBody, AVideo, CardImage } from './index';
-import { useRef } from 'react';
+import {Card, YoutubeCardContent, CardBody, AVideo, CardImage} from './index';
+import {useRef} from 'react';
 const getProductCard = (props) => {
   const [card, flipCard] = useState(false);
   const cardRef = useRef({});
@@ -13,8 +13,7 @@ const getProductCard = (props) => {
           onClick={() => flipCard(false)}
           role='contentInfo'
           aria-pressed='false'
-          aria-label='Card with Youtube Title, click watch here to view.'
-        >
+          aria-label='Card with Youtube Title, click watch here to view.'>
           <YoutubeCardContent aria-label='description'>{props.description}</YoutubeCardContent>
 
           <YoutubeCardContent aria-label='videoOwnerChannelTitle'>{props.videoOwnerChannelTitle}</YoutubeCardContent>

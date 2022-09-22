@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 export default function PageWrapper(props) {
-  const { children, heading, icon } = props;
+  const {children, heading, icon} = props;
 
   const iconSrc = `/static/menu-icons/${icon}-big.svg`;
 
