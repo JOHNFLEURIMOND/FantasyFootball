@@ -4,6 +4,7 @@ const BUILD_DIR = path.resolve(__dirname, "./build");
 const APP_DIR = path.resolve(__dirname, "./components");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+require('dotenv').config({ path: './.env' });
 
 module.exports = {
   entry: {
@@ -29,6 +30,9 @@ module.exports = {
     new webpack.DefinePlugin({
       APP_VERSION:
         JSON.stringify(process.env.APP_VERSION) || JSON.stringify("config"),
+    }),
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify(process.env),
     }),
     new MiniCssExtractPlugin({
       filename: 'bundle.css'
