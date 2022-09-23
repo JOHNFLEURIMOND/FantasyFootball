@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Nav from '../Navbar/Nav.jsx';
 import Footer from '../Footer/Footer';
 import MainHero from '../MainHero/MainHero';
-import {Provider as StyletronProvider, DebugEngine} from 'styletron-react';
-import {Client as Styletron} from 'styletron-engine-atomic';
-import {ProjectsSectionContainer, CardDiv, Title} from './index';
-import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, PriceFieldset, AVideo} from '../Card/index';
+import { Provider as StyletronProvider, DebugEngine } from 'styletron-react';
+import { Client as Styletron } from 'styletron-engine-atomic';
+import { ProjectsSectionContainer, CardDiv, Title } from './index';
+import { Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, PriceFieldset, AVideo } from '../Card/index';
 import axios from 'axios';
-import {GlobalStyle, Container} from '../CSS/global-style';
-import {Icon, Pagination, Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
+import { GlobalStyle, Container } from '../CSS/global-style';
+import { Icon, Pagination, Dimmer, Loader, Image, Segment } from 'semantic-ui-react';
 const key = process.env.REACT_APP_MY_API_KEY;
 
 const debug = process.env.NODE_ENV === 'production' ? void 0 : new DebugEngine();
@@ -29,7 +29,7 @@ function WeeklyProjections() {
         .then((responses) => {
           setStats(responses.data), console.log(responses.data);
         })
-        .catch((error) => setError(error.message))
+        .catch((error) => setError(error))
         .finally(() => setLoaded(false));
     };
 
@@ -44,6 +44,7 @@ function WeeklyProjections() {
         <Title>Fantasy Football News</Title>
         <h1>Search Players</h1>
         <input type='text' placeholder='Search For News' onChange={(e) => setSearch(e.target.value)} />
+        {console.log(error)}
         <CardDiv>
           {loading ? (
             <Segment>
@@ -110,10 +111,10 @@ function WeeklyProjections() {
             content: <Icon name='ellipsis horizontal' />,
             icon: true,
           }}
-          firstItem={{content: <Icon name='angle double left' />, icon: true}}
-          lastItem={{content: <Icon name='angle double right' />, icon: true}}
-          prevItem={{content: <Icon name='angle left' />, icon: true}}
-          nextItem={{content: <Icon name='angle right' />, icon: true}}
+          firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+          lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+          prevItem={{ content: <Icon name='angle left' />, icon: true }}
+          nextItem={{ content: <Icon name='angle right' />, icon: true }}
           totalPages={10}
         />
       </ProjectsSectionContainer>

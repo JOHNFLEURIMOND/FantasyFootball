@@ -52,7 +52,6 @@ const FantasyFootballRanking = () => {
                   return value;
                 }
               })
-              .sort((a, b) => a - b)
               .map((d, index) => (
                 <div key={index}>
                   {card ? (
