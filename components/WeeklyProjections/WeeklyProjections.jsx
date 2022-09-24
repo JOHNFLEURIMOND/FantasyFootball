@@ -22,6 +22,7 @@ function WeeklyProjections() {
   const [currentPage, setCurrentPage] = useState(1);
   const [statsPerPage] = useState(12);
   const indexOfLastStat = currentPage * statsPerPage;
+  const totalPages = stats.length / statsPerPage;
   const indexOfFirstStat = indexOfLastStat - statsPerPage;
   const currentStats = stats.slice(indexOfFirstStat, indexOfLastStat);
 
