@@ -20,9 +20,10 @@ function WeeklyProjections() {
   const [error, setError] = useState('');
   const [loading, setLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const indexOfLastStat = currentPage * 12;
-  const totalPages = stats.length / 12;
-  const indexOfFirstStat = indexOfLastStat - 12;
+  const [statsPerPage] = useState(12);
+  const indexOfLastStat = currentPage * statsPerPage;
+  const totalPages = stats.length / statsPerPage;
+  const indexOfFirstStat = indexOfLastStat - statsPerPage;
   const currentStats = stats.slice(indexOfFirstStat, indexOfLastStat);
 
   // Get current stats
@@ -39,10 +40,12 @@ function WeeklyProjections() {
         .catch((error) => setError(error))
         .finally(() => setLoaded(false));
     };
-    console.log('this is weekly projections: ', currentPage);
+
     getStats();
-  }, [currentPage]);
-  // console.log('this outside useEffects: ', stats)
+  }, [stats]);
+  {
+    console.log('this outside useEffects: ', stats);
+  }
 
   return (
     <Container>
@@ -52,7 +55,7 @@ function WeeklyProjections() {
       <ProjectsSectionContainer>
         <Title>Fantasy Football News</Title>
         <WeeklyProjectionCards stats={currentStats} loading={loading} />
-        <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={Math.ceil(totalPages)} />
+        <Pagination statsPerPage={statsPerPage} paginate={paginate} />
       </ProjectsSectionContainer>
       <Footer />
     </Container>
