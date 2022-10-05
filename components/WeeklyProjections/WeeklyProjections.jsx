@@ -5,28 +5,20 @@ import MainHero from '../MainHero/MainHero';
 import Nav from '../Navbar/Nav.jsx';
 import Pagination from '../Pagination/Pagination';
 import WeeklyProjectionCards from './WeeklyProjectionCards';
-import {Provider as StyletronProvider, DebugEngine} from 'styletron-react';
-import {Icon} from 'semantic-ui-react';
-import {Client as Styletron} from 'styletron-engine-atomic';
 import {ProjectsSectionContainer, Title} from './index';
 import {GlobalStyle, Container} from '../CSS/global-style';
 const key = process.env.REACT_APP_MY_API_KEY;
 
-const debug = process.env.NODE_ENV === 'production' ? void 0 : new DebugEngine();
-const engine = new Styletron();
 
 function WeeklyProjections() {
   const [stats, setStats] = useState([]);
   const [error, setError] = useState('');
-  const [loading, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const indexOfLastStat = currentPage * 12;
   const totalPages = stats.length / 12;
   const indexOfFirstStat = indexOfLastStat - 12;
   const currentStats = stats.slice(indexOfFirstStat, indexOfLastStat);
-
-  // Get current stats
-  const paginate = (pageNumbers) => setCurrentPage(pageNumbers);
 
   useEffect(() => {
     setLoaded(true);
@@ -37,12 +29,10 @@ function WeeklyProjections() {
           setStats(responses.data);
         })
         .catch((error) => setError(error))
-        .finally(() => setLoaded(false));
+        .finally(() => setLoading(false));
     };
-    console.log('this is weekly projections: ', currentPage);
     getStats();
   }, [currentPage]);
-  // console.log('this outside useEffects: ', stats)
 
   return (
     <Container>
@@ -51,7 +41,7 @@ function WeeklyProjections() {
       <MainHero />
       <ProjectsSectionContainer>
         <Title>Fantasy Football News</Title>
-        <WeeklyProjectionCards stats={currentStats} loading={loading} />
+        <WeeklyProjectionCards stats={currentStats} loading={loading} error={error} />
         <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={Math.ceil(totalPages)} />
       </ProjectsSectionContainer>
       <Footer />

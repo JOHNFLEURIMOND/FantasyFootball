@@ -1,6 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, PriceFieldset, AVideo} from '../Card/index';
+import React, {useState} from 'react';
+import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, AVideo} from '../Card/index';
 import {Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
 import {CardDiv} from './index';
 
