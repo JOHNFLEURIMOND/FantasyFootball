@@ -28,7 +28,7 @@ export default function PPR() {
         .then((responses) => {
           setPprStats(responses.data);
         })
-        .catch((error) => console.log(responses.error))
+        .catch((responses) => setError(responses.error))
         .finally(() => setLoading(false));
     };
     getStats();
