@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, PriceFieldset, AVideo} from '../Card/index';
+import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, AVideo} from '../Card/index';
 import axios from 'axios';
 import {ProjectsSectionContainer, Title, CardDiv} from './index';
-import {Icon, Pagination, Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
+import {Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
   const [card, flipCard] = useState(false);

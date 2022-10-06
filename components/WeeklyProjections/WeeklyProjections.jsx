@@ -27,7 +27,7 @@ function WeeklyProjections() {
         .then((responses) => {
           setStats(responses.data);
         })
-        .catch((error) => setError(error))
+        .catch((responses) => setError(responses.error))
         .finally(() => setLoading(false));
     };
     getStats();
