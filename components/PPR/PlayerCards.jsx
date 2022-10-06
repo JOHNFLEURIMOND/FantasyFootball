@@ -5,7 +5,7 @@ import {Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
 import {Input} from 'semantic-ui-react';
 const key = process.env.REACT_APP_MY_API_KEY;
 
-export default function PlayerCards({pprStats = [], loading, error}) {
+export default function PlayerCards({stats, loading, error}) {
   const [card, flipCard] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -35,7 +35,7 @@ export default function PlayerCards({pprStats = [], loading, error}) {
         />
       </div>
       <CardDiv>
-        {pprStats
+        {stats
           .filter((value) => {
             if (search === '') {
               return value;
