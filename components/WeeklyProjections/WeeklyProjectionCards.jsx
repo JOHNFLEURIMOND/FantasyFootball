@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, AVideo} from '../Card/index';
 import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
 import {CardDiv, LoadingDiv} from './index';
 
 export default function WeeklyProjectionCards({stats, loading}) {
-  const [card, flipCard] = useState(false);
+  const [isFlipped, changeFlip] = useState(false);
   const [search, setSearch] = useState('');
-
+  const handleClick = useCallback((event) => {
+    event.preventDefault()
+    changeFlip(!isFlipped)
+    console.log(stats.map(x => x.GameKey))
+  })
   if (loading) {
     return (
       <LoadingDiv>
@@ -85,11 +89,11 @@ export default function WeeklyProjectionCards({stats, loading}) {
               }
             })
             .map((d, index) => (
-              <div key={d.PlayerID}>
-                {card ? (
-                  <Card>
+              <div>
+                {isFlipped ? (
+                  <Card key={d.GameKey}>
                     <CardBody
-                      onClick={() => flipCard(false)}
+                      onClick={handleClick}
                       role='contentInfo'
                       aria-pressed='false'
                       aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'>
@@ -104,8 +108,8 @@ export default function WeeklyProjectionCards({stats, loading}) {
                     </CardBody>
                   </Card>
                 ) : (
-                  <Card>
-                    <CardBody onClick={() => flipCard(true)}>
+                  <Card key={d.GameKey}>
+                    <CardBody onClick={handleClick}>
                       <CardHeader role='img' aria-label='Description of the overall image'>
                         <YoutubeCardContent aria-label='title'>
                           {d.Name} : {d.Position}
