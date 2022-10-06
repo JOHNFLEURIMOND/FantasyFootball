@@ -2,7 +2,7 @@
 
 ![FantansyFootballApp](public/fantasyfootballHomePage.jpeg)
 
-![FantansyFootballApp](public/public\Players.jpeg)
+![FantansyFootballPlayers](public/Players.jpeg)
 
 # How It's Made :nut_and_bolt:🔨 :hammer::wrench::
 
