@@ -9,7 +9,6 @@ import {ProjectsSectionContainer, Title} from './index';
 import {GlobalStyle, Container} from '../CSS/global-style';
 const key = process.env.REACT_APP_MY_API_KEY;
 
-
 function WeeklyProjections() {
   const [stats, setStats] = useState([]);
   const [error, setError] = useState('');
@@ -21,7 +20,7 @@ function WeeklyProjections() {
   const currentStats = stats.slice(indexOfFirstStat, indexOfLastStat);
 
   useEffect(() => {
-    setLoaded(true);
+    setLoading(true);
     const getStats = async () => {
       await axios
         .get(`https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=${key}`)

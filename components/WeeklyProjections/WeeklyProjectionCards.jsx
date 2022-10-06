@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, AVideo} from '../Card/index';
-import {Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
-import {CardDiv} from './index';
+import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
+import {CardDiv, LoadingDiv} from './index';
 
 export default function WeeklyProjectionCards({stats, loading}) {
   const [card, flipCard] = useState(false);
@@ -9,23 +9,70 @@ export default function WeeklyProjectionCards({stats, loading}) {
 
   if (loading) {
     return (
-      <div>
-        <Segment>
+      <LoadingDiv>
+        <Segment size='massive' style={{ height: "650px" }}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
-
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>   
+        <Segment size='massive' style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
           <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         </Segment>
-      </div>
+        <Segment size='massive' style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive'style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment> <Segment size='massive' style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: "650px" }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+      </LoadingDiv>
     );
   }
 
   return (
     <div>
-      <h1>Search Players</h1>
-      <input type='text' placeholder='Search For News' onChange={(e) => setSearch(e.target.value)} />
-
+      <div className='SearchBar'>
+        <h1>Search Players</h1>
+        <Input
+          type='text'
+          label='NFL'
+          loading={loading}
+          placeholder='Search For Players'
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
       <>
         <CardDiv>
           {stats
