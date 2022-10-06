@@ -10,48 +10,49 @@ export default function WeeklyProjectionCards({stats, loading}) {
   if (loading) {
     return (
       <LoadingDiv>
-        <Segment size='massive' style={{ height: "650px" }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>   
-        <Segment size='massive' style={{ height: "650px" }}>
+        <Segment size='massive' style={{height: '650px'}}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
           <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         </Segment>
-        <Segment size='massive' style={{ height: "650px" }}>
+        <Segment size='massive' style={{height: '650px'}}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
           <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         </Segment>
-        <Segment size='massive' style={{ height: "650px" }}>
+        <Segment size='massive' style={{height: '650px'}}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
           <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         </Segment>
-        <Segment size='massive'style={{ height: "650px" }}>
+        <Segment size='massive' style={{height: '650px'}}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
           <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         </Segment>
-        <Segment size='massive' style={{ height: "650px" }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment> <Segment size='massive' style={{ height: "650px" }}>
+        <Segment size='massive' style={{height: '650px'}}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
           <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
         </Segment>
-        <Segment size='massive' style={{ height: "650px" }}>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>{' '}
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
           <Dimmer active inverted>
             <Loader size='large'>Loading</Loader>
           </Dimmer>
