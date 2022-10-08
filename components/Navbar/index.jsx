@@ -31,7 +31,7 @@ export const MenuItem = styled.li`
 export const MenuLink = styled(Link)`
   text-decoration: none;
   font-weight: bold;
-  font-size: 1.4rem;
+  font-size: 1rem;
   color: ${fleurimondColors.infrared};
   display: flex;
   justify-content: space-between;
@@ -42,18 +42,14 @@ export const MenuLink = styled(Link)`
   &:hover {
     border-color: ${fleurimondColors.white};
     color: ${fleurimondColors.white};
-    transform: translateY(-3rem);
   }
   &:active {
-    transform: translateY(3rem);
-    ${fleurimondColors.white}
-    ${fleurimondColors.white}
+    color:${fleurimondColors.white};
   }
   &:hover,
   &:active,
   &:focus {
     border-color: ${fleurimondColors.white};
-    transform: scale(1.08);
     color: ${fleurimondColors.white};
   }
 
