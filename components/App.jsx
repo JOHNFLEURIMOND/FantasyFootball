@@ -30,7 +30,7 @@ const Homepage = props => {
     const getPlayers = async () => {
       setLoaded(true);
       await axios
-        .get(`https://api.sportsdata.io/v3/nfl/scores/json/News?key=${key}`)
+        .get(`https://api.sportsdata.io/v3/nfl/scores/json/News?key=${process.env.REACT_APP_MY_API_KEY}`)
         .then(responses => setData(responses.data))
         .catch(error => setError(error.message))
         .finally(() => setLoaded(false));
