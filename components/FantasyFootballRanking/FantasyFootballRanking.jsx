@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import {
   Card,
   CardHeader,
@@ -8,12 +8,80 @@ import {
   Description,
 } from '../Card/index';
 import { NewsContext } from '../App';
-import { MainContainer, Title, CardDiv, SearchDiv, Header } from './index';
+import {
+  MainContainer,
+  Title,
+  CardDiv,
+  SearchDiv,
+  Header,
+  LoadingDiv,
+} from './index';
 import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
-  const { card, flipCard, data, search, setSearch, loaded } =
-    useContext(NewsContext);
+  const [isCardFlipped, setIsCardFlipped] = useState(-1);
+  const { card, data, search, setSearch, loaded } = useContext(NewsContext);
+  const handleClick = useCallback(index => {
+    setIsCardFlipped(index);
+    if (isCardFlipped == index) {
+      setIsCardFlipped(-1);
+    }
+  });
+
+  if (loaded) {
+    return (
+      <LoadingDiv>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>{' '}
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{ height: '650px' }}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+      </LoadingDiv>
+    );
+  }
   return (
     <MainContainer>
       <Title>Fantasy Football News</Title>
@@ -29,70 +97,58 @@ const FantasyFootballRanking = () => {
         </SearchDiv>
 
         <CardDiv>
-          {loaded ? (
-            <>
-              <Segment>
-                <Dimmer active inverted>
-                  <Loader size='large'>Loading</Loader>
-                </Dimmer>
-
-                <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-              </Segment>
-            </>
-          ) : (
-            data
-              .filter(value => {
-                if (search === '') {
-                  return value;
-                } else if (
-                  value.Content.toLowerCase().includes(search.toLowerCase())
-                ) {
-                  return value;
-                }
-              })
-              .map((d, index) => (
-                <div key={index}>
-                  {card ? (
-                    <Card>
-                      <CardBody onClick={() => flipCard(false)}>
-                        <CardHeader
-                          role='img'
-                          aria-label='Description of the overall image'
-                        >
-                          <HeaderTitle aria-label='title'>
-                            {d.Content}
-                          </HeaderTitle>
-                        </CardHeader>
-                        <Description aria-label='description'>
-                          Posted: {d.TimeAgo}
-                        </Description>
-                      </CardBody>
-                    </Card>
-                  ) : (
-                    <Card>
-                      <CardBody
-                        onClick={() => flipCard(true)}
-                        role='contentInfo'
-                        aria-pressed='false'
-                        aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'
+          {data
+            .filter(value => {
+              if (search === '') {
+                return value;
+              } else if (
+                value.Content.toLowerCase().includes(search.toLowerCase())
+              ) {
+                return value;
+              }
+            })
+            .map((d, index) => (
+              <div key={index}>
+                {isCardFlipped === index ? (
+                  <Card>
+                    <CardBody onClick={() => handleClick(index)}>
+                      <CardHeader
+                        role='img'
+                        aria-label='Description of the overall image'
                       >
-                        <CardHeader
-                          role='img'
-                          aria-label='Description of the Product image'
-                        >
-                          <NameFieldset aria-label='title'>
-                            Title: {d.Title}
-                          </NameFieldset>
-                        </CardHeader>
-                        <NameFieldset aria-label='description'>
-                          Source: {d.Source}
+                        <HeaderTitle aria-label='title'>
+                          {d.Content}
+                        </HeaderTitle>
+                      </CardHeader>
+                      <Description aria-label='description'>
+                        Posted: {d.TimeAgo}
+                      </Description>
+                    </CardBody>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardBody
+                      onClick={() => handleClick(index)}
+                      role='contentInfo'
+                      aria-pressed='false'
+                      aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'
+                    >
+                      <CardHeader
+                        role='img'
+                        aria-label='Description of the Product image'
+                      >
+                        <NameFieldset aria-label='title'>
+                          Title: {d.Title}
                         </NameFieldset>
-                      </CardBody>
-                    </Card>
-                  )}
-                </div>
-              ))
-          )}
+                      </CardHeader>
+                      <NameFieldset aria-label='description'>
+                        Source: {d.Source}
+                      </NameFieldset>
+                    </CardBody>
+                  </Card>
+                )}
+              </div>
+            ))}
         </CardDiv>
       </>
     </MainContainer>
