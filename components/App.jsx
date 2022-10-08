@@ -37,29 +37,30 @@ const Homepage = props => {
     };
 
     getPlayers();
-  }, []);
+  }, [search]);
 
   return (
-    <Container>
-      <GlobalStyle />
-      <Nav />
-      <MainHero />
-      <NewsContext.Provider
-        value={{
-          card,
-          flipCard,
-          data,
-          setData,
-          search,
-          setSearch,
-          loaded,
-          setLoaded,
-        }}
-      >
+    <NewsContext.Provider
+      value={{
+        card,
+        flipCard,
+        data,
+        setData,
+        search,
+        setSearch,
+        loaded,
+        setLoaded,
+      }}
+    >
+      <Container>
+        <GlobalStyle />
+        <Nav />
+        <MainHero />
+
         <FantasyFootballRanking />
-      </NewsContext.Provider>
-      <Footer />
-    </Container>
+        <Footer />
+      </Container>
+    </NewsContext.Provider>
   );
 };
 
