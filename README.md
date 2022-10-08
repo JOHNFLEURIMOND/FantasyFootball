@@ -12,7 +12,7 @@ This application is built with React, Semantic UI, & Sportsdata.io API.
 
 A user can get the most recent fantasy football news from Rotoworld Fantasy Pros; search for their favorite player for projections for the following games and average stats per game.
 
-The pages on the website are primarily created from three main components, FantasyFootballRanking, WeeklyProjections, and PPR, with two different API calls to Sportsdatas' API. First, I made a card component using Styled-Components that will populate the data on individual cards in a grid format once the promises come back from the API call. Suppose the user would like to see more players. In that case, there is a search bar to search for whatever player you like or filter by Position and/or start.
+The pages on the website are primarily created from three main components, FantasyFootballRanking, WeeklyProjections, and PPR, with two different API calls to Sportsdatas' API. First, I made a card component using Styled-Components that will populate the data on individual cards in a grid format once the promises come back from the API call. Suppose the user would like to see more players. In that case, there is a search bar to search for whatever player you like or filter by Position and/or stat.
 
 # Portfolio :open_file_folder::
 
