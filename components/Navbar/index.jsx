@@ -1,81 +1,20 @@
-import { BiRestaurant } from 'react-icons/bi';
+import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { fleurimondColors } from '../../utils/theme.js';
 
-export const Nav = styled.nav`
+export const NavContainer = styled.div`
+  position: fixed;
+  width: 100%;
   top: 0;
-  z-index: 9999999999 !important;
-  height: 80px;
-  background: ${fleurimondColors.midnight};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem calc((100vw - 1000px) / 2);
-  overflow: hidden;
-`;
-
-export const NavLogo = styled(Link)`
-  color: ${fleurimondColors.infrared};
-  cursor: pointer;
-  margin: 1em;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  font-size: 1.5rem;
-  font-weight: 800;
-  transition: all 0.5s ease;
-  &:hover,
-  &:active,
-  &:focus {
-    border-color: white;
-    color: white;
-    transform: scale(1.08);
-  }
-`;
-
-export const NavIcon = styled(BiRestaurant)`
-  margin: 2rem;
-  transition: all 0.5s ease;
-
-  &:hover {
-    transform: scale(2);
-  }
-`;
-
-export const MenuIcon = styled.div`
-  display: none;
-
-  @media (max-width: 800px) {
-    display: block;
-    position: absolute;
-    color: ${fleurimondColors.infrared};
-    top: 0;
-    right: 0;
-    transform: translate(-50%, 20%);
-    font-size: 4rem;
-    cursor: pointer;
-  }
-`;
-
-export const Menu = styled.ul`
-  display: flex;
-  align-items: center;
-  text-align: center;
-
-  @media only screen and (max-width: 800px) {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100vh;
-    position: absolute;
-    top: 80px;
-    left: ${({ click }) => (click ? '0' : '-100%')};
-    background: ${fleurimondColors.midnight};
-    transition: all 0.5s ease;
-  }
-`;
+  left: 0;
+  background-color: ${fleurimondColors.white};
+  color: ${fleurimondColors.white};
+  font-family: 'Exo 2', sans-serif;
+  padding: 1em;
+  z-index:9999999999;
+`
 
 export const MenuItem = styled.li`
   list-style: none;
@@ -101,20 +40,21 @@ export const MenuLink = styled(Link)`
   height: 100%;
   transition: all 0.2s ease;
   &:hover {
-    border-color: white;
-    color: white;
-    transform: traslateY(-3rem);
+    border-color: ${fleurimondColors.white};
+    color: ${fleurimondColors.white};
+    transform: translateY(-3rem);
   }
   &:active {
-    transform: traslateY(3rem);
-    color: white;
-    border-color: white;
+    transform: translateY(3rem);
+    ${fleurimondColors.white}
+    ${fleurimondColors.white}
   }
   &:hover,
   &:active,
   &:focus {
-    border-color: white;
+    border-color: ${fleurimondColors.white};
     transform: scale(1.08);
+    color: ${fleurimondColors.white};
   }
 
   @media only screen and (max-width: 800px) {
@@ -125,25 +65,115 @@ export const MenuLink = styled(Link)`
   }
 `;
 
-export const MenuItemBtn = styled.li`
-  list-style: none;
-  @media screen and (max-width: 800px) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-    height: 120px;
+export const StyledMenu = styled.nav`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: ${fleurimondColors.midnight};
+  transform: ${({ open }) => (open ? 'translateX(0)' : 'translateX(-100%)')};
+  height: 100vh;
+  text-align: left;
+  padding: 2rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.3s ease-in-out;
+
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+
+  a {
+    font-size: 1rem;
+    text-transform: uppercase;
+    padding: 1rem 0;
+    font-weight: bold;
+    letter-spacing: 0.5rem;
+    text-decoration: none;
+    transition: color 0.3s linear;
+
+    @media (max-width: 576px) {
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    &:hover {
+      color: ${fleurimondColors.white};
+    }
   }
 `;
 
-export const MenuLinkBtn = styled(Link)`
-  text-decoration: none;
+export const Menu = ({ open }) => {
+  return (
+    <StyledMenu open={open}>
+      <MenuItem>
+        <MenuLink to='/' aria-label='Home'>
+          Home
+        </MenuLink>
+      </MenuItem>
+
+      <MenuItem>
+        <MenuLink to='/WeeklyProjections' aria-label='Weekly Projections'>
+          Weekly Projections
+        </MenuLink>
+      </MenuItem>
+      <MenuItem>
+        <MenuLink to='/PPR' aria-label='PPR'>
+          PPR
+        </MenuLink>
+      </MenuItem>
+    </StyledMenu>
+  );
+};
+
+export const StyledBurger = styled.button`
+  position: absolute;
+  top: 5%;
+  left: 2rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 8px 16px;
-  height: 100%;
-  width: 100%;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
   border: none;
-  outline: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+
+  &:focus {
+    outline: none;
+  }
+
+  div {
+    width: 2rem;
+    height: 0.25rem;
+    background: ${({ open }) => (open ? fleurimondColors.infrared : fleurimondColors.infrared)};
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+
+    :first-child {
+      transform: ${({ open }) => (open ? 'rotate(45deg)' : 'rotate(0)')};
+    }
+
+    :nth-child(2) {
+      opacity: ${({ open }) => (open ? '0' : '1')};
+      transform: ${({ open }) => (open ? 'translateX(20px)' : 'translateX(0)')};
+    }
+
+    :nth-child(3) {
+      transform: ${({ open }) => (open ? 'rotate(-45deg)' : 'rotate(0)')};
+    }
+  }
 `;
+
+export const Burger = ({ open, setOpen }) => {
+  return (
+    <StyledBurger open={open} onClick={() => setOpen(!open)}>
+      <div />
+      <div />
+      <div />
+    </StyledBurger>
+  );
+};
