@@ -30,12 +30,7 @@ const FantasyFootballRanking = () => {
       <Title>Fantasy Football News</Title>
       <>
         <h1>Search News</h1>
-        <Input
-          type='text'
-          label='NFL'
-          placeholder='Search For News'
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <Input type='text' label='NFL' placeholder='Search For News' onChange={(e) => setSearch(e.target.value)} />
         <CardDiv>
           {loaded ? (
             <>
