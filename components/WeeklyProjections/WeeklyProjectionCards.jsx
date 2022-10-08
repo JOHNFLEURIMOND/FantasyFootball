@@ -99,17 +99,16 @@ export default function WeeklyProjectionCards({ stats, loading }) {
     <div>
       <div className='SearchBar'>
         <SearchDiv>
-        <Header>Search Players</Header>
-        <Input
-          type='text'
-          label='NFL'
-          loading={loading}
-          placeholder='Search For Players'
-          onChange={e => setSearch(e.target.value)}
-        />
-
+          <Header>Search Players</Header>
+          <Input
+            type='text'
+            label='NFL'
+            loading={loading}
+            placeholder='Search For Players'
+            onChange={e => setSearch(e.target.value)}
+          />
         </SearchDiv>
-  
+
         <SearchDiv className='select'>
           <select
             onChange={e => setPositionFilter(e.target.value)}
