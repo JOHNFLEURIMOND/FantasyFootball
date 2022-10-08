@@ -7,7 +7,7 @@ import {
   NameFieldset,
   Description,
 } from '../Card/index';
-import { CardDiv, LoadingDiv } from './index';
+import { CardDiv, LoadingDiv, SearchDiv, Header } from './index';
 import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 
 export default function PlayerCards({ stats, loading }) {
@@ -97,8 +97,9 @@ export default function PlayerCards({ stats, loading }) {
   }
   return (
     <div>
-      <div className='SearchBar'>
-        <h1>Search Players</h1>
+      <SearchDiv className='SearchBar'>
+       <SearchDiv>
+       <Header>Search Players</Header>
         <Input
           type='text'
           label='NFL'
@@ -107,7 +108,8 @@ export default function PlayerCards({ stats, loading }) {
           onChange={e => setSearch(e.target.value)}
         />
 
-        <div className='select'>
+       </SearchDiv>
+        <SearchDiv className='select'>
           <select
             onChange={e => setPositionFilter(e.target.value)}
             className='custom-select'
@@ -121,8 +123,8 @@ export default function PlayerCards({ stats, loading }) {
             ))}
           </select>
           {statsSort}
-        </div>
-      </div>
+        </SearchDiv>
+      </SearchDiv>
       <CardDiv>
         {stats
           .filter(value => {
