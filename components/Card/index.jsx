@@ -13,6 +13,9 @@ margin: 2rem;
 background: ${props => (props.selected ? '#E8F1FF' : '#FFFFFF')};
 border: ${props =>
   props.selected ? '1.5px solid #2375A4' : '1px solid #d5dde3'}
+z-index= -9999999999;
+
+
 @media(max-width: 800px){
   min-width: 200px;
 max-width: 400px;
@@ -74,7 +77,7 @@ export const HeaderTitle = styled.p`
   margin-top: 20px;
   border: 0;
 `;
-export const Description = styled.a`
+export const Description = styled.p`
   font-size: 1rem;
   text-decoration: none;
   color: ${fleurimondColors.smoke};
@@ -82,6 +85,7 @@ export const Description = styled.a`
   padding: 0 32px;
   margin-top: 20px;
   border: 0;
+  z-index= -9999999999;
 
   :hover {
     color: ${fleurimondColors.bebeBlue};

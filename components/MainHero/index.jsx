@@ -14,6 +14,7 @@ export const MainHero = styled.div`
   background-color: ${fleurimondColors.midnight};
   padding: 20px;
   margin: 0 0 20px 0;
+  z-index: -99999999;
 
   @media only screen and (max-width: 800px) {
     min-height: 50vh;
