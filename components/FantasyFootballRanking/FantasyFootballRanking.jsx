@@ -21,7 +21,7 @@ import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 const FantasyFootballRanking = () => {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const { card, data, search, setSearch, loaded } = useContext(NewsContext);
-  
+
   const handleClick = useCallback(index => {
     setIsCardFlipped(index);
     if (isCardFlipped == index) {

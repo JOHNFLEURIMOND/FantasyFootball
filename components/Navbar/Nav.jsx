@@ -1,33 +1,14 @@
-import { BiMenu, BiX } from 'react-icons/bi';
-import React, { useState } from 'react';
-import { Nav, NavLogo, Menu, MenuItem, MenuLink, MenuIcon } from './index';
+import { Menu, Burger } from './index';
+import React from 'react';
 
 const Navbar = () => {
-  const [click, setClick] = useState(false);
-  const handleClick = () => setClick(!click);
-
+  const [open, setOpen] = React.useState(false);
+  const node = React.useRef();
   return (
-    <>
-      <Nav>
-        <NavLogo to='/'>Fantasy Football '22</NavLogo>
-        <MenuIcon onClick={handleClick}>
-          {click ? <BiX /> : <BiMenu />}
-        </MenuIcon>
-
-        <Menu>
-          <MenuItem>
-            <MenuLink to='/'>Home</MenuLink>
-          </MenuItem>
-
-          <MenuItem>
-            <MenuLink to='/WeeklyProjections'>Weekly Projections</MenuLink>
-          </MenuItem>
-          <MenuItem>
-            <MenuLink to='/PPR'>PPR</MenuLink>
-          </MenuItem>
-        </Menu>
-      </Nav>
-    </>
+        <div ref={node}>
+        <Burger open={open} setOpen={setOpen} />
+        <Menu open={open} setOpen={setOpen} />
+      </div>
   );
 };
 
