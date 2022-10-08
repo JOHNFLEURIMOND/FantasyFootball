@@ -124,7 +124,6 @@ export const CardSection = styled.div`
   }
 `;
 
-
 export const CardDiv = styled.div`
   display: grid;
   justify-items: center;
