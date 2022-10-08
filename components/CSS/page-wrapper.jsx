@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 export default function PageWrapper(props) {
-  const {children, heading, icon} = props;
+  const { children, heading, icon } = props;
 
   const iconSrc = `/static/menu-icons/${icon}-big.svg`;
 
@@ -42,7 +42,7 @@ const Icon = styled.img`
 
 const Heading = styled.h1`
   color: #9fa6ad;
-  font-family: ${(props) => props.theme.fontFamilies.proxima};
+  font-family: ${props => props.theme.fontFamilies.proxima};
   font-size: 18px;
   font-weight: 700;
   line-height: 1.5;
@@ -50,7 +50,7 @@ const Heading = styled.h1`
 `;
 
 const ContentWrapper = styled.div`
-  background-color: ${(props) => props.theme.colors.backgroundContent};
+  background-color: ${props => props.theme.colors.backgroundContent};
   flex: 1 0 0%;
   min-height: 0;
   overflow-y: scroll;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {fleurimondColors} from '../../utils/theme.js';
+import { fleurimondColors } from '../../utils/theme.js';
 
 export const Card = styled.article`
 border: 1px solid ${fleurimondColors.lightSmoke};
@@ -10,8 +10,9 @@ max-width: 400px;
 min-height: 300px;
 padding: 1rem 0;
 margin: 2rem;
-background: ${(props) => (props.selected ? '#E8F1FF' : '#FFFFFF')};
-border: ${(props) => (props.selected ? '1.5px solid #2375A4' : '1px solid #d5dde3')}
+background: ${props => (props.selected ? '#E8F1FF' : '#FFFFFF')};
+border: ${props =>
+  props.selected ? '1.5px solid #2375A4' : '1px solid #d5dde3'}
 @media(max-width: 800px){
   min-width: 200px;
 max-width: 400px;

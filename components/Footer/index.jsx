@@ -1,8 +1,8 @@
-import {Container} from '../CSS/global-style';
+import { Container } from '../CSS/global-style';
 import styled from 'styled-components';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import {fleurimondColors} from '../../utils/theme.js';
+import { fleurimondColors } from '../../utils/theme.js';
 
 export const Footer = styled.footer`
   width: 100%;
@@ -74,7 +74,7 @@ export const Menu = styled.ul`
     height: 100vh;
     position: absolute;
     top: 80px;
-    left: ${({click}) => (click ? '0' : '-100%')};
+    left: ${({ click }) => (click ? '0' : '-100%')};
     background-color: ${fleurimondColors.midnight};
     transition: all 0.5s ease;
   }

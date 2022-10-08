@@ -1,7 +1,7 @@
 import React from 'react';
-import {MainHero} from './index';
+import { MainHero } from './index';
 
-const SimplyPlantedHero = (props) => {
+const SimplyPlantedHero = props => {
   return <MainHero></MainHero>;
 };
 

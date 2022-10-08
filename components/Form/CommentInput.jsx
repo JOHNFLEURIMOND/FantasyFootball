@@ -3,7 +3,11 @@ import React from 'react';
 export default function CommentInput(props) {
   return (
     <div>
-      <label htmlFor='FeedbackForm-' {...props.name} className='txt-l txt-l--sm'>
+      <label
+        htmlFor='FeedbackForm-'
+        {...props.name}
+        className='txt-l txt-l--sm'
+      >
         {props.title ? props.title : undefined}
       </label>
       <textarea

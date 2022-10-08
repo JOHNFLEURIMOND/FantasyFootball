@@ -1,8 +1,15 @@
-import React, {useState, useEffect} from 'react';
-import {Card, CardHeader, HeaderTitle, CardBody, NameFieldset, Description} from '../Card/index';
+import React, { useState, useEffect } from 'react';
+import {
+  Card,
+  CardHeader,
+  HeaderTitle,
+  CardBody,
+  NameFieldset,
+  Description,
+} from '../Card/index';
 import axios from 'axios';
-import {ProjectsSectionContainer, Title, CardDiv} from './index';
-import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
+import { ProjectsSectionContainer, Title, CardDiv } from './index';
+import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
   const [card, flipCard] = useState(false);
@@ -17,8 +24,8 @@ const FantasyFootballRanking = () => {
       setLoaded(true);
       await axios
         .get(`https://api.sportsdata.io/v3/nfl/scores/json/News?key=${key}`)
-        .then((responses) => setData(responses.data))
-        .catch((error) => setError(error.message))
+        .then(responses => setData(responses.data))
+        .catch(error => setError(error.message))
         .finally(() => setLoaded(false));
     };
 
@@ -30,7 +37,12 @@ const FantasyFootballRanking = () => {
       <Title>Fantasy Football News</Title>
       <>
         <h1>Search News</h1>
-        <Input type='text' label='NFL' placeholder='Search For News' onChange={(e) => setSearch(e.target.value)} />
+        <Input
+          type='text'
+          label='NFL'
+          placeholder='Search For News'
+          onChange={e => setSearch(e.target.value)}
+        />
         <CardDiv>
           {loaded ? (
             <>
@@ -44,10 +56,12 @@ const FantasyFootballRanking = () => {
             </>
           ) : (
             data
-              .filter((value) => {
+              .filter(value => {
                 if (search === '') {
                   return value;
-                } else if (value.Content.toLowerCase().includes(search.toLowerCase())) {
+                } else if (
+                  value.Content.toLowerCase().includes(search.toLowerCase())
+                ) {
                   return value;
                 }
               })
@@ -56,10 +70,17 @@ const FantasyFootballRanking = () => {
                   {card ? (
                     <Card>
                       <CardBody onClick={() => flipCard(false)}>
-                        <CardHeader role='img' aria-label='Description of the overall image'>
-                          <HeaderTitle aria-label='title'>{d.Content}</HeaderTitle>
+                        <CardHeader
+                          role='img'
+                          aria-label='Description of the overall image'
+                        >
+                          <HeaderTitle aria-label='title'>
+                            {d.Content}
+                          </HeaderTitle>
                         </CardHeader>
-                        <Description aria-label='description'>Posted: {d.TimeAgo}</Description>
+                        <Description aria-label='description'>
+                          Posted: {d.TimeAgo}
+                        </Description>
                       </CardBody>
                     </Card>
                   ) : (
@@ -68,11 +89,19 @@ const FantasyFootballRanking = () => {
                         onClick={() => flipCard(true)}
                         role='contentInfo'
                         aria-pressed='false'
-                        aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'>
-                        <CardHeader role='img' aria-label='Description of the Product image'>
-                          <NameFieldset aria-label='title'>Title: {d.Title}</NameFieldset>
+                        aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'
+                      >
+                        <CardHeader
+                          role='img'
+                          aria-label='Description of the Product image'
+                        >
+                          <NameFieldset aria-label='title'>
+                            Title: {d.Title}
+                          </NameFieldset>
                         </CardHeader>
-                        <NameFieldset aria-label='description'>Source: {d.Source}</NameFieldset>
+                        <NameFieldset aria-label='description'>
+                          Source: {d.Source}
+                        </NameFieldset>
                       </CardBody>
                     </Card>
                   )}

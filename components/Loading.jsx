@@ -1,5 +1,5 @@
 import React from 'react';
-import {Div, Icon} from 'atomize';
+import { Div, Icon } from 'atomize';
 
 const Loading = () => {
   return (
@@ -13,7 +13,8 @@ const Loading = () => {
       bottom='0'
       right='0'
       left='0'
-      style={{zIndex: -1}}>
+      style={{ zIndex: -1 }}
+    >
       <Icon name='Loading3' size='4rem' color='brand500' />
     </Div>
   );
