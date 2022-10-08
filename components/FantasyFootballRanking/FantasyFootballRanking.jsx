@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import {
   Card,
   CardHeader,
@@ -7,31 +7,13 @@ import {
   NameFieldset,
   Description,
 } from '../Card/index';
-import axios from 'axios';
+import { NewsContext } from '../App';
 import { MainContainer, Title, CardDiv, SearchDiv, Header } from './index';
 import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
-  const [card, flipCard] = useState(false);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState('');
-  const [search, setSearch] = useState('');
-  const [loaded, setLoaded] = useState(false);
-  const key = process.env.REACT_APP_MY_API_KEY;
-
-  useEffect(() => {
-    const getPlayers = async () => {
-      setLoaded(true);
-      await axios
-        .get(`https://api.sportsdata.io/v3/nfl/scores/json/News?key=${key}`)
-        .then(responses => setData(responses.data))
-        .catch(error => setError(error.message))
-        .finally(() => setLoaded(false));
-    };
-
-    getPlayers();
-  }, []);
-
+  const { card, flipCard, data, search, setSearch, loaded } =
+    useContext(NewsContext);
   return (
     <MainContainer>
       <Title>Fantasy Football News</Title>
