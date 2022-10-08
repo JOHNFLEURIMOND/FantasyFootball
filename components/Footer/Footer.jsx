@@ -9,7 +9,7 @@ import {
   MenuIcon,
 } from './index';
 
-const JFFooter = props => {
+const JFFooter = () => {
   //click is the initial state and setclick will be the update state
   const [click, setClick] = useState(false);
 
@@ -18,7 +18,7 @@ const JFFooter = props => {
   const handleClick = () => setClick(!click);
 
   return (
-    <Footer {...props}>
+    <Footer>
       <Menu onClick={handleClick} click={click}>
         <FooterLogo to='/'>
           <MenuIcon />
@@ -27,27 +27,6 @@ const JFFooter = props => {
         <MenuItem>
           <MenuLink onClick={handleClick} to='/'>
             {moment().format('llll')}
-          </MenuLink>
-        </MenuItem>
-        <MenuItem>
-          <MenuLink onClick={handleClick} to='https://twitter.com/TCODEMONGER'>
-            Twitter
-          </MenuLink>
-        </MenuItem>
-        <MenuItem>
-          <MenuLink
-            onClick={handleClick}
-            to='https://github.com/JOHNFLEURIMOND'
-          >
-            Instagram
-          </MenuLink>
-        </MenuItem>
-        <MenuItem>
-          <MenuLink
-            onClick={handleClick}
-            to='https://www.linkedin.com/in/john-fleurimond'
-          >
-            Facebook
           </MenuLink>
         </MenuItem>
       </Menu>

@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { fleurimondColors } from '../../utils/theme.js';
 import { Button } from 'semantic-ui-react';
 
-export const ProjectsSectionContainer = styled.div`
+export const MainContainer = styled.div`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -10,21 +10,21 @@ export const ProjectsSectionContainer = styled.div`
   text-align: center;
   font-weight: 500;
   margin: 0;
-  padding: 2em;
+  padding: 2em 15em;
   line-height: normal;
   background-color: ${fleurimondColors.white};
 
   @media (min-width: 800px) {
     box-sizing: border-box;
     margin: 0;
-    padding: 2em;
+    padding: 2em 15em;
   }
   @media (min-width: 400px) {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 2em;
+    padding: 2em 15em;
   }
 `;
 

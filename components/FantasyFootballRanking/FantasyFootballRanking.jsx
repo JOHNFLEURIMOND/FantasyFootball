@@ -9,7 +9,7 @@ import {
 } from '../Card/index';
 import axios from 'axios';
 import {
-  ProjectsSectionContainer,
+  MainContainer,
   Title,
   CardDiv,
   SearchDiv,
@@ -39,7 +39,7 @@ const FantasyFootballRanking = () => {
   }, []);
 
   return (
-    <ProjectsSectionContainer>
+    <MainContainer>
       <Title>Fantasy Football News</Title>
       <>
         <SearchDiv>
@@ -119,7 +119,7 @@ const FantasyFootballRanking = () => {
           )}
         </CardDiv>
       </>
-    </ProjectsSectionContainer>
+    </MainContainer>
   );
 };
 
