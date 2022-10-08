@@ -159,7 +159,7 @@ export default function PlayerCards({ stats, loading }) {
   return (
     <div>
       <div className='SearchBar'>
-        <SearchDiv></SearchDiv>
+        <SearchDiv>
         <Header>Search Players</Header>
         <Input
           type='text'
@@ -168,7 +168,7 @@ export default function PlayerCards({ stats, loading }) {
           placeholder='Search For Players'
           onChange={e => setSearch(e.target.value)}
         />
-
+</SearchDiv>
         <SelectDiv className='select'>
           <Select
             onChange={e => setPositionFilter(e.target.value)}
