@@ -1,16 +1,21 @@
 import React, {useState, useCallback} from 'react';
-import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, AVideo} from '../Card/index';
+import {Card, CardHeader, HeaderTitle, CardBody, NameFieldset, Description} from '../Card/index';
 import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
 import {CardDiv, LoadingDiv} from './index';
 
 export default function WeeklyProjectionCards({stats, loading}) {
-  const [isFlipped, changeFlip] = useState(false);
+  const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
-  const handleClick = useCallback((event) => {
-    event.preventDefault()
-    changeFlip(!isFlipped)
-    console.log(stats.map(x => x.GameKey))
-  })
+  const [positionFilter, setPositionFilter] = useState('')
+  const handleClick = useCallback((index) => {
+    setIsCardFlipped(index);
+    if(isCardFlipped == index){
+      setIsCardFlipped(-1);
+    }
+  });
+
+  const filterPositionItems = [...new Set(stats.map((item) => item.Position))];
+
   if (loading) {
     return (
       <LoadingDiv>
@@ -65,7 +70,15 @@ export default function WeeklyProjectionCards({stats, loading}) {
       </LoadingDiv>
     );
   }
-
+let statsSort = null;
+if(positionFilter === 'QB'){
+  statsSort =  <select> 
+                <option value=''>Sort By Stat</option>
+                <option key="1" value='PassingYards'>Passing Yards</option>
+                <option key="2" value='PassingTouchdowns'>Passing Touchdowns</option>
+                <option key="3" value='PassingAttempts'> Passing Attempts</option>
+              </select>
+} 
   return (
     <div>
       <div className='SearchBar'>
@@ -77,6 +90,19 @@ export default function WeeklyProjectionCards({stats, loading}) {
           placeholder='Search For Players'
           onChange={(e) => setSearch(e.target.value)}
         />
+
+        <div className='select'>
+          <select
+            onChange={(e) => setPositionFilter(e.target.value)}
+            className='custom-select'
+            aria-label='Filter Countries By Position'>
+            <option value=''>Filter By Position</option>
+            {filterPositionItems.map((item, index) => (
+              <option key={index} value={item}>Filter {item}</option>
+            ))}
+          </select>
+          {statsSort}
+        </div>
       </div>
       <>
         <CardDiv>
@@ -87,13 +113,19 @@ export default function WeeklyProjectionCards({stats, loading}) {
               } else if (value.Name.toLowerCase().includes(search.toLowerCase())) {
                 return value;
               }
+            }).filter((value) => {
+              if (positionFilter === '') {
+                return value;
+              } else if (value.Position.includes(positionFilter)) {
+                return value;
+              }
             })
             .map((d, index) => (
-              <div>
-                {isFlipped ? (
-                  <Card key={d.GameKey}>
+              <div key={index}>
+                {isCardFlipped === index ? (
+                  <Card>
                     <CardBody
-                      onClick={handleClick}
+                      onClick={() => handleClick(index)}
                       role='contentInfo'
                       aria-pressed='false'
                       aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'>
@@ -108,20 +140,20 @@ export default function WeeklyProjectionCards({stats, loading}) {
                     </CardBody>
                   </Card>
                 ) : (
-                  <Card key={d.GameKey}>
-                    <CardBody onClick={handleClick}>
+                  <Card>
+                    <CardBody onClick={() => handleClick(index)}>
                       <CardHeader role='img' aria-label='Description of the overall image'>
-                        <YoutubeCardContent aria-label='title'>
+                        <HeaderTitle aria-label='title'>
                           {d.Name} : {d.Position}
-                        </YoutubeCardContent>
+                        </HeaderTitle>
                       </CardHeader>
-                      <AVideo aria-label='description'>
+                      <Description aria-label='description'>
                         Players Team: {d.Team} VS: {d.Opponent}{' '}
-                      </AVideo>
-                      <AVideo aria-label='description'>
+                      </Description>
+                      <Description aria-label='description'>
                         {d.HomeOrAway === 'AWAY' ? 'Playing Away' : 'Playing At Home'}
-                      </AVideo>
-                      <AVideo aria-label='description'>Game Date: {d.GameDate}</AVideo>
+                      </Description>
+                      <Description aria-label='description'>Game Date: {d.GameDate}</Description>
                     </CardBody>
                   </Card>
                 )}

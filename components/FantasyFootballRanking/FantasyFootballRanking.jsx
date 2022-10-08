@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, AVideo} from '../Card/index';
+import {Card, CardHeader, HeaderTitle, CardBody, NameFieldset, Description} from '../Card/index';
 import axios from 'axios';
 import {ProjectsSectionContainer, Title, CardDiv} from './index';
-import {Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
+import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
   const [card, flipCard] = useState(false);
@@ -28,10 +28,14 @@ const FantasyFootballRanking = () => {
   return (
     <ProjectsSectionContainer>
       <Title>Fantasy Football News</Title>
-
       <>
         <h1>Search News</h1>
-        <input type='text' placeholder='Search For News' onChange={(e) => setSearch(e.target.value)} />
+        <Input
+          type='text'
+          label='NFL'
+          placeholder='Search For News'
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <CardDiv>
           {loaded ? (
             <>
@@ -58,9 +62,9 @@ const FantasyFootballRanking = () => {
                     <Card>
                       <CardBody onClick={() => flipCard(false)}>
                         <CardHeader role='img' aria-label='Description of the overall image'>
-                          <YoutubeCardContent aria-label='title'>{d.Content}</YoutubeCardContent>
+                          <HeaderTitle aria-label='title'>{d.Content}</HeaderTitle>
                         </CardHeader>
-                        <AVideo aria-label='description'>Posted: {d.TimeAgo}</AVideo>
+                        <Description aria-label='description'>Posted: {d.TimeAgo}</Description>
                       </CardBody>
                     </Card>
                   ) : (

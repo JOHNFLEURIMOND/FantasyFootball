@@ -65,7 +65,7 @@ export const NameFieldset = styled.h3`
   text-overflow: ellipsis;
 `;
 
-export const YoutubeCardContent = styled.p`
+export const HeaderTitle = styled.p`
   font-size: 1rem;
   text-decoration: none;
   padding: 0 32px;
@@ -73,7 +73,7 @@ export const YoutubeCardContent = styled.p`
   margin-top: 20px;
   border: 0;
 `;
-export const AVideo = styled.a`
+export const Description = styled.a`
   font-size: 1rem;
   text-decoration: none;
   color: ${fleurimondColors.smoke};

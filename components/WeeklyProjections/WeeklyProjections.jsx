@@ -9,7 +9,7 @@ import {StatsContext} from '../App';
 import {GlobalStyle, Container} from '../CSS/global-style';
 
 function WeeklyProjections() {
-  const {currentPage, currentStats, setCurrentPage, loading, error, totalPages} = useContext(StatsContext);
+  const {stats, currentStats, setCurrentPage, loading, error, totalPages} = useContext(StatsContext);
 
   return (
     <Container>
@@ -18,8 +18,7 @@ function WeeklyProjections() {
       <MainHero />
       <ProjectsSectionContainer>
         <Title>Fantasy Football News</Title>
-        <WeeklyProjectionCards stats={currentStats} loading={loading} error={error} />
-        <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={Math.ceil(totalPages)} />
+        <WeeklyProjectionCards stats={stats} loading={loading} error={error} />
       </ProjectsSectionContainer>
       <Footer />
     </Container>
