@@ -6,10 +6,10 @@ import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
 export default function PlayerCards({stats, loading}) {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
-  const [positionFilter, setPositionFilter] = useState('')
+  const [positionFilter, setPositionFilter] = useState('');
   const handleClick = useCallback((index) => {
     setIsCardFlipped(index);
-    if(isCardFlipped == index){
+    if (isCardFlipped == index) {
       setIsCardFlipped(-1);
     }
   });
@@ -19,69 +19,78 @@ export default function PlayerCards({stats, loading}) {
   if (loading) {
     return (
       <LoadingDiv>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>{' '}
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-      <Segment size='massive' style={{height: '650px'}}>
-        <Dimmer active inverted>
-          <Loader size='large'>Loading</Loader>
-        </Dimmer>
-        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-      </Segment>
-    </LoadingDiv>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>{' '}
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+        <Segment size='massive' style={{height: '650px'}}>
+          <Dimmer active inverted>
+            <Loader size='large'>Loading</Loader>
+          </Dimmer>
+          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+        </Segment>
+      </LoadingDiv>
     );
   }
   let statsSort = null;
-  if(positionFilter === 'QB'){
-    statsSort =  <select> 
-                  <option value=''>Sort By Stat</option>
-                  <option key="1" value='PassingYards'>Passing Yards</option>
-                  <option key="2" value='PassingTouchdowns'>Passing Touchdowns</option>
-                  <option key="3" value='PassingAttempts'> Passing Attempts</option>
-                </select>
-  } 
+  if (positionFilter === 'QB') {
+    statsSort = (
+      <select>
+        <option value=''>Sort By Stat</option>
+        <option key='1' value='PassingYards'>
+          Passing Yards
+        </option>
+        <option key='2' value='PassingTouchdowns'>
+          Passing Touchdowns
+        </option>
+        <option key='3' value='PassingAttempts'>
+          {' '}
+          Passing Attempts
+        </option>
+      </select>
+    );
+  }
   return (
     <div>
-         <div className='SearchBar'>
+      <div className='SearchBar'>
         <h1>Search Players</h1>
         <Input
           type='text'
@@ -98,7 +107,9 @@ export default function PlayerCards({stats, loading}) {
             aria-label='Filter Countries By Position'>
             <option value=''>Filter By Position</option>
             {filterPositionItems.map((item, index) => (
-              <option key={index} value={item}>Filter {item}</option>
+              <option key={index} value={item}>
+                Filter {item}
+              </option>
             ))}
           </select>
           {statsSort}
@@ -112,7 +123,8 @@ export default function PlayerCards({stats, loading}) {
             } else if (value.Name.toLowerCase().includes(search.toLowerCase())) {
               return value;
             }
-          }).filter((value) => {
+          })
+          .filter((value) => {
             if (positionFilter === '') {
               return value;
             } else if (value.Position.includes(positionFilter)) {
