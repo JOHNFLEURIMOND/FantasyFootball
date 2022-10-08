@@ -30,4 +30,3 @@ In the project directory, you can run: `npm run dev`
 # Demo :video_game:
 
 https://fantasyfootball22.netlify.app/
-
