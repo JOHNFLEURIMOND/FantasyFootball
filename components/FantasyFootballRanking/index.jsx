@@ -27,6 +27,47 @@ export const ProjectsSectionContainer = styled.div`
     padding: 2em;
   }
 `;
+
+export const Header = styled.p`
+  font-size: 2rem;
+  text-align: center;
+  grid-column: span 3;
+  margin: 1rem;
+
+  @media (max-width: 800px) {
+    font-size: 2rem;
+    text-align: center;
+    grid-column: span 2;
+  }
+  @media (max-width: 320px) {
+    font-size: 2rem;
+    text-align: center;
+    grid-column: span 2;
+    margin: 1rem 0;
+  }
+`;
+export const SearchDiv = styled.div`
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 500;
+  padding: 80px;
+  line-height: normal;
+  background-color: ${fleurimondColors.white};
+
+  @media (min-width: 800px) {
+    box-sizing: border-box;
+    padding: 80px;
+  }
+  @media (min-width: 400px) {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 80px;
+  }
+`;
 export const CardSection = styled.div`
   display: grid;
   justify-items: center;
@@ -55,24 +96,7 @@ export const CardSection = styled.div`
   }
 `;
 
-export const Header = styled.h1`
-  font-size: 3rem;
-  text-align: center;
-  grid-column: span 3;
-  margin: 3rem;
 
-  @media (max-width: 800px) {
-    font-size: 2rem;
-    text-align: center;
-    grid-column: span 2;
-  }
-  @media (max-width: 320px) {
-    font-size: 2rem;
-    text-align: center;
-    grid-column: span 2;
-    margin: 1rem 0;
-  }
-`;
 
 export const CardDiv = styled.div`
   display: grid;

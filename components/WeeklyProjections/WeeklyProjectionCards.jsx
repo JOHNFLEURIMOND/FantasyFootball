@@ -8,7 +8,7 @@ import {
   Description,
 } from '../Card/index';
 import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
-import { CardDiv, LoadingDiv } from './index';
+import { CardDiv, LoadingDiv, SearchDiv, Header } from './index';
 
 export default function WeeklyProjectionCards({ stats, loading }) {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
@@ -98,7 +98,8 @@ export default function WeeklyProjectionCards({ stats, loading }) {
   return (
     <div>
       <div className='SearchBar'>
-        <h1>Search Players</h1>
+        <SearchDiv>
+        <Header>Search Players</Header>
         <Input
           type='text'
           label='NFL'
@@ -107,7 +108,9 @@ export default function WeeklyProjectionCards({ stats, loading }) {
           onChange={e => setSearch(e.target.value)}
         />
 
-        <div className='select'>
+        </SearchDiv>
+  
+        <SearchDiv className='select'>
           <select
             onChange={e => setPositionFilter(e.target.value)}
             className='custom-select'
@@ -121,7 +124,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
             ))}
           </select>
           {statsSort}
-        </div>
+        </SearchDiv>
       </div>
       <>
         <CardDiv>
