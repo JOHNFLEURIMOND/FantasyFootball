@@ -1,4 +1,4 @@
-import {StyledButton} from './index';
+import { StyledButton } from './index';
 import React from 'react';
 
 const Button = () => {

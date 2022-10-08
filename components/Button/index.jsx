@@ -1,6 +1,6 @@
-import {fleurimondColors} from '../../utils/theme.js';
-import styled, {createGlobalStyle} from 'styled-components';
-import {Button} from 'semantic-ui-react';
+import { fleurimondColors } from '../../utils/theme.js';
+import styled, { createGlobalStyle } from 'styled-components';
+import { Button } from 'semantic-ui-react';
 
 export const StyledButton = styled(Button)`
     font-size: 13px;

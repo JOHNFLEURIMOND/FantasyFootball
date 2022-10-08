@@ -1,6 +1,6 @@
-import {BiMenu, BiX} from 'react-icons/bi';
-import React, {useState} from 'react';
-import {Nav, NavLogo, Menu, MenuItem, MenuLink, MenuIcon} from './index';
+import { BiMenu, BiX } from 'react-icons/bi';
+import React, { useState } from 'react';
+import { Nav, NavLogo, Menu, MenuItem, MenuLink, MenuIcon } from './index';
 
 const Navbar = () => {
   const [click, setClick] = useState(false);
@@ -10,7 +10,9 @@ const Navbar = () => {
     <>
       <Nav>
         <NavLogo to='/'>Fantasy Football '22</NavLogo>
-        <MenuIcon onClick={handleClick}>{click ? <BiX /> : <BiMenu />}</MenuIcon>
+        <MenuIcon onClick={handleClick}>
+          {click ? <BiX /> : <BiMenu />}
+        </MenuIcon>
 
         <Menu>
           <MenuItem>
