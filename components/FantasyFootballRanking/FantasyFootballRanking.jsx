@@ -8,7 +8,13 @@ import {
   Description,
 } from '../Card/index';
 import axios from 'axios';
-import { ProjectsSectionContainer, Title, CardDiv, SearchDiv , Header} from './index';
+import {
+  ProjectsSectionContainer,
+  Title,
+  CardDiv,
+  SearchDiv,
+  Header,
+} from './index';
 import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
@@ -36,16 +42,16 @@ const FantasyFootballRanking = () => {
     <ProjectsSectionContainer>
       <Title>Fantasy Football News</Title>
       <>
-      <SearchDiv>
-      <Header>Search News</Header>
-        <Input
-          type='text'
-          label='NFL'
-          placeholder='Search For News'
-          onChange={e => setSearch(e.target.value)}
-        />
-      </SearchDiv>
-     
+        <SearchDiv>
+          <Header>Search News</Header>
+          <Input
+            type='text'
+            label='NFL'
+            placeholder='Search For News'
+            onChange={e => setSearch(e.target.value)}
+          />
+        </SearchDiv>
+
         <CardDiv>
           {loaded ? (
             <>

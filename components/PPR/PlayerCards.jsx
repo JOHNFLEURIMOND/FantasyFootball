@@ -98,17 +98,16 @@ export default function PlayerCards({ stats, loading }) {
   return (
     <div>
       <SearchDiv className='SearchBar'>
-       <SearchDiv>
-       <Header>Search Players</Header>
-        <Input
-          type='text'
-          label='NFL'
-          loading={loading}
-          placeholder='Search For Players'
-          onChange={e => setSearch(e.target.value)}
-        />
-
-       </SearchDiv>
+        <SearchDiv>
+          <Header>Search Players</Header>
+          <Input
+            type='text'
+            label='NFL'
+            loading={loading}
+            placeholder='Search For Players'
+            onChange={e => setSearch(e.target.value)}
+          />
+        </SearchDiv>
         <SearchDiv className='select'>
           <select
             onChange={e => setPositionFilter(e.target.value)}
