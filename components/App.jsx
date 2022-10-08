@@ -16,14 +16,48 @@ const debug =
 const engine = new Styletron();
 
 export const StatsContext = createContext();
+export const NewsContext = createContext();
 
 const Homepage = props => {
+  const [card, flipCard] = useState(false);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const key = process.env.REACT_APP_MY_API_KEY;
+
+  useEffect(() => {
+    const getPlayers = async () => {
+      setLoaded(true);
+      await axios
+        .get(`https://api.sportsdata.io/v3/nfl/scores/json/News?key=${key}`)
+        .then(responses => setData(responses.data))
+        .catch(error => setError(error.message))
+        .finally(() => setLoaded(false));
+    };
+
+    getPlayers();
+  }, []);
+
   return (
     <Container>
       <GlobalStyle />
       <Nav />
       <MainHero />
-      <FantasyFootballRanking />
+      <NewsContext.Provider
+        value={{
+          card,
+          flipCard,
+          data,
+          setData,
+          search,
+          setSearch,
+          loaded,
+          setLoaded,
+        }}
+      >
+        <FantasyFootballRanking />
+      </NewsContext.Provider>
       <Footer />
     </Container>
   );
@@ -76,7 +110,7 @@ const App = () => {
       <StyletronProvider value={engine} debug={debug} debugAfterHydration>
         <Router location={history.location} navigator={history}>
           <Switch>
-            <Route path='/' exact component={Homepage} />
+            <Route path='/' exact component={Homepage} stats={stats} />
           </Switch>
           <Switch>
             <Route path='/WeeklyProjections' component={WeeklyProjections} />
