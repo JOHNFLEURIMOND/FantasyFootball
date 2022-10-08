@@ -22,6 +22,7 @@ The pages on the website are primarily created from three main components, Fanta
 
 1.  Clone repo
 2.  run `npm install`
+(Note: You need your own key and `.dotenv` file for this to work.)
 
 # How To Get It Started :arrow_forward: :
 
