@@ -1,6 +1,6 @@
-import styled, {css} from 'styled-components';
-import {fleurimondColors} from '../../utils/theme.js';
-import {Button} from 'semantic-ui-react';
+import styled, { css } from 'styled-components';
+import { fleurimondColors } from '../../utils/theme.js';
+import { Button } from 'semantic-ui-react';
 
 export const ProjectsSectionContainer = styled.div`
   width: 100%;
@@ -181,7 +181,8 @@ export const Bolt = styled.span`
     position: absolute;
     border-style: solid;
     border-width: 0 0 10px 5px;
-    border-color: transparent transparent ${fleurimondColors.graySmoke} transparent;
+    border-color: transparent transparent ${fleurimondColors.graySmoke}
+      transparent;
     top: 0px;
     left: -11px;
     padding: 0;
@@ -194,7 +195,8 @@ export const Bolt = styled.span`
     position: absolute;
     border-style: solid;
     border-width: 0 0 10px 5px;
-    border-color: transparent transparent transparent ${fleurimondColors.graySmoke};
+    border-color: transparent transparent transparent
+      ${fleurimondColors.graySmoke};
     bottom: 0px;
     right: 3px;
     content: '';

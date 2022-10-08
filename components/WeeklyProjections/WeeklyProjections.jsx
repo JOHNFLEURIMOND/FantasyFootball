@@ -1,15 +1,16 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import Footer from '../Footer/Footer';
 import MainHero from '../MainHero/MainHero';
 import Nav from '../Navbar/Nav.jsx';
 import Pagination from '../Pagination/Pagination';
 import WeeklyProjectionCards from './WeeklyProjectionCards';
-import {ProjectsSectionContainer, Title} from './index';
-import {StatsContext} from '../App';
-import {GlobalStyle, Container} from '../CSS/global-style';
+import { ProjectsSectionContainer, Title } from './index';
+import { StatsContext } from '../App';
+import { GlobalStyle, Container } from '../CSS/global-style';
 
 function WeeklyProjections() {
-  const {stats, currentStats, setCurrentPage, loading, error, totalPages} = useContext(StatsContext);
+  const { stats, currentStats, setCurrentPage, loading, error, totalPages } =
+    useContext(StatsContext);
 
   return (
     <Container>

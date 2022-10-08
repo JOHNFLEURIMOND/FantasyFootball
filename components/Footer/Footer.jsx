@@ -1,8 +1,15 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
-import {Footer, FooterLogo, Menu, MenuItem, MenuLink, MenuIcon} from './index';
+import {
+  Footer,
+  FooterLogo,
+  Menu,
+  MenuItem,
+  MenuLink,
+  MenuIcon,
+} from './index';
 
-const JFFooter = (props) => {
+const JFFooter = props => {
   //click is the initial state and setclick will be the update state
   const [click, setClick] = useState(false);
 
@@ -28,12 +35,18 @@ const JFFooter = (props) => {
           </MenuLink>
         </MenuItem>
         <MenuItem>
-          <MenuLink onClick={handleClick} to='https://github.com/JOHNFLEURIMOND'>
+          <MenuLink
+            onClick={handleClick}
+            to='https://github.com/JOHNFLEURIMOND'
+          >
             Instagram
           </MenuLink>
         </MenuItem>
         <MenuItem>
-          <MenuLink onClick={handleClick} to='https://www.linkedin.com/in/john-fleurimond'>
+          <MenuLink
+            onClick={handleClick}
+            to='https://www.linkedin.com/in/john-fleurimond'
+          >
             Facebook
           </MenuLink>
         </MenuItem>
