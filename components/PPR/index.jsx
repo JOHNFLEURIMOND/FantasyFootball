@@ -17,14 +17,14 @@ export const PPRPageContainer = styled.div`
   @media (min-width: 800px) {
     box-sizing: border-box;
     margin: 0;
-    padding: 2em 15em;
+    padding: 2em 10em;
   }
   @media (min-width: 400px) {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 2em 15em;
+    padding: 2em 0em;
   }
 `;
 
@@ -185,7 +185,7 @@ export const SearchDiv = styled.div`
     box-sizing: border-box;
     padding: 20px;
   }
-  @media (min-width: 400px) {
+  @media (min-width: 200px) {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
