@@ -13,8 +13,8 @@ export const NavContainer = styled.div`
   color: ${fleurimondColors.white};
   font-family: 'Exo 2', sans-serif;
   padding: 1em;
-  z-index:9999999999;
-`
+  z-index: 9999999999;
+`;
 
 export const MenuItem = styled.li`
   list-style: none;
@@ -148,7 +148,8 @@ export const StyledBurger = styled.button`
   div {
     width: 2rem;
     height: 0.25rem;
-    background: ${({ open }) => (open ? fleurimondColors.infrared : fleurimondColors.infrared)};
+    background: ${({ open }) =>
+      open ? fleurimondColors.infrared : fleurimondColors.infrared};
     border-radius: 10px;
     transition: all 0.3s linear;
     position: relative;
