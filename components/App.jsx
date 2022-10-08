@@ -37,12 +37,14 @@ const App = () => {
   const totalPages = stats.length / 12;
   const indexOfFirstStat = indexOfLastStat - 12;
   const currentStats = stats.slice(indexOfFirstStat, indexOfLastStat);
-
+  console.log('this is the total pages and current pages in app.jsx', totalPages, currentPage, stats.length);
   useEffect(() => {
     setLoading(true);
     const getStats = async () => {
       await axios
-        .get(`https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=[REMOVED_HISTORICAL_API_KEY]`)
+        .get(
+          `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=[REMOVED_HISTORICAL_API_KEY]`,
+        )
         .then((responses) => {
           setStats(responses.data);
         })
@@ -50,7 +52,7 @@ const App = () => {
         .finally(() => setLoading(false));
     };
     getStats();
-  }, [currentPage]);
+  }, []);
 
   return (
     <StatsContext.Provider

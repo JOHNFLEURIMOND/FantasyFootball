@@ -27,6 +27,34 @@ export const ProjectsSectionContainer = styled.div`
     padding: 2em;
   }
 `;
+export const LoadingDiv = styled.div`
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  grid-gap: 1rem;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+
+  @media (max-width: 800px) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+    justify-items: center;
+    align-items: center;
+    grid-gap: 1rem;
+  }
+  @media (max-width: 464px) {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr 1fr 1fr !important;
+    justify-items: center;
+    align-items: center;
+    grid-gap: 1rem;
+  }
+`;
+
 export const CardSection = styled.div`
   display: grid;
   justify-items: center;
