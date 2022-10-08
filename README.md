@@ -8,10 +8,6 @@
 
 This application is built with React, Semantic UI, & Sportsdata.io API.
 
-# Demo :video_game:
-
-https://fantasyfootball22.netlify.app/
-
 # How It's Works:white_check_mark::🖥 & Lessons Learned :mortar_board:
 
 A user can get the most recent fantasy football news from Rotoworld Fantasy Pros; search for their favorite player for projections for the following games and average stats per game.
@@ -30,3 +26,8 @@ The pages on the website are primarily created from three main components, Fanta
 # How To Get It Started :arrow_forward: :
 
 In the project directory, you can run: `npm run dev`
+
+# Demo :video_game:
+
+https://fantasyfootball22.netlify.app/
+
