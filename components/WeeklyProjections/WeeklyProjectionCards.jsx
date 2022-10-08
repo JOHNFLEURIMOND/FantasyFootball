@@ -6,10 +6,10 @@ import {CardDiv, LoadingDiv} from './index';
 export default function WeeklyProjectionCards({stats, loading}) {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
-  const [positionFilter, setPositionFilter] = useState('')
+  const [positionFilter, setPositionFilter] = useState('');
   const handleClick = useCallback((index) => {
     setIsCardFlipped(index);
-    if(isCardFlipped == index){
+    if (isCardFlipped == index) {
       setIsCardFlipped(-1);
     }
   });
@@ -70,15 +70,24 @@ export default function WeeklyProjectionCards({stats, loading}) {
       </LoadingDiv>
     );
   }
-let statsSort = null;
-if(positionFilter === 'QB'){
-  statsSort =  <select> 
-                <option value=''>Sort By Stat</option>
-                <option key="1" value='PassingYards'>Passing Yards</option>
-                <option key="2" value='PassingTouchdowns'>Passing Touchdowns</option>
-                <option key="3" value='PassingAttempts'> Passing Attempts</option>
-              </select>
-} 
+  let statsSort = null;
+  if (positionFilter === 'QB') {
+    statsSort = (
+      <select>
+        <option value=''>Sort By Stat</option>
+        <option key='1' value='PassingYards'>
+          Passing Yards
+        </option>
+        <option key='2' value='PassingTouchdowns'>
+          Passing Touchdowns
+        </option>
+        <option key='3' value='PassingAttempts'>
+          {' '}
+          Passing Attempts
+        </option>
+      </select>
+    );
+  }
   return (
     <div>
       <div className='SearchBar'>
@@ -98,7 +107,9 @@ if(positionFilter === 'QB'){
             aria-label='Filter Countries By Position'>
             <option value=''>Filter By Position</option>
             {filterPositionItems.map((item, index) => (
-              <option key={index} value={item}>Filter {item}</option>
+              <option key={index} value={item}>
+                Filter {item}
+              </option>
             ))}
           </select>
           {statsSort}
@@ -113,7 +124,8 @@ if(positionFilter === 'QB'){
               } else if (value.Name.toLowerCase().includes(search.toLowerCase())) {
                 return value;
               }
-            }).filter((value) => {
+            })
+            .filter((value) => {
               if (positionFilter === '') {
                 return value;
               } else if (value.Position.includes(positionFilter)) {
