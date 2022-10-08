@@ -4,7 +4,7 @@ import MainHero from '../MainHero/MainHero';
 import Nav from '../Navbar/Nav.jsx';
 import Pagination from '../Pagination/Pagination';
 import WeeklyProjectionCards from './WeeklyProjectionCards';
-import { ProjectsSectionContainer, Title } from './index';
+import { MainContainer, Title } from './index';
 import { StatsContext } from '../App';
 import { GlobalStyle, Container } from '../CSS/global-style';
 
@@ -17,10 +17,10 @@ function WeeklyProjections() {
       <GlobalStyle />
       <Nav />
       <MainHero />
-      <ProjectsSectionContainer>
+      <MainContainer>
         <Title>Fantasy Football News</Title>
         <WeeklyProjectionCards stats={stats} loading={loading} error={error} />
-      </ProjectsSectionContainer>
+      </MainContainer>
       <Footer />
     </Container>
   );
