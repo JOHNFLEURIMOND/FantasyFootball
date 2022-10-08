@@ -1,30 +1,87 @@
-import React, {useState} from 'react';
-import {Card, CardHeader, YoutubeCardContent, CardBody, NameFieldset, PriceFieldset, AVideo} from '../Card/index';
-import {CardDiv} from './index';
-import {Dimmer, Loader, Image, Segment} from 'semantic-ui-react';
-import {Input} from 'semantic-ui-react';
-const key = process.env.REACT_APP_MY_API_KEY;
+import React, {useState, useCallback} from 'react';
+import {Card, CardHeader, HeaderTitle, CardBody, NameFieldset, Description} from '../Card/index';
+import {CardDiv, LoadingDiv} from './index';
+import {Dimmer, Loader, Image, Segment, Input} from 'semantic-ui-react';
 
-export default function PlayerCards({stats, loading, error}) {
-  const [card, flipCard] = useState(false);
+export default function PlayerCards({stats, loading}) {
+  const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
+  const [positionFilter, setPositionFilter] = useState('')
+  const handleClick = useCallback((index) => {
+    setIsCardFlipped(index);
+    if(isCardFlipped == index){
+      setIsCardFlipped(-1);
+    }
+  });
+
+  const filterPositionItems = [...new Set(stats.map((item) => item.Position))];
 
   if (loading) {
     return (
-      <div>
-        <Segment>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-      </div>
+      <LoadingDiv>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>{' '}
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+      <Segment size='massive' style={{height: '650px'}}>
+        <Dimmer active inverted>
+          <Loader size='large'>Loading</Loader>
+        </Dimmer>
+        <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
+      </Segment>
+    </LoadingDiv>
     );
   }
-
+  let statsSort = null;
+  if(positionFilter === 'QB'){
+    statsSort =  <select> 
+                  <option value=''>Sort By Stat</option>
+                  <option key="1" value='PassingYards'>Passing Yards</option>
+                  <option key="2" value='PassingTouchdowns'>Passing Touchdowns</option>
+                  <option key="3" value='PassingAttempts'> Passing Attempts</option>
+                </select>
+  } 
   return (
     <div>
-      <div className='SearchBar'>
+         <div className='SearchBar'>
         <h1>Search Players</h1>
         <Input
           type='text'
@@ -33,6 +90,19 @@ export default function PlayerCards({stats, loading, error}) {
           placeholder='Search For Players'
           onChange={(e) => setSearch(e.target.value)}
         />
+
+        <div className='select'>
+          <select
+            onChange={(e) => setPositionFilter(e.target.value)}
+            className='custom-select'
+            aria-label='Filter Countries By Position'>
+            <option value=''>Filter By Position</option>
+            {filterPositionItems.map((item, index) => (
+              <option key={index} value={item}>Filter {item}</option>
+            ))}
+          </select>
+          {statsSort}
+        </div>
       </div>
       <CardDiv>
         {stats
@@ -42,13 +112,19 @@ export default function PlayerCards({stats, loading, error}) {
             } else if (value.Name.toLowerCase().includes(search.toLowerCase())) {
               return value;
             }
+          }).filter((value) => {
+            if (positionFilter === '') {
+              return value;
+            } else if (value.Position.includes(positionFilter)) {
+              return value;
+            }
           })
           .map((d, index) => (
-            <div key={d.PlayerID}>
-              {card ? (
+            <div key={index}>
+              {isCardFlipped === index ? (
                 <Card>
                   <CardBody
-                    onClick={() => flipCard(false)}
+                    onClick={() => handleClick(index)}
                     role='contentInfo'
                     aria-pressed='false'
                     aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'>
@@ -67,14 +143,14 @@ export default function PlayerCards({stats, loading, error}) {
                   </CardBody>
                 </Card>
               ) : (
-                <Card key={d.PlayerID}>
-                  <CardBody onClick={() => flipCard(true)}>
+                <Card>
+                  <CardBody onClick={() => handleClick(index)}>
                     <CardHeader role='img' aria-label='Description of the overall image'>
-                      <YoutubeCardContent aria-label='title'>{d.Name}</YoutubeCardContent>
+                      <HeaderTitle aria-label='title'>{d.Name}</HeaderTitle>
                     </CardHeader>
-                    <AVideo aria-label='description'>
+                    <Description aria-label='description'>
                       Players Team: {d.Team} VS: {d.Opponent}{' '}
-                    </AVideo>
+                    </Description>
                   </CardBody>
                 </Card>
               )}

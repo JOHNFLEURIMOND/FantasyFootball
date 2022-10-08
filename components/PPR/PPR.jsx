@@ -9,7 +9,7 @@ import {GlobalStyle, Container} from '../CSS/global-style';
 import {StatsContext} from '../App';
 
 export default function PPR() {
-  const {currentPage, currentStats, setCurrentPage, loading, error, totalPages} = useContext(StatsContext);
+  const {currentPage, stats, setCurrentPage, loading, error, totalPages} = useContext(StatsContext);
 
   return (
     <Container>
@@ -18,7 +18,7 @@ export default function PPR() {
       <MainHero />
       <Title>Fantasy Football PPR Stats</Title>
       <ProjectsSectionContainer>
-        <PlayerCards stats={currentStats} loading={loading} error={error} />
+        <PlayerCards stats={stats} loading={loading} error={error} />
         <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={Math.ceil(totalPages)} />
       </ProjectsSectionContainer>
       <Footer />
