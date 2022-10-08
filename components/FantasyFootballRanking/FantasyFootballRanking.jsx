@@ -8,13 +8,7 @@ import {
   Description,
 } from '../Card/index';
 import axios from 'axios';
-import {
-  MainContainer,
-  Title,
-  CardDiv,
-  SearchDiv,
-  Header,
-} from './index';
+import { MainContainer, Title, CardDiv, SearchDiv, Header } from './index';
 import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
 
 const FantasyFootballRanking = () => {
