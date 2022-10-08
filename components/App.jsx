@@ -49,7 +49,7 @@ const App = () => {
     const getStats = async () => {
       await axios
         .get(
-          `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=${key}`
+          `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/3?key=31c47054e334469486c840aee3f595b6`
         )
         .then(responses => {
           setStats(responses.data);

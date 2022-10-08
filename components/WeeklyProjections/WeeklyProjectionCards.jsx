@@ -7,8 +7,24 @@ import {
   NameFieldset,
   Description,
 } from '../Card/index';
-import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
-import { CardDiv, LoadingDiv, SearchDiv, Header } from './index';
+import {
+  Dimmer,
+  Loader,
+  Image,
+  Segment,
+  Input,
+  Form,
+  Radio,
+  Header,
+} from 'semantic-ui-react';
+import {
+  CardDiv,
+  LoadingDiv,
+  SearchDiv,
+  Select,
+  option,
+  SelectDiv,
+} from './index';
 
 export default function WeeklyProjectionCards({ stats, loading }) {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
@@ -80,37 +96,80 @@ export default function WeeklyProjectionCards({ stats, loading }) {
   let statsSort = null;
   if (positionFilter === 'QB') {
     statsSort = (
-      <select>
-        <option value=''>Sort By Stat</option>
-        <option key='1' value='PassingYards'>
-          Passing Yards
-        </option>
-        <option key='2' value='PassingTouchdowns'>
-          Passing Touchdowns
-        </option>
-        <option key='3' value='PassingAttempts'>
-          {' '}
-          Passing Attempts
-        </option>
-      </select>
+      <SelectDiv>
+        <Form>
+          <Form.Field>
+            <Radio
+              label='Passing Attempts'
+              key='1'
+              name='radioGroup'
+              value='PassingAttempts'
+            />
+          </Form.Field>
+          <Form.Field>
+            <Radio
+              label='Passing Yards'
+              key='2'
+              name='radioGroup'
+              value='PassingYards'
+            />
+          </Form.Field>
+          <Form.Field>
+            <Radio
+              label='Passing Yards'
+              key='2'
+              name='radioGroup'
+              value='PassingTouchdowns'
+            />
+          </Form.Field>
+        </Form>
+      </SelectDiv>
     );
+  } else if (positionFilter === 'RB') {
+    <SelectDiv>
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Passing Attempts'
+            key='1'
+            name='radioGroup'
+            value='PassingAttempts'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Passing Yards'
+            key='2'
+            name='radioGroup'
+            value='PassingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Passing Yards'
+            key='2'
+            name='radioGroup'
+            value='PassingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
+    </SelectDiv>;
   }
   return (
     <div>
       <div className='SearchBar'>
-        <SearchDiv>
-          <Header>Search Players</Header>
-          <Input
-            type='text'
-            label='NFL'
-            loading={loading}
-            placeholder='Search For Players'
-            onChange={e => setSearch(e.target.value)}
-          />
-        </SearchDiv>
+        <SearchDiv></SearchDiv>
+        <Header>Search Players</Header>
+        <Input
+          type='text'
+          label='NFL'
+          loading={loading}
+          placeholder='Search For Players'
+          onChange={e => setSearch(e.target.value)}
+        />
 
-        <SearchDiv className='select'>
-          <select
+        <SelectDiv className='select'>
+          <Select
             onChange={e => setPositionFilter(e.target.value)}
             className='custom-select'
             aria-label='Filter Countries By Position'
@@ -121,9 +180,9 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                 Filter {item}
               </option>
             ))}
-          </select>
+          </Select>
           {statsSort}
-        </SearchDiv>
+        </SelectDiv>
       </div>
       <>
         <CardDiv>

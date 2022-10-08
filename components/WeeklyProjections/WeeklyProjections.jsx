@@ -9,8 +9,7 @@ import { StatsContext } from '../App';
 import { GlobalStyle, Container } from '../CSS/global-style';
 
 function WeeklyProjections() {
-  const { stats, currentStats, setCurrentPage, loading, error, totalPages } =
-    useContext(StatsContext);
+  const { stats, loading, error } = useContext(StatsContext);
 
   return (
     <Container>
