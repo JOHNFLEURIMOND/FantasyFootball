@@ -7,8 +7,23 @@ import {
   NameFieldset,
   Description,
 } from '../Card/index';
-import { CardDiv, LoadingDiv, SearchDiv, Header } from './index';
-import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
+import {
+  CardDiv,
+  LoadingDiv,
+  SearchDiv,
+  Header,
+  SelectDiv,
+  Select,
+} from './index';
+import {
+  Dimmer,
+  Loader,
+  Image,
+  Segment,
+  Input,
+  Form,
+  Radio,
+} from 'semantic-ui-react';
 
 export default function PlayerCards({ stats, loading }) {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
@@ -80,36 +95,82 @@ export default function PlayerCards({ stats, loading }) {
   let statsSort = null;
   if (positionFilter === 'QB') {
     statsSort = (
-      <select>
-        <option value=''>Sort By Stat</option>
-        <option key='1' value='PassingYards'>
-          Passing Yards
-        </option>
-        <option key='2' value='PassingTouchdowns'>
-          Passing Touchdowns
-        </option>
-        <option key='3' value='PassingAttempts'>
-          {' '}
-          Passing Attempts
-        </option>
-      </select>
+      <SelectDiv>
+        <Form>
+          <Form.Field>
+            <Radio
+              label='Passing Attempts'
+              key='1'
+              name='radioGroup'
+              value='PassingAttempts'
+            />
+          </Form.Field>
+          <Form.Field>
+            <Radio
+              label='Passing Yards'
+              key='2'
+              name='radioGroup'
+              value='PassingYards'
+            />
+          </Form.Field>
+          <Form.Field>
+            <Radio
+              label='Passing Yards'
+              key='3'
+              name='radioGroup'
+              value='PassingTouchdowns'
+            />
+          </Form.Field>
+        </Form>
+      </SelectDiv>
+    );
+  } else if (positionFilter === 'RB') {
+    statsSort = (
+      <SelectDiv>
+        <Form>
+          <Form.Field>
+            <Radio
+              label='Rushing Attempts'
+              key='1'
+              name='radioGroup'
+              value='RushingAttempts'
+            />
+          </Form.Field>
+          <Form.Field>
+            <Radio
+              label='Rushing Yards'
+              key='2'
+              name='radioGroup'
+              value='RushingYards'
+            />
+          </Form.Field>
+          <Form.Field>
+            <Radio
+              label='Rushing Touchdowns'
+              key='3'
+              name='radioGroup'
+              value='RushingTouchdowns'
+            />
+          </Form.Field>
+        </Form>
+      </SelectDiv>
     );
   }
   return (
     <div>
-      <SearchDiv className='SearchBar'>
-        <SearchDiv>
-          <Header>Search Players</Header>
-          <Input
-            type='text'
-            label='NFL'
-            loading={loading}
-            placeholder='Search For Players'
-            onChange={e => setSearch(e.target.value)}
-          />
-        </SearchDiv>
-        <SearchDiv className='select'>
-          <select
+      <div className='SearchBar'>
+        <SearchDiv></SearchDiv>
+        <Header>Search Players</Header>
+        <Input
+          type='text'
+          label='NFL'
+          loading={loading}
+          placeholder='Search For Players'
+          onChange={e => setSearch(e.target.value)}
+        />
+
+        <SelectDiv className='select'>
+          <Select
             onChange={e => setPositionFilter(e.target.value)}
             className='custom-select'
             aria-label='Filter Countries By Position'
@@ -120,10 +181,10 @@ export default function PlayerCards({ stats, loading }) {
                 Filter {item}
               </option>
             ))}
-          </select>
+          </Select>
           {statsSort}
-        </SearchDiv>
-      </SearchDiv>
+        </SelectDiv>
+      </div>
       <CardDiv>
         {stats
           .filter(value => {
@@ -162,12 +223,12 @@ export default function PlayerCards({ stats, loading }) {
                       </NameFieldset>
                     </CardHeader>
                     <NameFieldset aria-label='title' key={d.PlayerID}>
-                      Rushing Attempts/ Rushing Yard/ TDS : {d.RushingAttempts}{' '}
-                      : {d.RushingYards} : {d.RushingTouchdowns}
+                      Rushing Attempts:{d.RushingAttempts} / Rushing Yard:{' '}
+                      {d.RushingYards} / Rushing TDS {d.RushingTouchdowns}
                     </NameFieldset>
                     <NameFieldset aria-label='title' key={d.PlayerID}>
-                      Receptions/ Receiving Yards/ TDS: {d.Receptions}{' '}
-                      {d.ReceivingYards} : {d.ReceivingTouchdowns}
+                      Receptions: {d.Receptions} / Receiving Yards/{' '}
+                      {d.ReceivingYards}/ Receiving TDS:{d.ReceivingTouchdowns}/
                     </NameFieldset>
                   </CardBody>
                 </Card>

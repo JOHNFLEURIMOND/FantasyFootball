@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { fleurimondColors } from '../../utils/theme.js';
 import { Button } from 'semantic-ui-react';
 
-export const ProjectsSectionContainer = styled.div`
+export const PPRPageContainer = styled.div`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -25,6 +25,47 @@ export const ProjectsSectionContainer = styled.div`
     box-sizing: border-box;
     margin: 0;
     padding: 2em 15em;
+  }
+`;
+
+export const Select = styled.select`
+  width: 10%;
+  height: 30px;
+  background: white;
+  color: gray;
+  padding-left: 5px;
+  font-size: 14px;
+  1px solid rgba(34,36,38,.15)
+  margin: 10px;
+
+  option {
+    color: black;
+    background: white;
+    display: flex;
+    white-space: pre;
+    min-height: 20px;
+    padding: 0px 2px 1px;
+  }
+`;
+
+export const SelectDiv = styled.div`
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 500;
+  margin: 20px 0;
+  line-height: normal;
+  background-color: ${fleurimondColors.white};
+
+  @media (min-width: 800px) {
+    box-sizing: border-box;
+  }
+  @media (min-width: 400px) {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
   }
 `;
 export const LoadingDiv = styled.div`
