@@ -184,83 +184,81 @@ export default function WeeklyProjectionCards({ stats, loading }) {
           {statsSort}
         </SelectDiv>
       </div>
-      <>
-        <CardDiv>
-          {stats
-            .filter(value => {
-              if (search === '') {
-                return value;
-              } else if (
-                value.Name.toLowerCase().includes(search.toLowerCase())
-              ) {
-                return value;
-              }
-            })
-            .filter(value => {
-              if (positionFilter === '') {
-                return value;
-              } else if (value.Position.includes(positionFilter)) {
-                return value;
-              }
-            })
-            .map((d, index) => (
-              <div key={index}>
-                {isCardFlipped === index ? (
-                  <Card>
-                    <CardBody
-                      onClick={() => handleClick(index)}
-                      role='contentInfo'
-                      aria-pressed='false'
-                      aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'
+      <CardDiv>
+        {stats
+          .filter(value => {
+            if (search === '') {
+              return value;
+            } else if (
+              value.Name.toLowerCase().includes(search.toLowerCase())
+            ) {
+              return value;
+            }
+          })
+          .filter(value => {
+            if (positionFilter === '') {
+              return value;
+            } else if (value.Position.includes(positionFilter)) {
+              return value;
+            }
+          })
+          .map((d, index) => (
+            <div key={index}>
+              {isCardFlipped === index ? (
+                <Card>
+                  <CardBody
+                    onClick={() => handleClick(index)}
+                    role='contentInfo'
+                    aria-pressed='false'
+                    aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'
+                  >
+                    <CardHeader
+                      role='img'
+                      aria-label='Description of the Product image'
                     >
-                      <CardHeader
-                        role='img'
-                        aria-label='Description of the Product image'
-                      >
-                        <NameFieldset aria-label='title'>
-                          Active: {d.Activated === 1 ? 'Active' : 'Not Active'}
-                        </NameFieldset>
-                      </CardHeader>
                       <NameFieldset aria-label='title'>
-                        Fantasy Points FanDuel: {d.FantasyPointsFanDuel}
+                        Active: {d.Activated === 1 ? 'Active' : 'Not Active'}
                       </NameFieldset>
-                      <NameFieldset aria-label='description'>
-                        Fantasy Points: {d.FantasyPoints}
-                      </NameFieldset>
-                      <NameFieldset aria-label='description'>
-                        FantasyPointsPPR: {d.FantasyPointsPPR}
-                      </NameFieldset>
-                    </CardBody>
-                  </Card>
-                ) : (
-                  <Card>
-                    <CardBody onClick={() => handleClick(index)}>
-                      <CardHeader
-                        role='img'
-                        aria-label='Description of the overall image'
-                      >
-                        <HeaderTitle aria-label='title'>
-                          {d.Name} : {d.Position}
-                        </HeaderTitle>
-                      </CardHeader>
-                      <Description aria-label='description'>
-                        Players Team: {d.Team} VS: {d.Opponent}{' '}
-                      </Description>
-                      <Description aria-label='description'>
-                        {d.HomeOrAway === 'AWAY'
-                          ? 'Playing Away'
-                          : 'Playing At Home'}
-                      </Description>
-                      <Description aria-label='description'>
-                        Game Date: {d.GameDate}
-                      </Description>
-                    </CardBody>
-                  </Card>
-                )}
-              </div>
-            ))}
-        </CardDiv>
-      </>
+                    </CardHeader>
+                    <NameFieldset aria-label='title'>
+                      Fantasy Points FanDuel: {d.FantasyPointsFanDuel}
+                    </NameFieldset>
+                    <NameFieldset aria-label='description'>
+                      Fantasy Points: {d.FantasyPoints}
+                    </NameFieldset>
+                    <NameFieldset aria-label='description'>
+                      FantasyPointsPPR: {d.FantasyPointsPPR}
+                    </NameFieldset>
+                  </CardBody>
+                </Card>
+              ) : (
+                <Card>
+                  <CardBody onClick={() => handleClick(index)}>
+                    <CardHeader
+                      role='img'
+                      aria-label='Description of the overall image'
+                    >
+                      <HeaderTitle aria-label='title'>
+                        {d.Name} : {d.Position}
+                      </HeaderTitle>
+                    </CardHeader>
+                    <Description aria-label='description'>
+                      Players Team: {d.Team} VS: {d.Opponent}{' '}
+                    </Description>
+                    <Description aria-label='description'>
+                      {d.HomeOrAway === 'AWAY'
+                        ? 'Playing Away'
+                        : 'Playing At Home'}
+                    </Description>
+                    <Description aria-label='description'>
+                      Game Date: {d.GameDate}
+                    </Description>
+                  </CardBody>
+                </Card>
+              )}
+            </div>
+          ))}
+      </CardDiv>
     </div>
   );
 }

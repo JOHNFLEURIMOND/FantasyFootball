@@ -44,7 +44,7 @@ export const MenuLink = styled(Link)`
     color: ${fleurimondColors.white};
   }
   &:active {
-    color:${fleurimondColors.white};
+    color: ${fleurimondColors.white};
   }
   &:hover,
   &:active,
