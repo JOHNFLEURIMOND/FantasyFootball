@@ -23,8 +23,11 @@ export const MainContainer = styled.div`
     width: 100%;
     height: 100%;
     box-sizing: border-box;
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 500;
     margin: 0;
-    padding: 2em 0em;
+    padding: 2em 0;
   }
 `;
 export const Select = styled.select`
@@ -171,6 +174,7 @@ export const CardDiv = styled.div`
   height: 100%;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+  padding: 0 5em;
 
   @media (max-width: 800px) {
     display: grid;
