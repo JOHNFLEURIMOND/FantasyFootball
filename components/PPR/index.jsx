@@ -133,6 +133,7 @@ export const CardDiv = styled.div`
   height: 100%;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+  padding: 0 5em;
 
   @media (max-width: 800px) {
     display: grid;
