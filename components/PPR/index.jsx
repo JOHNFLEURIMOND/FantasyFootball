@@ -19,7 +19,7 @@ export const PPRPageContainer = styled.div`
     margin: 0;
     padding: 2em 10em;
   }
-  @media (min-width: 400px) {
+  @media (min-width: 200px) {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
