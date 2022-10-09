@@ -103,7 +103,7 @@ const FantasyFootballRanking = () => {
               if (search === '') {
                 return value;
               } else if (
-                value.Content.toLowerCase().includes(search.toLowerCase())
+                value.Title.toLowerCase().includes(search.toLowerCase())
               ) {
                 return value;
               }
