@@ -19,7 +19,7 @@ export const MainContainer = styled.div`
     margin: 0;
     padding: 2em 10em;
   }
-  @media (min-width: 300px) {
+  @media (min-width: 200px) {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -132,6 +132,7 @@ export const CardDiv = styled.div`
   height: 100%;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+  padding: 0 5em;
 
   @media (max-width: 800px) {
     display: grid;
