@@ -62,38 +62,32 @@ export const PriceFieldset = styled.h3`
 `;
 
 export const NameFieldset = styled.h3`
-  color: ${fleurimondColors.black};
+  color: ${fleurimondColors.midnight};
   padding: 0.75rem;
   font-size: 1rem;
   border: 0;
   text-overflow: ellipsis;
 `;
 
-export const HeaderTitle = styled.p`
+export const HeaderTitle = styled.h3`
   font-size: 1rem;
   text-decoration: none;
   padding: 0 32px;
-  color: ${fleurimondColors.smoke};
+  color: ${fleurimondColors.black};
   margin-top: 20px;
   border: 0;
 `;
-export const Description = styled.p`
+export const Description = styled.h3`
   font-size: 1rem;
-  text-decoration: none;
-  color: ${fleurimondColors.smoke};
+  color: ${fleurimondColors.midnight};
   position: relative;
   padding: 0 32px;
   margin-top: 20px;
   border: 0;
-  z-index= -9999999999;
-
-  :hover {
-    color: ${fleurimondColors.bebeBlue};
-  }
 `;
 
 export const FlippedCardInfoFieldset = styled.span`
-  color: ${fleurimondColors.smoke};
+  color: ${fleurimondColors.midnight};
   font-size: 1rem;
   width: 100%;
   font-weight: 500;
