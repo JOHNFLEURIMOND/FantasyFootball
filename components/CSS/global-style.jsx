@@ -30,6 +30,7 @@ export const GlobalStyle = createGlobalStyle`
     vertical-align: baseline;
     overflow-x: hidden;
   }
+  label {  overflow-y: hidden;}
   /* HTML5 display-role reset for older browsers */
   article, aside, details, figcaption, figure,
   footer, header, hgroup, menu, nav, section {
