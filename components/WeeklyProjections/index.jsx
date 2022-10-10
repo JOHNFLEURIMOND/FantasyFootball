@@ -31,21 +31,21 @@ export const MainContainer = styled.div`
   }
 `;
 export const Select = styled.select`
-margin: 0;
-    max-width: 100%;
-    flex: 1 0 auto;
-    outline: 0;
-    -webkit-tap-highlight-color: rgba(255,255,255,0);
-    text-align: left;
-    line-height: 1.21428571em;
-    font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
-    padding: 0.67857143em 1em;
-    background: #fff;
-    border: 1px solid rgba(34,36,38,.15);
-    color: rgba(0,0,0,.87);
-    border-radius: 0.28571429rem;
-    transition: box-shadow .1s ease,border-color .1s ease;
-    box-shadow: none;
+  margin: 0;
+  max-width: 100%;
+  flex: 1 0 auto;
+  outline: 0;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  text-align: left;
+  line-height: 1.21428571em;
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 0.67857143em 1em;
+  background: #fff;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  color: rgba(0, 0, 0, 0.87);
+  border-radius: 0.28571429rem;
+  transition: box-shadow 0.1s ease, border-color 0.1s ease;
+  box-shadow: none;
 
   option {
     color: black;

@@ -96,34 +96,36 @@ export default function WeeklyProjectionCards({ stats, loading }) {
   let statsSort = null;
   if (positionFilter == 'QB') {
     statsSort = (
-        <Form>
-          <Form.Field>
-            <Radio
-              label='Passing Attempts'
-              key='1'
-              name='radioGroup'
-              value='PassingAttempts'
-              style={{ overflowY: "hidden", /* Hide vertical scrollbar */
-              overflowX: "hidden" }}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label='Passing Yards'
-              key='2'
-              name='radioGroup'
-              value='PassingYards'
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label='Passing Yards'
-              key='2'
-              name='radioGroup'
-              value='PassingTouchdowns'
-            />
-          </Form.Field>
-        </Form>
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Passing Attempts'
+            key='1'
+            name='radioGroup'
+            value='PassingAttempts'
+            style={{
+              overflowY: 'hidden' /* Hide vertical scrollbar */,
+              overflowX: 'hidden',
+            }}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Passing Yards'
+            key='2'
+            name='radioGroup'
+            value='PassingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Passing Yards'
+            key='2'
+            name='radioGroup'
+            value='PassingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
     );
   } else if (positionFilter == 'RB') {
     statsSort = (
@@ -153,66 +155,66 @@ export default function WeeklyProjectionCards({ stats, loading }) {
           />
         </Form.Field>
       </Form>
-    )
-  }else if (positionFilter == 'WR') {
+    );
+  } else if (positionFilter == 'WR') {
     statsSort = (
-    <Form>
-      <Form.Field>
-        <Radio
-          label='Receiving Attempts'
-          key='7'
-          name='radioGroup'
-          value='Receptions'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Radio
-          label='Receiving Yards'
-          key='8'
-          name='radioGroup'
-          value='ReceivingYards'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Radio
-          label='Receiving Touchdowns'
-          key='9'
-          name='radioGroup'
-          value='ReceivingTouchdowns'
-        />
-      </Form.Field>
-    </Form>
-    )
-} else if (positionFilter == 'TE') {
-  statsSort = (
-  <Form>
-    <Form.Field>
-      <Radio
-        label='Receiving Attempts'
-        key='7'
-        name='radioGroup'
-        value='Receptions'
-      />
-    </Form.Field>
-    <Form.Field>
-      <Radio
-        label='Receiving Yards'
-        key='8'
-        name='radioGroup'
-        value='ReceivingYards'
-      />
-    </Form.Field>
-    <Form.Field>
-      <Radio
-        label='Receiving Touchdowns'
-        key='9'
-        name='radioGroup'
-        value='ReceivingTouchdowns'
-      />
-    </Form.Field>
-  </Form>
-  )
-} 
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Receiving Attempts'
+            key='7'
+            name='radioGroup'
+            value='Receptions'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Yards'
+            key='8'
+            name='radioGroup'
+            value='ReceivingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Touchdowns'
+            key='9'
+            name='radioGroup'
+            value='ReceivingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
+    );
+  } else if (positionFilter == 'TE') {
+    statsSort = (
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Receiving Attempts'
+            key='7'
+            name='radioGroup'
+            value='Receptions'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Yards'
+            key='8'
+            name='radioGroup'
+            value='ReceivingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Touchdowns'
+            key='9'
+            name='radioGroup'
+            value='ReceivingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
+    );
+  }
 
   return (
     <div>
@@ -240,9 +242,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
               </option>
             ))}
           </Select>
-          <SelectDiv>
-          {statsSort}
-          </SelectDiv>
+          <SelectDiv>{statsSort}</SelectDiv>
         </SelectDiv>
       </div>
       <CardDiv>
