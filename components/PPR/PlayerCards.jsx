@@ -93,69 +93,128 @@ export default function PlayerCards({ stats, loading }) {
     );
   }
   let statsSort = null;
-  if (positionFilter === 'QB') {
+  if (positionFilter == 'QB') {
     statsSort = (
-      <SelectDiv>
-        <Form>
-          <Form.Field>
-            <Radio
-              label='Passing Attempts'
-              key='1'
-              name='radioGroup'
-              value='PassingAttempts'
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label='Passing Yards'
-              key='2'
-              name='radioGroup'
-              value='PassingYards'
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label='Passing Yards'
-              key='3'
-              name='radioGroup'
-              value='PassingTouchdowns'
-            />
-          </Form.Field>
-        </Form>
-      </SelectDiv>
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Passing Attempts'
+            key='1'
+            name='radioGroup'
+            value='PassingAttempts'
+            style={{
+              overflowY: 'hidden' /* Hide vertical scrollbar */,
+              overflowX: 'hidden',
+            }}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Passing Yards'
+            key='2'
+            name='radioGroup'
+            value='PassingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Passing Yards'
+            key='2'
+            name='radioGroup'
+            value='PassingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
     );
-  } else if (positionFilter === 'RB') {
+  } else if (positionFilter == 'RB') {
     statsSort = (
-      <SelectDiv>
-        <Form>
-          <Form.Field>
-            <Radio
-              label='Rushing Attempts'
-              key='1'
-              name='radioGroup'
-              value='RushingAttempts'
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label='Rushing Yards'
-              key='2'
-              name='radioGroup'
-              value='RushingYards'
-            />
-          </Form.Field>
-          <Form.Field>
-            <Radio
-              label='Rushing Touchdowns'
-              key='3'
-              name='radioGroup'
-              value='RushingTouchdowns'
-            />
-          </Form.Field>
-        </Form>
-      </SelectDiv>
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Rushing Attempts'
+            key='4'
+            name='radioGroup'
+            value='RushingAttempts'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Rushing Yards'
+            key='5'
+            name='radioGroup'
+            value='RushingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Rushing Yards'
+            key='6'
+            name='radioGroup'
+            value='RushingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
+    );
+  } else if (positionFilter == 'WR') {
+    statsSort = (
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Receiving Attempts'
+            key='7'
+            name='radioGroup'
+            value='Receptions'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Yards'
+            key='8'
+            name='radioGroup'
+            value='ReceivingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Touchdowns'
+            key='9'
+            name='radioGroup'
+            value='ReceivingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
+    );
+  } else if (positionFilter == 'TE') {
+    statsSort = (
+      <Form>
+        <Form.Field>
+          <Radio
+            label='Receiving Attempts'
+            key='7'
+            name='radioGroup'
+            value='Receptions'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Yards'
+            key='8'
+            name='radioGroup'
+            value='ReceivingYards'
+          />
+        </Form.Field>
+        <Form.Field>
+          <Radio
+            label='Receiving Touchdowns'
+            key='9'
+            name='radioGroup'
+            value='ReceivingTouchdowns'
+          />
+        </Form.Field>
+      </Form>
     );
   }
+
   return (
     <div>
       <div className='SearchBar'>
@@ -182,7 +241,7 @@ export default function PlayerCards({ stats, loading }) {
               </option>
             ))}
           </Select>
-          {statsSort}
+          <SelectDiv>{statsSort}</SelectDiv>
         </SelectDiv>
       </div>
       <CardDiv>
