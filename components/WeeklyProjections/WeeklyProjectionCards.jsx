@@ -149,23 +149,23 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                     onClick={() => handleClick(index)}
                     role='contentInfo'
                     aria-pressed='false'
-                    aria-label='Product Card with a Image and a list of price, type of strain, thc and cbd levels.'
+                    aria-label='Player Card with a list of fantasy projection stats and match info.'
                   >
                     <CardHeader
-                      role='img'
-                      aria-label='Description of the Product image'
+                      role='info'
+                      aria-label='Stats'
                     >
-                      <NameFieldset aria-label='title'>
+                      <NameFieldset aria-label='Active or not'>
                         Active: {d.Activated === 1 ? 'Active' : 'Not Active'}
                       </NameFieldset>
                     </CardHeader>
-                    <NameFieldset aria-label='title'>
+                    <NameFieldset aria-label='Fanduel points'>
                       Fantasy Points FanDuel: {d.FantasyPointsFanDuel}
                     </NameFieldset>
-                    <NameFieldset aria-label='description'>
+                    <NameFieldset aria-label='Fantasy Football Point'>
                       Fantasy Points: {d.FantasyPoints}
                     </NameFieldset>
-                    <NameFieldset aria-label='description'>
+                    <NameFieldset aria-label='PPR Points'>
                       FantasyPointsPPR: {d.FantasyPointsPPR}
                     </NameFieldset>
                   </CardBody>
@@ -175,21 +175,21 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                   <CardBody onClick={() => handleClick(index)}>
                     <CardHeader
                       role='img'
-                      aria-label='Description of the overall image'
+                      aria-label='Description of the player and match'
                     >
-                      <HeaderTitle aria-label='title'>
+                      <HeaderTitle aria-label='Name and Position'>
                         {d.Name} : {d.Position}
                       </HeaderTitle>
                     </CardHeader>
-                    <Description aria-label='description'>
+                    <Description aria-label='Match'>
                       Players Team: {d.Team} VS: {d.Opponent}{' '}
                     </Description>
-                    <Description aria-label='description'>
+                    <Description aria-label='Playing home or away'>
                       {d.HomeOrAway === 'AWAY'
                         ? 'Playing Away'
                         : 'Playing At Home'}
                     </Description>
-                    <Description aria-label='description'>
+                    <Description aria-label='Game Date'>
                       Game Date: {d.GameDate}
                     </Description>
                   </CardBody>
