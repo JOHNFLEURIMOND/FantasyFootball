@@ -118,7 +118,7 @@ export default function PlayerCards({ stats, loading }) {
         </Form.Field>
         <Form.Field>
           <Radio
-            label='Passing Yards'
+            label='Passing Touchdowns'
             key='2'
             name='radioGroup'
             value='PassingTouchdowns'
@@ -147,7 +147,7 @@ export default function PlayerCards({ stats, loading }) {
         </Form.Field>
         <Form.Field>
           <Radio
-            label='Rushing Yards'
+            label='Rushing Touchdowns'
             key='6'
             name='radioGroup'
             value='RushingTouchdowns'
