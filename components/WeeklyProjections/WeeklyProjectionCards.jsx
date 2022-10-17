@@ -120,7 +120,6 @@ export default function WeeklyProjectionCards({ stats, loading }) {
               </option>
             ))}
           </Select>
-          
         </SelectDiv>
       </div>
       <CardDiv>
@@ -151,10 +150,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                     aria-pressed='false'
                     aria-label='Player Card with a list of fantasy projection stats and match info.'
                   >
-                    <CardHeader
-                      role='info'
-                      aria-label='Stats'
-                    >
+                    <CardHeader role='info' aria-label='Stats'>
                       <NameFieldset aria-label='Active or not'>
                         Active: {d.Activated === 1 ? 'Active' : 'Not Active'}
                       </NameFieldset>
