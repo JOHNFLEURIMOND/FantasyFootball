@@ -19,14 +19,12 @@ export const PPRPageContainer = styled.div`
     box-sizing: border-box;
     margin: 0;
     padding: 64px 250px;
-
   }
   @media (min-width: 200px) {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     margin: 0;
-    
   }
 `;
 
