@@ -10,14 +10,15 @@ export const MainContainer = styled.div`
   text-align: center;
   font-weight: 500;
   margin: 0;
-  padding: 2em 15em;
+  padding: 64px 250px;
+
   line-height: normal;
   background-color: ${fleurimondColors.white};
 
   @media (min-width: 800px) {
     box-sizing: border-box;
     margin: 0;
-    padding: 2em 10em;
+    padding: 64px 250px;
   }
   @media (min-width: 200px) {
     width: 100%;
@@ -27,7 +28,6 @@ export const MainContainer = styled.div`
     text-align: center;
     font-weight: 500;
     margin: 0;
-    padding: 2em 0;
   }
 `;
 export const Select = styled.select`
