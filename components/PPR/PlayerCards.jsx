@@ -272,20 +272,23 @@ export default function PlayerCards({ stats, loading }) {
                     aria-pressed='false'
                     aria-label='Card With Players stats'
                   >
-                    <CardHeader
-                      role='img'
-                      aria-label='Card with stats'
-                    >
+                    <CardHeader role='img' aria-label='Card with stats'>
                       <NameFieldset aria-label='Passing Yards and Touchdowns'>
                         Passing Yards/ Passing TDS: {d.PassingYards} :{' '}
                         {d.PassingTouchdowns}:
                       </NameFieldset>
                     </CardHeader>
-                    <NameFieldset aria-label='Rushing Attempts Rushing Yard Rushing TDS' key={d.PlayerID}>
+                    <NameFieldset
+                      aria-label='Rushing Attempts Rushing Yard Rushing TDS'
+                      key={d.PlayerID}
+                    >
                       Rushing Attempts:{d.RushingAttempts} / Rushing Yard:{' '}
                       {d.RushingYards} / Rushing TDS {d.RushingTouchdowns}
                     </NameFieldset>
-                    <NameFieldset aria-label='Receptions receiving yards, and receiving touchdowns' key={d.PlayerID}>
+                    <NameFieldset
+                      aria-label='Receptions receiving yards, and receiving touchdowns'
+                      key={d.PlayerID}
+                    >
                       Receptions: {d.Receptions} / Receiving Yards/{' '}
                       {d.ReceivingYards}/ Receiving TDS:{d.ReceivingTouchdowns}/
                     </NameFieldset>

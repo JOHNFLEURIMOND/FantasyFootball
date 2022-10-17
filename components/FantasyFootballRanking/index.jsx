@@ -19,7 +19,6 @@ export const MainContainer = styled.div`
     box-sizing: border-box;
     margin: 0;
     padding: 64px 250px;
-
   }
   @media (min-width: 200px) {
     width: 100%;
