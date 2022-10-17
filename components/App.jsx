@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import axios from 'axios';
 import Nav from '../components/Navbar/Nav.jsx';
 import Footer from '../components/Footer/Footer';
@@ -58,7 +58,6 @@ const Homepage = props => {
         <GlobalStyle />
         <Nav />
         <MainHero />
-
         <FantasyFootballRanking />
         <Footer />
       </Container>
@@ -75,18 +74,13 @@ const App = () => {
   const totalPages = stats.length / 12;
   const indexOfFirstStat = indexOfLastStat - 12;
   const currentStats = stats.slice(indexOfFirstStat, indexOfLastStat);
-  console.log(
-    'this is the total pages and current pages in app.jsx',
-    totalPages,
-    currentPage,
-    stats.length
-  );
+
   useEffect(() => {
     setLoading(true);
     const getStats = async () => {
       await axios
         .get(
-          `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/6?key=${key}`
+          `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/7?key=${key}`
         )
         .then(responses => {
           setStats(responses.data);
