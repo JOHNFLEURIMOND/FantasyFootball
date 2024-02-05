@@ -99,9 +99,7 @@ export const Container = styled.div`
   @media (max-width: 991px) {
     padding: 0;
   }
-  @media (min-width: 1500px) {
-    max-width: 1500px;
-  }
+
   @media (min-width: 1800px) {
     max-width: 100%;
     padding: 0;
