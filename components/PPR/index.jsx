@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { fleurimondColors } from '../../utils/theme.js';
+import { fleurimondColors } from '../CSS/theme.js';
 import { Button } from 'semantic-ui-react';
 
 export const PPRPageContainer = styled.div`
@@ -42,7 +42,9 @@ export const Select = styled.select`
   border: 1px solid rgba(34, 36, 38, 0.15);
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0.28571429rem;
-  transition: box-shadow 0.1s ease, border-color 0.1s ease;
+  transition:
+    box-shadow 0.1s ease,
+    border-color 0.1s ease;
   box-shadow: none;
 
   option {

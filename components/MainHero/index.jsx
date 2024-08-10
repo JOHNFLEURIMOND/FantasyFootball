@@ -1,20 +1,21 @@
+// components/HeroSection/index.jsx
 import styled from 'styled-components';
-import { fleurimondColors } from '../../utils/theme.js';
-import img from '../../public/fantasyfootball.jpeg';
+import { fleurimondColors } from '../CSS/theme';
+import heroImage from '../../public/fantasyfootball.jpeg';
 
-export const MainHero = styled.div`
+// Styled component for the main hero section
+export const HeroSection = styled.div`
+  background-image: url(${heroImage});
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
   min-height: 100vh;
   box-sizing: border-box;
-  font-size: 20px;
-  background-image: url(${img});
+  font-size: 1.25rem; /* 20px */
   background-color: ${fleurimondColors.midnight};
-  padding: 20px;
-  margin: 0 0 20px 0;
-  z-index: -99999999;
+  margin-bottom: 20px;
+  z-index: -1;
 
   @media only screen and (max-width: 800px) {
     min-height: 50vh;
@@ -24,20 +25,22 @@ export const MainHero = styled.div`
   }
 `;
 
-export const LeftHalf = styled.div`
-  min-width: 100vh;
+// Styled component for the left section
+export const LeftSection = styled.div`
+  min-width: 100vw;
   min-height: 70vh;
   display: flex;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
+  flex-direction: column;
   align-items: center;
 `;
 
-export const Title = styled.h1`
+// Styled component for the main title
+export const MainTitle = styled.h1`
   letter-spacing: 1px;
   font-size: 2.4em;
   padding: 1rem;
   margin-top: 2em;
+
   @media only screen and (max-width: 800px) {
     font-size: 1.8em;
   }
@@ -45,7 +48,9 @@ export const Title = styled.h1`
     font-size: 1em;
   }
 `;
-export const TitleName = styled.h1`
+
+// Styled component for the name title
+export const NameTitle = styled.h1`
   letter-spacing: 1px;
   font-size: 3.4em;
   padding: 1rem;
@@ -57,7 +62,9 @@ export const TitleName = styled.h1`
     font-size: 1em;
   }
 `;
-export const TitleProfession = styled.h1`
+
+// Styled component for the profession title
+export const ProfessionTitle = styled.h1`
   letter-spacing: 1px;
   font-size: 2em;
   padding: 1rem;
@@ -70,7 +77,8 @@ export const TitleProfession = styled.h1`
   }
 `;
 
-export const TitleSpan = styled.h1`
+// Styled component for the span title
+export const SpanTitle = styled.h1`
   letter-spacing: 1px;
   display: inline-block;
   font-size: 2em;
@@ -79,10 +87,8 @@ export const TitleSpan = styled.h1`
 
   @media only screen and (max-width: 800px) {
     font-size: 1.8em;
-    flex: 1;
   }
   @media only screen and (max-width: 420px) {
     font-size: 1em;
-    flex: 1;
   }
 `;

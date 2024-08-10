@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { fleurimondColors } from '../../utils/theme.js';
+import { fleurimondColors } from '../CSS/theme.js';
 import { Button } from 'semantic-ui-react';
 
 export const ProjectsSectionContainer = styled.div`

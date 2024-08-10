@@ -1,4 +1,5 @@
-const fleurimondColors = {
+// Define colors
+export const fleurimondColors = {
   black: '#000000',
   graySmoke: '#b7c2d0',
   smoke: '#5f6b78',
@@ -19,13 +20,13 @@ const fleurimondColors = {
   giganticGreen: '#8dbd3e',
   bebeBlue: '#94ceda',
   steelTeal: '#00a0ac',
-  jocelyneTeal: "#389583",
-  palesasAquaDark:  "rgba(91, 220, 148, 0.55)",
-  palesasAqua: "#5bdc94",
-  lightAqua: "#8de4af",
+  jocelyneTeal: '#389583',
+  palesasAquaDark: 'rgba(91, 220, 148, 0.55)',
+  palesasAqua: '#5bdc94',
+  lightAqua: '#8de4af',
   blue: '#0aa2dc',
   dutchieBlue: '#4c9be2',
-  tartBlue: 'rgba(69, 101, 238, 0.95) ',
+  tartBlue: 'rgba(69, 101, 238, 0.95)',
   irateIris: '#4500bc',
   midnight: '#01002e',
   Palesa: 'rgba(116, 59, 239, 0.85)',
@@ -47,15 +48,108 @@ const fleurimondColors = {
   },
 };
 
-export { fleurimondColors };
+// Define media breakpoints
+export const media = {
+  mobile: '480px',
+  tab: '768px',
+  desktop: '1200px',
+};
 
-export default {
-  colors: {},
+// Define responsive styles
+export const responsiveStyles = {
+  mobile: {
+    '@media (max-width: 480px)': {
+      body: {
+        fontSize: '14px',
+      },
+      '.container': {
+        padding: '10px',
+      },
+      '.header': {
+        fontSize: '18px',
+      },
+      '.button': {
+        padding: '10px 20px',
+        fontSize: '14px',
+      },
+      '.footer': {
+        padding: '1rem',
+      },
+    },
+  },
+  tablet: {
+    '@media (max-width: 767px)': {
+      body: {
+        fontSize: '16px',
+      },
+      '.container': {
+        padding: '15px',
+      },
+      '.header': {
+        fontSize: '20px',
+      },
+      '.button': {
+        padding: '12px 24px',
+        fontSize: '16px',
+      },
+      '.footer': {
+        padding: '1.5rem',
+      },
+    },
+  },
+  portraitTabletToDesktop: {
+    '@media (min-width: 768px) and (max-width: 979px)': {
+      body: {
+        fontSize: '18px',
+      },
+      '.container': {
+        padding: '20px',
+      },
+      '.header': {
+        fontSize: '24px',
+      },
+      '.button': {
+        padding: '15px 30px',
+        fontSize: '18px',
+      },
+      '.footer': {
+        padding: '2rem',
+      },
+    },
+  },
+  largeDesktop: {
+    '@media (min-width: 1200px)': {
+      body: {
+        fontSize: '20px',
+      },
+      '.container': {
+        padding: '30px',
+      },
+      '.header': {
+        fontSize: '28px',
+      },
+      '.button': {
+        padding: '20px 40px',
+        fontSize: '20px',
+      },
+      '.footer': {
+        padding: '3rem',
+      },
+    },
+  },
+};
+
+// Define theme object
+const theme = {
+  fleurimondColors,
+  media,
+  responsiveStyles,
   buttons: {
     primary: {
       color: fleurimondColors.white,
       backgroundColor: fleurimondColors.buttons.blue,
       borderColor: fleurimondColors.buttons.blue,
+      primaryText: '#000000',
 
       '&:hover,&:active,&:focus': {
         backgroundColor: fleurimondColors.buttons.darkBlue,
@@ -141,3 +235,5 @@ export default {
   fontSizes: [12, 13, 14, 16, 18, 25],
   space: [0, 5, 10, 20, 40, 80],
 };
+
+export default theme;

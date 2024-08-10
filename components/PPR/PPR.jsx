@@ -5,28 +5,24 @@ import MainHero from '../MainHero/MainHero';
 import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
 import { PPRPageContainer, Title } from './index';
-import { GlobalStyle, Container } from '../CSS/global-style';
-import { StatsContext } from '../App';
+import { StatsContext } from '../context';
 
 export default function PPR() {
-  const { currentPage, stats, setCurrentPage, loading, error, totalPages } =
+  const { stats, loading, currentStats, totalPages, setCurrentPage } =
     useContext(StatsContext);
 
   return (
-    <Container>
-      <GlobalStyle />
+    <PPRPageContainer>
       <Nav />
       <MainHero />
-      <Title>Fantasy Football PPR Stats</Title>
-      <PPRPageContainer>
-        <PlayerCards stats={stats} loading={loading} error={error} />
-        <Pagination
-          setCurrentPage={setCurrentPage}
-          currentPage={currentPage}
-          totalPages={Math.ceil(totalPages)}
-        />
-      </PPRPageContainer>
+      <Title>Player Points Projection</Title>
+      <PlayerCards stats={currentStats} loading={loading} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={page => setCurrentPage(page)}
+      />
       <Footer />
-    </Container>
+    </PPRPageContainer>
   );
 }

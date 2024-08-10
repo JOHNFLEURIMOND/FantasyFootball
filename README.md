@@ -17,6 +17,7 @@ I created the pages on the website from three main components, FantasyFootballRa
 Styling these pages became easy with Semantic UI and Style-Components. I made a card component using Styled Components that will populate the data on individual cards once the promise comes back. The user can filter thru the players by name by typing in the input or selecting the position in the input selection options.
 
 Managing the API in the global state was easy using a React Hook called useContext; In React, they created Hooks, functions that let you "hook into" React state and lifecycle features from function components rather than the Class-based OOP style. So finally, hooks provide a more direct API to the React concepts you already know: props, state, context, refs, and lifecycle. And just like Redux, you can create a provider with a value object that's all the data you want to pass to your components.
+
 # Portfolio :open_file_folder::
 
 ** :computer: 🇭🇹 WEBSITE:** [John Fleurimond](https://johnfleurimond.netlify.app)
@@ -25,7 +26,7 @@ Managing the API in the global state was easy using a React Hook called useConte
 
 1.  Clone repo
 2.  run `npm install`
-(Note: You need your own key and `.dotenv` file for this to work.)
+    (Note: You need your own key and `.dotenv` file for this to work.)
 
 # How To Get It Started :arrow_forward: :
 
