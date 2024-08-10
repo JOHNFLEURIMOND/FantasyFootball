@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import theme from './CSS/theme'; // Adjust path as necessary
 import Loading from './Loading'; // Fixed import path
-import ReactHelmet from 'react-helmet';
 import {
   NewsProvider,
   StatsProvider,
   NewsContext,
   StatsContext,
 } from './context'; // Import context providers
+import ReactHelmet from 'react-helmet';
 
 // Lazy load components
 const Nav = lazy(() => import('./Navbar/Nav'));
@@ -25,13 +25,12 @@ const PPR = lazy(() => import('./PPR/PPR'));
 
 // Homepage Component
 const Homepage = () => {
-  const { news, search, setSearch, loaded, fetchNews } =
-    useContext(NewsContext);
+  const { fetchNews } = useContext(NewsContext);
   const { fetchStats } = useContext(StatsContext);
 
   useEffect(() => {
-    fetchNews(process.env.REACT_APP_MY_API_KEY); // Fetch news on mount
-    fetchStats(process.env.REACT_APP_MY_API_KEY); // Fetch stats on mount
+    fetchNews(); // Fetch news on mount
+    fetchStats(); // Fetch stats on mount
   }, [fetchNews, fetchStats]);
 
   return (

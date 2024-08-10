@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { NavLink } from 'react-router-dom';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import moment from 'moment';
-import { colors, media } from '../layout/theme'; // Corrected path to theme
+import { fleurimondColors, media } from '../CSS/theme'; // Adjust path to theme
 
 const Footer = () => {
   return (
@@ -79,8 +79,8 @@ const shakeAnimation = keyframes`
 `;
 
 const FooterWrapper = styled.div`
-  background-color: ${colors.deepBlue};
-  color: ${colors.white};
+  background-color: ${fleurimondColors.midnight}; // Use midnight color for background
+  color: ${fleurimondColors.white}; // Use white color for text
   padding: 1rem 0; /* Reduced padding to make the footer thinner */
 `;
 
@@ -134,8 +134,8 @@ const FooterContact = styled.div`
 const FooterBottomSection = styled.div`
   padding: 1rem 2rem; /* Adjusted padding */
   text-align: center;
-  background-color: ${colors.black};
-  color: ${colors.white};
+  background-color: ${fleurimondColors.midnight}; // Use midnight color for background
+  color: ${fleurimondColors.white}; // Use white color for text
 
   .footer-bottom-links {
     margin-top: 0.5rem;
@@ -144,7 +144,7 @@ const FooterBottomSection = styled.div`
     justify-content: center;
 
     a {
-      color: ${colors.white};
+      color: ${fleurimondColors.white}; // Use white color for links
       text-decoration: none;
       font-size: 0.9rem; /* Reduced font size for a thinner appearance */
     }
@@ -161,20 +161,20 @@ const StyledLink = styled.a`
   justify-content: center;
   padding: 0.25rem; /* Reduced padding */
   border-radius: 50%;
-  border: 2px solid ${colors.white};
+  border: 2px solid ${fleurimondColors.white}; // Use white color for border
   transition: all 0.3s ease;
 
   .icons {
-    color: ${colors.white};
+    color: ${fleurimondColors.white}; // Use white color for icons
     font-size: 1.25rem; /* Reduced font size */
   }
 
   &:hover {
-    background-color: ${colors.haitianGold};
-    border-color: ${colors.haitianGold};
+    background-color: ${fleurimondColors.infrared}; // Use infrared color for background on hover
+    border-color: ${fleurimondColors.infrared}; // Use infrared color for border on hover
     animation: ${shakeAnimation} 0.6s ease;
     .icons {
-      color: ${colors.deepBlue};
+      color: ${fleurimondColors.midnight}; // Change icon color to midnight on hover
     }
   }
 `;
