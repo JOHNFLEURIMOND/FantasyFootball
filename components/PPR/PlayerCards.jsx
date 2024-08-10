@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme.js';
-import Button from '../Button/Button';
+import Button from '../Button/Button.jsx'; // Ensure this path is correct
 import Modal from './Modal';
 import Loading from '../Loading';
 

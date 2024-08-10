@@ -6,6 +6,7 @@ export const NewsContext = createContext();
 
 // Create StatsContext
 export const StatsContext = createContext();
+const apiKey = process.env.REACT_APP_MY_API_KEY;
 
 // Provider component for NewsContext
 export const NewsProvider = ({ children }) => {
@@ -14,7 +15,7 @@ export const NewsProvider = ({ children }) => {
   const [loaded, setLoaded] = useState(false);
 
   // Fetch news data and update state
-  const fetchNews = async apiKey => {
+  const fetchNews = useCallback(async () => {
     setLoaded(false);
     try {
       const response = await fetch(
@@ -28,7 +29,7 @@ export const NewsProvider = ({ children }) => {
     } finally {
       setLoaded(true);
     }
-  };
+  }, []); // Dependency array is empty, so fetchNews will not change
 
   return (
     <NewsContext.Provider
@@ -49,7 +50,7 @@ export const StatsProvider = ({ children }) => {
   const itemsPerPage = 12; // Define items per page for pagination
 
   // Fetch stats data and update state
-  const fetchStats = useCallback(async apiKey => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -65,10 +66,10 @@ export const StatsProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // Dependency array is empty, so fetchStats will not change
 
   // Fetch scores data and update state
-  const fetchScores = useCallback(async (season, week, apiKey) => {
+  const fetchScores = useCallback(async (season, week) => {
     setLoading(true);
     setError(null);
     try {
@@ -84,8 +85,9 @@ export const StatsProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // Dependency array is empty, so fetchScores will not change
 
+  // Calculate pagination details
   const totalPages = Math.ceil(stats.length / itemsPerPage);
   const currentStats = stats.slice(
     (currentPage - 1) * itemsPerPage,
@@ -102,7 +104,7 @@ export const StatsProvider = ({ children }) => {
         fetchStats,
         fetchScores,
         currentPage,
-        setCurrentPage,
+        setCurrentPage, // Ensure this is a function
         currentStats,
         totalPages,
       }}

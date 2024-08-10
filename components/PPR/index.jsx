@@ -10,7 +10,6 @@ export const PPRPageContainer = styled.div`
   text-align: center;
   font-weight: 500;
   margin: 0;
-  padding: 2em 15em;
   line-height: normal;
   background-color: ${fleurimondColors.white};
   padding: 64px 250px;

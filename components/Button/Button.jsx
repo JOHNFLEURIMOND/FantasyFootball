@@ -1,8 +1,8 @@
-//src/styles/Button.jsx
+// src/styles/Button.jsx
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { space } from 'styled-system';
-import theme from '../CSS/theme'; // Adjust path if needed
+import { fleurimondColors } from '../CSS/theme.js'; // Ensure this path is correct
 
 const baseButtonStyles = css`
   border-radius: 3px;
@@ -29,40 +29,45 @@ const baseButtonStyles = css`
 
 const buttonVariants = {
   primary: {
-    color: theme.colors.button.primary.color,
-    backgroundColor: theme.colors.button.primary.backgroundColor,
-    borderColor: theme.colors.button.primary.borderColor,
+    color: fleurimondColors.primaryButtonColor || '#fff',
+    backgroundColor: fleurimondColors.primaryButtonBgColor || '#007bff',
+    borderColor: fleurimondColors.primaryButtonBorderColor || '#007bff',
 
     '&:hover,&:active,&:focus': {
-      backgroundColor: theme.colors.button.primary.hover.backgroundColor,
-      borderColor: theme.colors.button.primary.hover.borderColor,
-      color: theme.colors.button.primary.hover.color,
+      backgroundColor: fleurimondColors.primaryButtonHoverBgColor || '#0056b3',
+      borderColor: fleurimondColors.primaryButtonHoverBorderColor || '#004085',
+      color: fleurimondColors.primaryButtonHoverColor || '#fff',
     },
 
     '&:disabled': {
-      backgroundColor: theme.colors.button.primary.disabled.backgroundColor,
-      borderColor: theme.colors.button.primary.disabled.borderColor,
-      color: theme.colors.button.primary.disabled.color,
+      backgroundColor:
+        fleurimondColors.primaryButtonDisabledBgColor || '#e0e0e0',
+      borderColor:
+        fleurimondColors.primaryButtonDisabledBorderColor || '#e0e0e0',
+      color: fleurimondColors.primaryButtonDisabledColor || '#6c757d',
     },
   },
   secondary: {
-    color: theme.colors.button.secondary.color,
-    backgroundColor: theme.colors.button.secondary.backgroundColor,
-    borderColor: theme.colors.button.secondary.borderColor,
+    color: fleurimondColors.secondaryButtonColor || '#fff',
+    backgroundColor: fleurimondColors.secondaryButtonBgColor || '#6c757d',
+    borderColor: fleurimondColors.secondaryButtonBorderColor || '#6c757d',
 
     '&:hover,&:active,&:focus': {
-      backgroundColor: theme.colors.button.secondary.hover.backgroundColor,
-      borderColor: theme.colors.button.secondary.hover.borderColor,
-      color: theme.colors.button.secondary.hover.color,
+      backgroundColor:
+        fleurimondColors.secondaryButtonHoverBgColor || '#5a6268',
+      borderColor:
+        fleurimondColors.secondaryButtonHoverBorderColor || '#545b62',
+      color: fleurimondColors.secondaryButtonHoverColor || '#fff',
     },
 
     '&:disabled': {
-      backgroundColor: theme.colors.button.secondary.disabled.backgroundColor,
-      borderColor: theme.colors.button.secondary.disabled.borderColor,
-      color: theme.colors.button.secondary.disabled.color,
+      backgroundColor:
+        fleurimondColors.secondaryButtonDisabledBgColor || '#e0e0e0',
+      borderColor:
+        fleurimondColors.secondaryButtonDisabledBorderColor || '#e0e0e0',
+      color: fleurimondColors.secondaryButtonDisabledColor || '#6c757d',
     },
   },
-  // Add other button variants here...
 };
 
 const buttonSizes = {
@@ -81,10 +86,10 @@ const buttonSizes = {
   },
 };
 
-const getButtonStyles = ({ variant, size }) => css`
+const getButtonStyles = ({ variant = 'secondary', size = 'small' }) => css`
   ${baseButtonStyles};
-  ${buttonSizes[size || 'small']};
-  ${buttonVariants[variant || 'secondary']};
+  ${buttonSizes[size]};
+  ${buttonVariants[variant]};
   ${space};
 `;
 
@@ -98,7 +103,6 @@ const StyledLink = styled.a`
 
 const Button = ({ variant = 'secondary', size = 'small', href, ...rest }) => {
   if (href) {
-    // Render as an anchor tag if href is provided
     return (
       <StyledLink href={href} {...rest}>
         {rest.children}
@@ -106,7 +110,6 @@ const Button = ({ variant = 'secondary', size = 'small', href, ...rest }) => {
     );
   }
 
-  // Default to button tag
   return (
     <StyledButton variant={variant} size={size} {...rest}>
       {rest.children}
