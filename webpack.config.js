@@ -1,98 +1,107 @@
-const path = require("path");
-const webpack = require("webpack");
-const BUILD_DIR = path.resolve(__dirname, "./build");
-const APP_DIR = path.resolve(__dirname, "./components");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { DefinePlugin } = require('webpack');
 require('dotenv').config({ path: './.env' });
 
-module.exports = {
-  entry: {
-    main: ["@babel/polyfill", path.resolve(APP_DIR + "/Main.js")],
-  },
-  mode: "development",
-  devServer: {
-    static: BUILD_DIR + "index/html",
-    port: 5000,
-  },
-  output: {
-    path: path.resolve(BUILD_DIR),
-    publicPath: "/",
-    filename: "bundle.js",
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: path.resolve(BUILD_DIR, "index.html"),
-      favicon: "public/favicon.ico",
-      // Load a custom template (lodash by default)
-      template: "index.html",
-    }),
-    new webpack.DefinePlugin({
-      APP_VERSION:
-        JSON.stringify(process.env.APP_VERSION) || JSON.stringify("config"),
-    }),
-    new webpack.DefinePlugin({
-      "process.env": JSON.stringify(process.env),
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'bundle.css'
-    })
-  ],
-  module: {
-    rules: [
-      {
-        exclude: /node_modules/,
-        test: /\.(js|jsx)?$/,
-        use: [
-          {
-            loader: require.resolve("babel-loader"),
-          },
-        ],
+const BUILD_DIR = path.resolve(__dirname, 'build');
+const APP_DIR = path.resolve(__dirname, 'components');
+
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+
+  return {
+    entry: {
+      main: ['@babel/polyfill', path.resolve(APP_DIR, 'Main.js')],
+    },
+    mode: isProduction ? 'production' : 'development',
+    devServer: {
+      static: {
+        directory: BUILD_DIR,
+        publicPath: '/',
       },
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: "babel-loader",
-          },
-        ],
-      },
-      {
-        test: /\.(sa|sc|c)ss$/,
-        exclude: /node_modules/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader',
-        ],
-      },
-      {
-        test: /\.(jpe?g|gif|png|svg)$/i,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: '[name]-[hash].[ext]'
-            }
-          }
-        ]
-      }
+      port: 5000,
+      hot: true,
+      historyApiFallback: true,
+    },
+    output: {
+      path: BUILD_DIR,
+      publicPath: '/',
+      filename: isProduction ? 'js/[name].[contenthash].js' : 'js/[name].js',
+      chunkFilename: isProduction
+        ? 'js/[name].[contenthash].chunk.js'
+        : 'js/[name].chunk.js',
+      assetModuleFilename: 'assets/images/[name].[hash][ext][query]',
+    },
+    plugins: [
+      new CleanWebpackPlugin(),
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: path.resolve(__dirname, 'public/index.html'),
+        favicon: path.resolve(__dirname, 'public/favicon.ico'),
+      }),
+      new DefinePlugin({
+        'process.env': JSON.stringify(process.env),
+      }),
+      new MiniCssExtractPlugin({
+        filename: isProduction
+          ? 'css/[name].[contenthash].css'
+          : 'css/[name].css',
+      }),
     ],
-  },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true
-        }
-      }
-    }
-  },
-  resolve: {
-    extensions: [".jsx", ".js"],
-  },
+    module: {
+      rules: [
+        {
+          test: /\.(js|jsx)$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env', '@babel/preset-react'],
+              plugins: ['@babel/plugin-transform-runtime'],
+            },
+          },
+        },
+        {
+          test: /\.(sa|sc|c)ss$/,
+          use: [
+            MiniCssExtractPlugin.loader, // Extract CSS into separate files
+            'css-loader', // Resolves CSS imports
+            'sass-loader', // Compiles SCSS to CSS
+          ],
+        },
+        {
+          test: /\.(jpe?g|gif|png|svg)$/i,
+          type: 'asset/resource',
+          generator: {
+            filename: 'assets/images/[name].[hash][ext][query]',
+          },
+        },
+      ],
+    },
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          styles: {
+            name: 'styles',
+            test: /\.(css|scss)$/,
+            chunks: 'all',
+            enforce: true,
+          },
+        },
+      },
+      runtimeChunk: {
+        name: entryPoint => `runtime-${entryPoint.name}`,
+      },
+      minimize: isProduction,
+    },
+    resolve: {
+      extensions: ['.js', '.jsx'],
+    },
+  };
 };

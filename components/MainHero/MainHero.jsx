@@ -1,8 +1,10 @@
+// components/HeroSection/SimpleHeroSection.jsx
 import React from 'react';
-import { MainHero } from './index';
+import { HeroSection } from './index';
 
-const SimplyPlantedHero = props => {
-  return <MainHero></MainHero>;
-};
+// Functional component for the hero section
+const SimpleHeroSection = React.memo(() => {
+  return <HeroSection></HeroSection>;
+});
 
-export default SimplyPlantedHero;
+export default SimpleHeroSection;

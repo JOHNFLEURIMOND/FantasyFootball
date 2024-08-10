@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import {
   Card,
   CardHeader,
@@ -7,89 +7,24 @@ import {
   NameFieldset,
   Description,
 } from '../Card/index';
-import {
-  Dimmer,
-  Loader,
-  Image,
-  Segment,
-  Input,
-  Form,
-  Radio,
-  Header,
-} from 'semantic-ui-react';
-import {
-  CardDiv,
-  LoadingDiv,
-  SearchDiv,
-  Select,
-  option,
-  SelectDiv,
-} from './index';
+import Loading from '../../components/Loading';
+import { CardDiv, LoadingDiv, SearchDiv, Select, SelectDiv } from './index';
 
-export default function WeeklyProjectionCards({ stats, loading }) {
+const WeeklyProjectionCards = memo(({ stats, loading }) => {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
+
   const handleClick = useCallback(index => {
-    setIsCardFlipped(index);
-    if (isCardFlipped == index) {
-      setIsCardFlipped(-1);
-    }
-  });
+    setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
+  }, []);
 
   const filterPositionItems = [...new Set(stats.map(item => item.Position))];
 
   if (loading) {
     return (
       <LoadingDiv>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>{' '}
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
+        <Loading percentage={100} /> {/* Use Loading component */}
       </LoadingDiv>
     );
   }
@@ -102,7 +37,6 @@ export default function WeeklyProjectionCards({ stats, loading }) {
           <Input
             type='text'
             label='NFL'
-            loading={loading}
             placeholder='Search For Players'
             onChange={e => setSearch(e.target.value)}
           />
@@ -110,8 +44,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
         <SelectDiv className='select'>
           <Select
             onChange={e => setPositionFilter(e.target.value)}
-            className='custom-select'
-            aria-label='Filter Countries By Position'
+            aria-label='Filter Players By Position'
           >
             <option value=''>Filter By Position</option>
             {filterPositionItems.map((item, index) => (
@@ -124,22 +57,15 @@ export default function WeeklyProjectionCards({ stats, loading }) {
       </div>
       <CardDiv>
         {stats
-          .filter(value => {
-            if (search === '') {
-              return value;
-            } else if (
+          .filter(
+            value =>
+              search === '' ||
               value.Name.toLowerCase().includes(search.toLowerCase())
-            ) {
-              return value;
-            }
-          })
-          .filter(value => {
-            if (positionFilter === '') {
-              return value;
-            } else if (value.Position.includes(positionFilter)) {
-              return value;
-            }
-          })
+          )
+          .filter(
+            value =>
+              positionFilter === '' || value.Position.includes(positionFilter)
+          )
           .map((d, index) => (
             <div key={index}>
               {isCardFlipped === index ? (
@@ -147,7 +73,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                   <CardBody
                     onClick={() => handleClick(index)}
                     role='contentInfo'
-                    aria-pressed='false'
+                    aria-pressed={isCardFlipped === index}
                     aria-label='Player Card with a list of fantasy projection stats and match info.'
                   >
                     <CardHeader role='info' aria-label='Stats'>
@@ -162,7 +88,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                       Fantasy Points: {d.FantasyPoints}
                     </NameFieldset>
                     <NameFieldset aria-label='PPR Points'>
-                      FantasyPointsPPR: {d.FantasyPointsPPR}
+                      Fantasy Points PPR: {d.FantasyPointsPPR}
                     </NameFieldset>
                   </CardBody>
                 </Card>
@@ -178,7 +104,7 @@ export default function WeeklyProjectionCards({ stats, loading }) {
                       </HeaderTitle>
                     </CardHeader>
                     <Description aria-label='Match'>
-                      Players Team: {d.Team} VS: {d.Opponent}{' '}
+                      Players Team: {d.Team} VS: {d.Opponent}
                     </Description>
                     <Description aria-label='Playing home or away'>
                       {d.HomeOrAway === 'AWAY'
@@ -196,4 +122,6 @@ export default function WeeklyProjectionCards({ stats, loading }) {
       </CardDiv>
     </div>
   );
-}
+});
+
+export default WeeklyProjectionCards;

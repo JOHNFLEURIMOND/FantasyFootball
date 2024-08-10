@@ -1,27 +1,38 @@
-import React, { useContext } from 'react';
-import Footer from '../Footer/Footer';
+import React, { useContext, useEffect } from 'react';
+import WeeklyProjectionCards from './WeeklyProjectionCards';
+import { StatsContext } from '../context'; // Updated import path
+import { MainContainer, Title } from './index';
 import MainHero from '../MainHero/MainHero';
 import Nav from '../Navbar/Nav.jsx';
-import Pagination from '../Pagination/Pagination';
-import WeeklyProjectionCards from './WeeklyProjectionCards';
-import { MainContainer, Title } from './index';
-import { StatsContext } from '../App';
-import { GlobalStyle, Container } from '../CSS/global-style';
+import Footer from '../Footer/Footer';
+import GlobalStyle from '../CSS/global-style';
 
 function WeeklyProjections() {
-  const { stats, loading, error } = useContext(StatsContext);
+  const { stats, loading, error, fetchStats } = useContext(StatsContext);
+
+  useEffect(() => {
+    // Replace 'YOUR_API_KEY' with the actual API key or logic to retrieve it
+    fetchStats('YOUR_API_KEY');
+  }, [fetchStats]);
 
   return (
-    <Container>
+    <>
       <GlobalStyle />
       <Nav />
       <MainHero />
       <MainContainer>
-        <Title>Fantasy Football News</Title>
-        <WeeklyProjectionCards stats={stats} loading={loading} error={error} />
+        <Title>Fantasy Football Projections</Title>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <WeeklyProjectionCards stats={stats} loading={loading} />
+            {error && <p>Error loading stats: {error.message}</p>}
+          </>
+        )}
       </MainContainer>
       <Footer />
-    </Container>
+    </>
   );
 }
 

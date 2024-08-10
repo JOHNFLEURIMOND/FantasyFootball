@@ -1,107 +1,130 @@
-import styled, { createGlobalStyle } from 'styled-components';
-import { fleurimondColors } from '../../utils/theme';
+// components/CSS/global-style.jsx
+import { createGlobalStyle } from 'styled-components';
+import theme from '../CSS/theme'; // Correct import for theme
 
-export const GlobalStyle = createGlobalStyle`
-  /* http://meyerweb.com/eric/tools/css/reset/
-     v2.0 | 20110126
-     License: none (public domain)
-  */
- @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@1,200&family=Montserrat:wght@300&family=Open+Sans:ital,wght@1,300&display=swap');
- 
-
-  html, body, div, span, applet, object, iframe,
-  h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-  a, abbr, acronym, address, big, cite, code,
-  del, dfn, em, img, ins, kbd, q, s, samp,
-  small, strike, strong, sub, sup, tt, var,
-  b, u, i, center,
-  dl, dt, dd, ol, ul, li,
-  fieldset, form, label, legend,
-  table, caption, tbody, tfoot, thead, tr, th, td,
-  article, aside, canvas, details, embed,
-  figure, figcaption, footer, header, hgroup,
-  menu, nav, output, ruby, section, summary,
-  time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-    overflow-x: hidden;
-  }
-  label {  overflow-y: hidden;}
-  /* HTML5 display-role reset for older browsers */
-  article, aside, details, figcaption, figure,
-  footer, header, hgroup, menu, nav, section {
-    display: block;
-  }
-  body {
-    line-height: 1;
-
-  }
-  ol, ul {
-    list-style: none;
-  }
-  blockquote, q {
-    quotes: none;
-  }
-  blockquote:before, blockquote:after,
-  q:before, q:after {
-    content: '';
-    content: none;
-  }
-  table {
-    border-collapse: collapse;
-    border-spacing: 0;
+const GlobalStyle = createGlobalStyle`
+  :root {
+    --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-body: Georgia, "Times New Roman", Times, serif;
+    --font-size-base: 62.5%;
+    --font-size-heading: 3rem;
+    --font-size-body: 1.6rem;
+    --line-height-heading: 4rem;
+    --line-height-body: 2.6rem;
+    --font-weight-heading: 700;
+    --font-weight-body: 400;
+    --color-background: ${theme.fleurimondColors.white};
+    --color-primary-text: ${theme.fleurimondColors.smoke};
+    --color-accent: ${theme.fleurimondColors.tartBlue}; // Updated to tartBlue
+    --color-border: ${theme.fleurimondColors.graySmoke}; // Adjusted to graySmoke
+    --color-button-primary-bg: ${theme.fleurimondColors.buttons.blue}; // Updated to theme button color
+    --color-button-primary-text: ${theme.fleurimondColors.white}; // Updated to white
+    --color-shadow: ${theme.fleurimondColors.black}; // Example shadow color
+    --scrollbar-width: 1.5rem;
   }
 
-  /* */
-  html {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-
-  body, html, #__next {
-    height: 100%;
-    width: 100%;
-  }
-
-  body {
-    font-family: 'Montserrat',sans-serif;
-
-  }
-
-  * {
+  *, *::before, *::after {
     box-sizing: border-box;
   }
 
-  b, strong {
-    font-weight: bold;
+  html {
+    font-size: var(--font-size-base);
+    overflow-x: hidden;
   }
 
-  em, i {
-    font-style: italic;
+  body {
+    background-color: var(--color-background);
+    color: var(--color-primary-text);
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-body);
+    line-height: var(--line-height-body);
+    font-size: var(--font-size-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading);
+    color: var(--color-primary-text);
+    line-height: var(--line-height-heading);
+    font-size: var(--font-size-heading);
+  }
+
+  /* Responsive Styles */
+  @media (max-width: ${theme.media.mobile}) {
+    body {
+      font-size: 1.4rem;
+    }
+    .container {
+      padding: 10px;
+    }
+    .header {
+      font-size: 1.8rem;
+    }
+    .button {
+      padding: 10px 20px;
+      font-size: 1.4rem;
+    }
+    .footer {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: ${theme.media.tab}) {
+    body {
+      font-size: 1.6rem;
+    }
+    .container {
+      padding: 15px;
+    }
+    .header {
+      font-size: 2rem;
+    }
+    .button {
+      padding: 12px 24px;
+      font-size: 1.6rem;
+    }
+    .footer {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (min-width: ${theme.media.tab}) and (max-width: 979px) {
+    body {
+      font-size: 1.8rem;
+    }
+    .container {
+      padding: 20px;
+    }
+    .header {
+      font-size: 2.4rem;
+    }
+    .button {
+      padding: 15px 30px;
+      font-size: 1.8rem;
+    }
+    .footer {
+      padding: 2rem;
+    }
+  }
+
+  @media (min-width: ${theme.media.desktop}) {
+    body {
+      font-size: 2rem;
+    }
+    .container {
+      padding: 30px;
+    }
+    .header {
+      font-size: 2.8rem;
+    }
+    .button {
+      padding: 20px 40px;
+      font-size: 2rem;
+    }
+    .footer {
+      padding: 3rem;
+    }
   }
 `;
 
-export const Container = styled.div`
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%
-  display: flex;
-  
-  @media (max-width: 400px) {
-    padding: 0;
-  }
-  @media (max-width: 991px) {
-    padding: 0;
-  }
-
-  @media (min-width: 1800px) {
-    max-width: 100%;
-    padding: 0;
-  }
-`;
+export default GlobalStyle;

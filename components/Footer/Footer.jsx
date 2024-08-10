@@ -1,37 +1,182 @@
-import React, { useState } from 'react';
+import React from 'react';
+import styled, { keyframes } from 'styled-components';
+import { NavLink } from 'react-router-dom';
+import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import moment from 'moment';
-import {
-  Footer,
-  FooterLogo,
-  Menu,
-  MenuItem,
-  MenuLink,
-  MenuIcon,
-} from './index';
+import { colors, media } from '../layout/theme'; // Corrected path to theme
 
-const JFFooter = () => {
-  //click is the initial state and setclick will be the update state
-  const [click, setClick] = useState(false);
-
-  //Create a function to handle the click state of the menu icon.
-  //if the menu icon was the menu bar at the beginning when clicked it will have the close icon
-  const handleClick = () => setClick(!click);
-
+const Footer = () => {
   return (
-    <Footer>
-      <Menu onClick={handleClick} click={click}>
-        <FooterLogo to='/'>
-          <MenuIcon />
-          Fantasy Football '22
-        </FooterLogo>
-        <MenuItem>
-          <MenuLink onClick={handleClick} to='/'>
-            {moment().format('llll')}
-          </MenuLink>
-        </MenuItem>
-      </Menu>
-    </Footer>
+    <FooterWrapper>
+      <FooterContent>
+        <FooterGrid>
+          <FooterAbout>
+            <h3>Fleurimond Productions</h3>
+            <p>
+              We specialize in capturing stunning visuals and creating
+              compelling stories through our photography and cinematography
+              services.
+            </p>
+          </FooterAbout>
+
+          <FooterSocial>
+            <h3>Follow Us</h3>
+            <SocialIcons>
+              <SocialLink
+                href='https://www.linkedin.com/in/john-fleurimond/'
+                label='LinkedIn'
+                icon={FaLinkedin}
+              />
+              <SocialLink
+                href='https://github.com/JOHNFLEURIMOND'
+                label='GitHub'
+                icon={FaGithub}
+              />
+            </SocialIcons>
+          </FooterSocial>
+
+          <FooterContact>
+            <h3>Contact Us</h3>
+            <p>617-781-5088</p>
+          </FooterContact>
+        </FooterGrid>
+
+        <FooterBottomSection>
+          <p>
+            &copy; {moment().format('YYYY')} Fleurimond Productions. All Rights
+            Reserved
+          </p>
+          <div className='footer-bottom-links'>
+            <NavLink to='/privacypolicy'>Privacy Policy</NavLink>
+            <NavLink to='/termsconditions'>Terms & Conditions</NavLink>
+            <NavLink to='/about'>About Us</NavLink>
+            <NavLink to='/photoshoot-inquiry'>Photoshoot Inquiry</NavLink>
+            <NavLink to='/deleteuserdata'>Delete User Data</NavLink>
+          </div>
+        </FooterBottomSection>
+      </FooterContent>
+    </FooterWrapper>
   );
 };
 
-export default JFFooter;
+const SocialLink = ({ href, label, icon: Icon }) => (
+  <StyledLink
+    href={href}
+    target='_blank'
+    rel='noopener noreferrer'
+    aria-label={label}
+  >
+    <Icon className='icons' />
+  </StyledLink>
+);
+
+const shakeAnimation = keyframes`
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+`;
+
+const FooterWrapper = styled.div`
+  background-color: ${colors.deepBlue};
+  color: ${colors.white};
+  padding: 1rem 0; /* Reduced padding to make the footer thinner */
+`;
+
+const FooterContent = styled.section`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem; /* Reduced padding to make the footer thinner */
+`;
+
+const FooterGrid = styled.div`
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+
+  @media ${media.tablet} {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FooterAbout = styled.div`
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem; /* Reduced font size for a thinner appearance */
+  }
+
+  p {
+    font-size: 0.9rem; /* Reduced font size for a thinner appearance */
+  }
+`;
+
+const FooterSocial = styled.div`
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem; /* Reduced font size for a thinner appearance */
+  }
+`;
+
+const SocialIcons = styled.div`
+  display: flex;
+  gap: 0.75rem; /* Reduced gap */
+  justify-content: center;
+`;
+
+const FooterContact = styled.div`
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem; /* Reduced font size for a thinner appearance */
+  }
+`;
+
+const FooterBottomSection = styled.div`
+  padding: 1rem 2rem; /* Adjusted padding */
+  text-align: center;
+  background-color: ${colors.black};
+  color: ${colors.white};
+
+  .footer-bottom-links {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.75rem; /* Reduced gap */
+    justify-content: center;
+
+    a {
+      color: ${colors.white};
+      text-decoration: none;
+      font-size: 0.9rem; /* Reduced font size for a thinner appearance */
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+const StyledLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem; /* Reduced padding */
+  border-radius: 50%;
+  border: 2px solid ${colors.white};
+  transition: all 0.3s ease;
+
+  .icons {
+    color: ${colors.white};
+    font-size: 1.25rem; /* Reduced font size */
+  }
+
+  &:hover {
+    background-color: ${colors.haitianGold};
+    border-color: ${colors.haitianGold};
+    animation: ${shakeAnimation} 0.6s ease;
+    .icons {
+      color: ${colors.deepBlue};
+    }
+  }
+`;
+
+export default Footer;
