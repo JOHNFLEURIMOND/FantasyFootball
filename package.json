@@ -17,7 +17,7 @@
     "dev": "webpack-dev-server --open",
     "start": "nodemon Server.js",
     "restart": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && npm install && npx npm-check-updates -u && npm install && npm run serve",
-    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'Fix api calls in ppr, ffr, wp' && git push",
+    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'Fix api calls AND STYLE in ppr, ffr, wp' && git push",
     "kill": "sudo kill -9 `ps aux | grep node | grep -v grep | awk '{print $2}'`",
     "clean": "npm cache clean --force && npm run build",
     "prettier": "npx prettier --write ."

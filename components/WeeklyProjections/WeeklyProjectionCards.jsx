@@ -1,133 +1,21 @@
 import React, { useState, useCallback, memo } from 'react';
-import styled, { keyframes } from 'styled-components';
-import TextInput from './TextInput.jsx'; // Import the TextInput component
-import { fleurimondColors } from '../CSS/theme'; // Import the color theme
+import TextInput from './TextInput'; // Import the TextInput component
+import {
+  LoaderWrapper,
+  Loader,
+  StyledSelect,
+  CardContainer,
+  LoadingDiv,
+  SearchDiv,
+  SelectDiv,
+  Card,
+  CardHeader,
+  CardBody,
+  NameFieldset,
+  Description,
+  HeaderTitle,
+} from './index.jsx'; // Import the styled components
 
-// Keyframes for Loader
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-// Styled Components
-const LoaderWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
-
-const Loader = styled.div`
-  border: 8px solid ${fleurimondColors.grey};
-  border-top: 8px solid ${fleurimondColors.blue};
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: ${spin} 1s linear infinite;
-`;
-
-const StyledSelect = styled.select`
-  width: 100%;
-  max-width: 420px;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.black};
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-
-  &:focus {
-    border-color: ${fleurimondColors.blue};
-    outline: none;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-  }
-`;
-
-const StyledInput = styled(TextInput)`
-  width: 100%;
-  max-width: 420px;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.black};
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-
-  &:focus {
-    border-color: ${fleurimondColors.blue};
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-  }
-`;
-
-const CardDiv = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-`;
-
-const LoadingDiv = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-`;
-
-const SearchDiv = styled.div`
-  margin-bottom: 1.5rem;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    margin-bottom: 1rem;
-  }
-`;
-
-const SelectDiv = styled.div`
-  margin-bottom: 1.5rem;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    margin-bottom: 1rem;
-  }
-`;
-
-const Card = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-`;
-
-const CardHeader = styled.div`
-  background-color: #f4f4f4;
-  padding: 1rem;
-  font-weight: bold;
-`;
-
-const CardBody = styled.div`
-  padding: 1rem;
-`;
-
-const NameFieldset = styled.div`
-  margin-bottom: 0.5rem;
-`;
-
-const Description = styled.div`
-  margin-bottom: 0.5rem;
-`;
-
-const HeaderTitle = styled.h3`
-  font-size: 1.25rem;
-  margin: 0;
-`;
-
-// WeeklyProjectionCards Component
 const WeeklyProjectionCards = ({ stats, loading }) => {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
@@ -155,7 +43,7 @@ const WeeklyProjectionCards = ({ stats, loading }) => {
     <div>
       <SearchDiv>
         <h2>Search Players</h2>
-        <StyledInput
+        <TextInput
           name='search'
           title='Search'
           placeholder='Search For Players'
@@ -176,7 +64,7 @@ const WeeklyProjectionCards = ({ stats, loading }) => {
           ))}
         </StyledSelect>
       </SelectDiv>
-      <CardDiv>
+      <CardContainer>
         {stats
           .filter(
             value =>
@@ -238,7 +126,7 @@ const WeeklyProjectionCards = ({ stats, loading }) => {
               </CardBody>
             </Card>
           ))}
-      </CardDiv>
+      </CardContainer>
     </div>
   );
 };
