@@ -1,5 +1,4 @@
-// src/contexts.js
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 
 // Create NewsContext
 export const NewsContext = createContext();
@@ -29,7 +28,12 @@ export const NewsProvider = ({ children }) => {
     } finally {
       setLoaded(true);
     }
-  }, []); // Dependency array is empty, so fetchNews will not change
+  }, []);
+
+  // Optionally call fetchNews on mount
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
 
   return (
     <NewsContext.Provider
@@ -55,7 +59,7 @@ export const StatsProvider = ({ children }) => {
     setError(null);
     try {
       const response = await fetch(
-        `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2022REG/7?key=${apiKey}`
+        `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2024REG/7?key=${apiKey}`
       );
       if (!response.ok) throw new Error('Network response was not ok.');
       const data = await response.json();
@@ -66,7 +70,7 @@ export const StatsProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []); // Dependency array is empty, so fetchStats will not change
+  }, []);
 
   // Fetch scores data and update state
   const fetchScores = useCallback(async (season, week) => {
@@ -85,7 +89,7 @@ export const StatsProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []); // Dependency array is empty, so fetchScores will not change
+  }, []);
 
   // Calculate pagination details
   const totalPages = Math.ceil(stats.length / itemsPerPage);
@@ -94,10 +98,15 @@ export const StatsProvider = ({ children }) => {
     currentPage * itemsPerPage
   );
 
+  // Optionally call fetchStats on mount
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
   return (
     <StatsContext.Provider
       value={{
-        stats,
+        stats: currentStats,
         scores,
         loading,
         error,
@@ -105,7 +114,6 @@ export const StatsProvider = ({ children }) => {
         fetchScores,
         currentPage,
         setCurrentPage, // Ensure this is a function
-        currentStats,
         totalPages,
       }}
     >
