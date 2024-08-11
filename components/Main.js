@@ -1,9 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import GlobalStyle from './CSS/global-style'; // Import the GlobalStyle
-import './index.css'; // Import index.css
-import Loading from './Loading'; // Import the Loading component
-import { Helmet } from 'react-helmet'; // Import Helmet for SEO
+import GlobalStyle from './CSS/global-style';
+import './index.css';
+import Loading from './Loading';
+import { Helmet } from 'react-helmet';
 
 // Lazy load the App component
 const App = lazy(() => import('./App'));
@@ -27,7 +27,7 @@ const SEO = () => (
 const Main = () => (
   <>
     <SEO />
-    <GlobalStyle /> {/* Apply global styles */}
+    <GlobalStyle />
     <Suspense fallback={<Loading percentage={100} />}>
       <App />
     </Suspense>
@@ -35,5 +35,6 @@ const Main = () => (
 );
 
 // Use ReactDOM.createRoot for concurrent rendering support
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
 root.render(<Main />);

@@ -1,4 +1,3 @@
-// components/Card/Modal.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme.js';
@@ -46,7 +45,6 @@ const Modal = ({
   content,
   source,
   updated,
-  url,
   originalSource,
   onClose,
 }) => (

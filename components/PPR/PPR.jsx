@@ -1,12 +1,17 @@
-// components/PPR/PPR.jsx
-import React, { useState, useContext, useEffect } from 'react';
-import Nav from '../Navbar/Nav.jsx';
-import Footer from '../Footer/Footer.jsx';
-import MainHero from '../MainHero/MainHero.jsx';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { StatsContext } from '../context';
 import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
-import { Title, FilterContainer, StyledSelect, SearchDiv } from './index.jsx';
-import { StatsContext } from '../context';
+import {
+  Title,
+  FilterContainer,
+  StyledSelect,
+  SearchDiv,
+  PPRPageContainer,
+} from './index';
+import Nav from '../Navbar/Nav';
+import Footer from '../Footer/Footer';
+import MainHero from '../MainHero/MainHero'; // Ensure this path is correct
 import TextInput from '../WeeklyProjections/TextInput';
 import { Form, Radio } from 'semantic-ui-react';
 
@@ -15,9 +20,9 @@ const PPR = () => {
     stats,
     loading,
     currentPage,
-    totalPages,
     setCurrentPage,
     fetchStats,
+    totalPages,
   } = useContext(StatsContext);
 
   const [search, setSearch] = useState('');
@@ -28,33 +33,49 @@ const PPR = () => {
     fetchStats();
   }, [fetchStats]);
 
-  const handleSearchChange = e => setSearch(e.target.value);
+  const handleSearchChange = useCallback(e => setSearch(e.target.value), []);
+  const handlePositionFilterChange = useCallback(
+    e => setPositionFilter(e.target.value),
+    []
+  );
+  const handleSortOptionChange = useCallback(
+    (e, { value }) => setSortOption(value),
+    []
+  );
 
-  const handlePositionFilterChange = e => setPositionFilter(e.target.value);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const handleSortOptionChange = (e, { value }) => setSortOption(value);
-
-  // Filter and sort stats based on user input
   const filteredStats = stats
     .filter(
       player =>
-        search === '' ||
-        player.Name.toLowerCase().includes(search.toLowerCase())
+        !search || player.Name.toLowerCase().includes(search.toLowerCase())
     )
-    .filter(
-      player => positionFilter === '' || player.Position === positionFilter
-    )
+    .filter(player => !positionFilter || player.Position === positionFilter)
     .sort((a, b) => {
-      if (!sortOption || !(sortOption in a) || !(sortOption in b)) return 0;
-      return b[sortOption] - a[sortOption];
+      if (
+        sortOption &&
+        a[sortOption] !== undefined &&
+        b[sortOption] !== undefined
+      ) {
+        return b[sortOption] - a[sortOption];
+      }
+      return 0;
     });
 
-  const handlePageChange = page => setCurrentPage(page);
+  const itemsPerPage = 12;
+  const totalFilteredPages = Math.ceil(filteredStats.length / itemsPerPage);
+
+  const currentStats = filteredStats.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <>
+    <PPRPageContainer>
       <Nav />
-      <MainHero />
+      <MainHero /> {/* Ensure this is placed correctly */}
       <Title>Player Points Projection</Title>
       <FilterContainer>
         <SearchDiv>
@@ -107,14 +128,14 @@ const PPR = () => {
           </Form>
         </SearchDiv>
       </FilterContainer>
-      <PlayerCards stats={filteredStats} loading={loading} />
+      <PlayerCards stats={currentStats} loading={loading} />
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalFilteredPages}
       />
       <Footer />
-    </>
+    </PPRPageContainer>
   );
 };
 

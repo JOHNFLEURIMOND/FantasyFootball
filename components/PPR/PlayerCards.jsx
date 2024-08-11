@@ -1,84 +1,124 @@
-// components/PPR/PlayerCards.jsx
-import React, { useState, useCallback } from 'react';
+// PlayerCards.jsx
+import React from 'react';
+import PropTypes from 'prop-types';
+import Modal from './Modal';
 import {
-  Card,
-  CardHeader,
+  CardContainer,
+  CardWrapper,
+  CardInner,
+  CardFront,
+  CardBack,
+  CardImage,
+  CardContent,
+  ExpandedContent,
   HeaderTitle,
-  CardBody,
-  NameFieldset,
   Description,
-} from '../Card/index';
-import { CardDiv, LoadingDiv } from './index';
-import { Dimmer, Loader, Image, Segment } from 'semantic-ui-react';
+  LoaderWrapper,
+  NameFieldset,
+  MainContainer,
+  Title,
+} from './CardStyles';
+import Loading from '../Loading'; // Fixed import path
 
-export default function PlayerCards({ stats, loading }) {
-  const [isCardFlipped, setIsCardFlipped] = useState(-1);
+const PlayerCards = ({ stats, loading }) => {
+  const [openModal, setOpenModal] = React.useState(null);
+  const [expandedIndex, setExpandedIndex] = React.useState(null);
 
-  const handleClick = useCallback(index => {
-    setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
-  }, []);
+  const handleCardClick = index => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+  };
+
+  const handleOpenModal = player => {
+    setOpenModal(player);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(null);
+  };
 
   if (loading) {
     return (
-      <LoadingDiv>
-        {[...Array(8)].map((_, index) => (
-          <Segment key={index} size='massive' style={{ height: '650px' }}>
-            <Dimmer active inverted>
-              <Loader size='large'>Loading</Loader>
-            </Dimmer>
-            <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-          </Segment>
-        ))}
-      </LoadingDiv>
+      <LoaderWrapper>
+        <Loading />
+      </LoaderWrapper>
     );
   }
 
   return (
-    <CardDiv>
-      {stats.map((d, index) => (
-        <div key={d.PlayerID}>
-          {isCardFlipped === index ? (
-            <Card>
-              <CardBody
-                onClick={() => handleClick(index)}
-                role='contentInfo'
-                aria-pressed={isCardFlipped === index}
-                aria-label={`Card with stats for ${d.Name}`}
-              >
-                <CardHeader role='img' aria-label='Card with stats'>
-                  <NameFieldset aria-label='Passing Yards and Touchdowns'>
-                    Passing Yards: {d.PassingYards} / Passing Touchdowns:{' '}
-                    {d.PassingTouchdowns}
-                  </NameFieldset>
-                </CardHeader>
-                <NameFieldset aria-label='Rushing Attempts, Rushing Yards, and Rushing Touchdowns'>
-                  Rushing Attempts: {d.RushingAttempts} / Rushing Yards:{' '}
-                  {d.RushingYards} / Rushing Touchdowns: {d.RushingTouchdowns}
-                </NameFieldset>
-                <NameFieldset aria-label='Receptions, Receiving Yards, and Receiving Touchdowns'>
-                  Receptions: {d.Receptions} / Receiving Yards:{' '}
-                  {d.ReceivingYards} / Receiving Touchdowns:{' '}
-                  {d.ReceivingTouchdowns}
-                </NameFieldset>
-              </CardBody>
-            </Card>
-          ) : (
-            <Card>
-              <CardBody onClick={() => handleClick(index)}>
-                <CardHeader
-                  role='img'
-                  aria-label='Description of the Name and Match'
-                >
-                  <HeaderTitle aria-label='Name'>{d.Name}</HeaderTitle>
-                </CardHeader>
-                <Description aria-label='Players team vs Opponent'>
-                  Player's Team: {d.Team} VS {d.Opponent}
-                </Description>
-              </CardBody>
-            </Card>
-          )}
-        </div>
-      ))}
-    </CardDiv>
+    <MainContainer>
+      <Title>Player Cards</Title>
+      <CardContainer>
+        {stats.map((player, index) => (
+          <CardWrapper
+            key={player.Id || index}
+            onClick={() => handleCardClick(index)}
+          >
+            <CardInner $isExpanded={expandedIndex === index}>
+              <CardFront>
+                <CardImage>
+                  <img
+                    src={player.imageUrl || '/path/to/placeholder-image.jpg'}
+                    alt={player.Name || 'Player Image'}
+                  />
+                </CardImage>
+                <CardContent>
+                  <HeaderTitle>{player.Name || 'Unknown Player'}</HeaderTitle>
+                  <Description>
+                    Position: {player.Position || 'Unknown Position'}
+                  </Description>
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleOpenModal(player);
+                    }}
+                  >
+                    More Details
+                  </button>
+                </CardContent>
+              </CardFront>
+              <CardBack>
+                <ExpandedContent>
+                  <HeaderTitle>{player.Name || 'Unknown Player'}</HeaderTitle>
+                  <Description>
+                    Stats: {player.Stats || 'No stats available'}
+                  </Description>
+                  {/* Additional details */}
+                </ExpandedContent>
+              </CardBack>
+            </CardInner>
+          </CardWrapper>
+        ))}
+      </CardContainer>
+
+      {openModal && (
+        <Modal
+          title={openModal.Name || 'Unknown Player'}
+          content={openModal.Description || 'No description available'}
+          source={openModal.Source || 'No source available'}
+          updated={openModal.Updated || 'Unknown'}
+          originalSource={openModal.OriginalSource || 'Unknown'}
+          onClose={handleCloseModal}
+        />
+      )}
+    </MainContainer>
   );
-}
+};
+
+PlayerCards.propTypes = {
+  stats: PropTypes.arrayOf(
+    PropTypes.shape({
+      imageUrl: PropTypes.string,
+      Name: PropTypes.string,
+      Position: PropTypes.string,
+      Stats: PropTypes.string,
+      Description: PropTypes.string,
+      Source: PropTypes.string,
+      Updated: PropTypes.string,
+      OriginalSource: PropTypes.string,
+      Id: PropTypes.string,
+    })
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+};
+
+export default PlayerCards;

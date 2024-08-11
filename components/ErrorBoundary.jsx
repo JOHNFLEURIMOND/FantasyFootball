@@ -1,26 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
+// ErrorBoundary Component using functional approach
+const ErrorBoundary = ({ children }) => {
+  const [hasError, setHasError] = useState(false);
+
+  // This hook catches errors in the component tree
+  useEffect(() => {
+    const handleError = event => {
+      setHasError(true);
+      console.error('Error caught by Error Boundary:', event.error);
+    };
+
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
+  // Fallback UI
+  if (hasError) {
+    return (
+      <div role='alert'>
+        <h1>Something went wrong.</h1>
+      </div>
+    );
   }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
+  return children;
+};
 
-  componentDidCatch(error, errorInfo) {
-    console.error('Error caught by Error Boundary:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
-    }
-
-    return this.props.children;
-  }
-}
-
-export default ErrorBoundary;
+export default React.memo(ErrorBoundary);

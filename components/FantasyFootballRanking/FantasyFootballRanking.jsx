@@ -1,109 +1,94 @@
 import React, { useContext, useState, useCallback, useEffect } from 'react';
-import { NewsContext } from '../context'; // Updated import path
+import PropTypes from 'prop-types';
+import { NewsContext } from '../context';
 import {
-  Card,
-  CardHeader,
-  HeaderTitle,
-  CardBody,
-  NameFieldset,
-  Description,
-} from '../Card/index';
-import {
-  MainContainer,
-  Title,
-  CardDiv,
-  SearchDiv,
-  Header,
+  CardContainer,
+  CardWrapper,
+  CardInner,
+  CardFront,
+  CardBack,
   LoadingDiv,
-} from './index';
-import { Dimmer, Loader, Image, Segment, Input } from 'semantic-ui-react';
+} from '../Card/index';
+import Modal from '../Card/Modal';
 
 const FantasyFootballRanking = () => {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
-  const { news, search, setSearch, loaded, fetchNews } =
-    useContext(NewsContext);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedNews, setSelectedNews] = useState(null);
+  const { news, loaded, fetchNews } = useContext(NewsContext);
 
   useEffect(() => {
-    // Replace 'YOUR_API_KEY' with actual API key or logic to get it
-    fetchNews('YOUR_API_KEY');
+    fetchNews(); // No need to pass the API key here
   }, [fetchNews]);
 
   const handleClick = useCallback(index => {
     setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
   }, []);
 
+  const handleModalOpen = useCallback(newsItem => {
+    setSelectedNews(newsItem);
+    setModalOpen(true);
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setModalOpen(false);
+    setSelectedNews(null);
+  }, []);
+
   if (!loaded) {
-    return (
-      <LoadingDiv>
-        <Segment size='massive' style={{ height: '650px' }}>
-          <Dimmer active inverted>
-            <Loader size='large'>Loading</Loader>
-          </Dimmer>
-          <Image src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-        </Segment>
-        {/* Repeat segments if needed */}
-      </LoadingDiv>
-    );
+    return <LoadingDiv>Loading...</LoadingDiv>;
   }
 
   return (
-    <MainContainer>
-      <Title>Fantasy Football News</Title>
-      <SearchDiv>
-        <Header>Search News</Header>
-        <Input
-          type='text'
-          label='NFL'
-          placeholder='Search For News'
-          value={search}
-          onChange={e => setSearch(e.target.value)}
+    <>
+      <CardContainer>
+        {news.map((d, index) => (
+          <CardWrapper key={d.NewsID || index}>
+            <CardInner $isExpanded={isCardFlipped === index}>
+              {/* Card Front */}
+              <CardFront onClick={() => handleClick(index)}>
+                <h3>{d.Title}</h3>
+                <p>Source: {d.Source}</p>
+                <p>Posted: {d.TimeAgo}</p>
+              </CardFront>
+              {/* Card Back */}
+              <CardBack>
+                <p>{d.Content}</p>
+                <p>Author: {d.Author}</p>
+                <p>Team: {d.Team}</p>
+                <a
+                  href={d.OriginalSourceUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  Original Source
+                </a>
+                <button onClick={() => handleModalOpen(d)}>Details</button>
+              </CardBack>
+            </CardInner>
+          </CardWrapper>
+        ))}
+      </CardContainer>
+
+      {isModalOpen && selectedNews && (
+        <Modal
+          title={selectedNews.Title || 'No Title'}
+          content={selectedNews.Content || 'No Content'}
+          source={selectedNews.Source || 'No Source'}
+          updated={selectedNews.TimeAgo || 'No Date'}
+          url={selectedNews.Url || '#'}
+          originalSource={selectedNews.OriginalSourceUrl || '#'}
+          onClose={handleModalClose}
         />
-      </SearchDiv>
-      <CardDiv>
-        {news
-          .filter(
-            value =>
-              search === '' ||
-              value.Title.toLowerCase().includes(search.toLowerCase())
-          )
-          .map((d, index) => (
-            <div key={index}>
-              {isCardFlipped === index ? (
-                <Card>
-                  <CardBody onClick={() => handleClick(index)}>
-                    <CardHeader
-                      role='img'
-                      aria-label='Description of the overall image'
-                    >
-                      <HeaderTitle aria-label='title'>{d.Content}</HeaderTitle>
-                    </CardHeader>
-                    <Description aria-label='description'>
-                      Posted: {d.TimeAgo}
-                    </Description>
-                  </CardBody>
-                </Card>
-              ) : (
-                <Card>
-                  <CardBody onClick={() => handleClick(index)}>
-                    <CardHeader
-                      role='img'
-                      aria-label='Description of the Product image'
-                    >
-                      <NameFieldset aria-label='title'>
-                        Title: {d.Title}
-                      </NameFieldset>
-                    </CardHeader>
-                    <NameFieldset aria-label='description'>
-                      Source: {d.Source}
-                    </NameFieldset>
-                  </CardBody>
-                </Card>
-              )}
-            </div>
-          ))}
-      </CardDiv>
-    </MainContainer>
+      )}
+    </>
   );
+};
+
+FantasyFootballRanking.propTypes = {
+  news: PropTypes.array.isRequired,
+  loaded: PropTypes.bool.isRequired,
+  fetchNews: PropTypes.func.isRequired,
 };
 
 export default FantasyFootballRanking;
