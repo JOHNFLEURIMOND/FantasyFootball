@@ -179,6 +179,16 @@ const Navbar = React.memo(() => {
             PPR
           </NavLink>
         </li>
+        {/* <li>
+          <NavLink
+            className='navbar-link'
+            onClick={() => setOpenMenu(false)}
+            to='/Replays'
+            aria-label='Navigate to Replays'
+          >
+            Replays
+          </NavLink>
+        </li> */}
       </ul>
     </Nav>
   );

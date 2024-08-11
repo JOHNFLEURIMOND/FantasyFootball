@@ -51,7 +51,7 @@ export const fleurimondColors = {
 // Define media breakpoints
 export const media = {
   mobile: '480px',
-  tab: '768px',
+  tablet: '768px',
   desktop: '1200px',
 };
 
@@ -78,7 +78,7 @@ export const responsiveStyles = {
     },
   },
   tablet: {
-    '@media (max-width: 767px)': {
+    '@media (min-width: 481px) and (max-width: 767px)': {
       body: {
         fontSize: '16px',
       },
@@ -150,13 +150,11 @@ const theme = {
       backgroundColor: fleurimondColors.buttons.blue,
       borderColor: fleurimondColors.buttons.blue,
       primaryText: '#000000',
-
       '&:hover,&:active,&:focus': {
         backgroundColor: fleurimondColors.buttons.darkBlue,
         borderColor: fleurimondColors.buttons.darkBlue,
         color: fleurimondColors.white,
       },
-
       '&:disabled': {
         backgroundColor: fleurimondColors.buttons.lightBlue,
         borderColor: fleurimondColors.buttons.lightBlue,
@@ -167,13 +165,11 @@ const theme = {
       color: fleurimondColors.buttons.blue,
       backgroundColor: fleurimondColors.white,
       borderColor: fleurimondColors.buttons.blue,
-
       '&:hover,&:active,&:focus': {
         backgroundColor: '#edf1f5',
         borderColor: fleurimondColors.buttons.blue,
         color: fleurimondColors.buttons.blue,
       },
-
       '&:disabled': {
         backgroundColor: fleurimondColors.white,
         borderColor: fleurimondColors.buttons.lightBlue,
@@ -184,13 +180,11 @@ const theme = {
       color: fleurimondColors.buttons.blue,
       backgroundColor: fleurimondColors.white,
       borderColor: '#dbdbdb',
-
       '&:hover,&:active,&:focus': {
         backgroundColor: '#f7f7f7',
         borderColor: '#cccccc',
         color: fleurimondColors.buttons.blue,
       },
-
       '&:disabled': {
         backgroundColor: fleurimondColors.white,
         borderColor: '#e8e8e8',
@@ -201,13 +195,11 @@ const theme = {
       color: fleurimondColors.white,
       backgroundColor: fleurimondColors.fierceFuchsia,
       borderColor: fleurimondColors.fierceFuchsia,
-
       '&:hover,&:active,&:focus': {
         backgroundColor: '#6d1643',
         borderColor: '#6d1643',
         color: fleurimondColors.white,
       },
-
       '&:disabled': {
         backgroundColor: fleurimondColors.buttons.lightFuschia,
         borderColor: fleurimondColors.buttons.lightFuschia,
@@ -218,13 +210,11 @@ const theme = {
       color: fleurimondColors.fierceFuchsia,
       backgroundColor: fleurimondColors.white,
       borderColor: fleurimondColors.fierceFuchsia,
-
       '&:hover,&:active,&:focus': {
         backgroundColor: '#fdf4f9',
         borderColor: fleurimondColors.fierceFuchsia,
         color: fleurimondColors.fierceFuchsia,
       },
-
       '&:disabled': {
         backgroundColor: fleurimondColors.white,
         borderColor: fleurimondColors.buttons.lightFuschia,
