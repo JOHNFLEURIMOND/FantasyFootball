@@ -202,4 +202,4 @@ The application provides real-time fantasy football news and player projections,
 
 ## Contact
 
-..For any questions or feedback, please reach out to [Fleur](https://johnfleurimond.netlify.app)..
+.. For any questions or feedback, please reach out to [Fleur](https://johnfleurimond.netlify.app)..

@@ -1,134 +1,114 @@
-// components/Card/PlayerCards.jsx
+import React from 'react';
+import styled from 'styled-components';
+import { fleurimondColors } from '../CSS/theme.js';
 
-import React, { useState, useCallback } from 'react';
-import {
-  CardContainer,
-  CardWrapper,
-  CardInner,
-  CardFront,
-  CardBack,
-  CardImage,
-  CardContent,
-  ExpandedContent,
-  LoadingDiv,
-  SearchDiv,
-  Header,
-  Input,
-  SelectDiv,
-  Select,
-} from './index';
-import Button from '../Button/Button';
-import Loading from '../Loading';
-import Modal from './Modal';
-
-const filterStats = (stats, search, positionFilter) => {
-  return stats
-    .filter(
-      value =>
-        search === '' || value.Name.toLowerCase().includes(search.toLowerCase())
-    )
-    .filter(
-      value => positionFilter === '' || value.Position.includes(positionFilter)
-    );
-};
-
-const PlayerCards = ({ stats = [], loading }) => {
-  const [isCardFlipped, setIsCardFlipped] = useState(-1);
-  const [search, setSearch] = useState('');
-  const [positionFilter, setPositionFilter] = useState('');
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
-
-  const handleClick = useCallback(index => {
-    setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
-  }, []);
-
-  const handleModalOpen = player => {
-    setSelectedPlayer(player);
-    setModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-    setSelectedPlayer(null);
-  };
-
-  const filterPositionItems = [...new Set(stats.map(item => item.Position))];
-
-  if (loading) {
-    return (
-      <LoadingDiv>
-        <Loading percentage={100} />
-      </LoadingDiv>
-    );
-  }
+const Card = ({ data, type, onClick, onModalOpen, isFlipped }) => {
+  const isNews = type === 'news';
 
   return (
-    <>
-      <SearchDiv>
-        <Header>Search Players</Header>
-        <Input
-          type='text'
-          placeholder='Search For Players'
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-      </SearchDiv>
-      <SelectDiv>
-        <Select
-          onChange={e => setPositionFilter(e.target.value)}
-          aria-label='Filter By Position'
-        >
-          <option value=''>Filter By Position</option>
-          {filterPositionItems.map((item, index) => (
-            <option key={index} value={item}>
-              Filter {item}
-            </option>
-          ))}
-        </Select>
-      </SelectDiv>
-      <CardContainer>
-        {filterStats(stats, search, positionFilter).map((d, index) => (
-          <CardWrapper key={index}>
-            <CardInner $isExpanded={isCardFlipped === index}>
-              <CardFront>
-                <CardContent>
-                  <h3>{d.Name}</h3>
-                  <p>Team: {d.Team}</p>
-                  <p>Opponent: {d.Opponent}</p>
-                  <Button onClick={() => handleModalOpen(d)}>Details</Button>
-                </CardContent>
-              </CardFront>
-              <CardBack>
-                <ExpandedContent>
-                  <p>Passing Yards: {d.PassingYards}</p>
-                  <p>Passing Touchdowns: {d.PassingTouchdowns}</p>
-                  <p>Rushing Attempts: {d.RushingAttempts}</p>
-                  <p>Rushing Yards: {d.RushingYards}</p>
-                  <p>Rushing Touchdowns: {d.RushingTouchdowns}</p>
-                  <p>Receptions: {d.Receptions}</p>
-                  <p>Receiving Yards: {d.ReceivingYards}</p>
-                  <p>Receiving Touchdowns: {d.ReceivingTouchdowns}</p>
-                </ExpandedContent>
-              </CardBack>
-            </CardInner>
-          </CardWrapper>
-        ))}
-      </CardContainer>
-
-      {isModalOpen && selectedPlayer && (
-        <Modal
-          title={selectedPlayer.Title || 'No Title'}
-          content={selectedPlayer.Content || 'No Content'}
-          source={selectedPlayer.Source || 'No Source'}
-          updated={selectedPlayer.Updated || 'No Date'}
-          url={selectedPlayer.Url || '#'}
-          originalSource={selectedPlayer.OriginalSourceUrl || '#'}
-          onClose={handleModalClose}
-        />
-      )}
-    </>
+    <CardWrapper onClick={onClick}>
+      <CardInner $isFlipped={isFlipped}>
+        <CardFront>
+          {isNews ? (
+            <>
+              <h3>{data.Title}</h3>
+              <p>{data.Source}</p>
+              <p>Updated: {new Date(data.Updated).toLocaleDateString()}</p>
+              <p>{data.TimeAgo}</p>
+            </>
+          ) : (
+            <>
+              <h3>
+                {data.AwayTeam} vs {data.HomeTeam}
+              </h3>
+              <p>Date: {new Date(data.Date).toLocaleDateString()}</p>
+              <p>Channel: {data.Channel}</p>
+              <p>Point Spread: {data.PointSpread}</p>
+              <p>Over/Under: {data.OverUnder}</p>
+              <p>
+                Stadium: {data.StadiumDetails.Name}, {data.StadiumDetails.City},{' '}
+                {data.StadiumDetails.State}
+              </p>
+            </>
+          )}
+        </CardFront>
+        <CardBack>
+          {isNews ? (
+            <>
+              <p>{data.Summary}</p>
+              <button onClick={() => onModalOpen(data)}>More Details</button>
+            </>
+          ) : (
+            <>
+              <p>Point Spread: {data.PointSpread}</p>
+              <p>Over/Under: {data.OverUnder}</p>
+              <p>Channel: {data.Channel}</p>
+              <p>Stadium: {data.StadiumDetails.Name}</p>
+              <button onClick={() => onModalOpen(data)}>More Details</button>
+            </>
+          )}
+        </CardBack>
+      </CardInner>
+    </CardWrapper>
   );
 };
 
-export default PlayerCards;
+// Card Styles
+const CardWrapper = styled.div`
+  width: 100%;
+  max-width: 300px;
+  height: 400px;
+  perspective: 1000px;
+  cursor: pointer;
+  border: 1px solid ${fleurimondColors.graySmoke};
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease-in-out;
+
+  &:hover,
+  &:focus {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+`;
+
+const CardInner = styled.div`
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+  transform: ${({ $isFlipped }) =>
+    $isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
+`;
+
+const CardFront = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: ${fleurimondColors.white};
+`;
+
+const CardBack = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: ${fleurimondColors.white};
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+`;
+
+export default Card;

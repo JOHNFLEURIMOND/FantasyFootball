@@ -170,4 +170,46 @@ i {
 
 .ui.pagination.menu {
   font-size: 3em;
+  padding: 1em;
+}
+
+/* Pagination.css */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0; /* Adjusted margin for better spacing */
+}
+
+.custom-pagination .pagination > .item {
+  border-radius: 50%;
+  margin: 0 5px; /* Adjusted margin for better spacing */
+  font-size: 1.2rem; /* Adjusted font size for better readability */
+  width: 40px; /* Adjusted width */
+  height: 40px; /* Adjusted height */
+  line-height: 40px; /* Centered text vertically */
+  text-align: center;
+  padding: 0;
+  border: 1px solid #6e6558; /* Example border color */
+}
+
+.pagination > .item.active {
+  color: #eb3745 !important;
+}
+
+.pagination > .item:hover {
+  color: #01002e; /* Example border color on hover */
+}
+
+.custom-pagination .pagination > .item.ellipsis {
+  margin: 0 8px;
+  font-size: 1.2rem; /* Adjusted font size for ellipses */
+  color: #01002e;
+}
+
+.custom-pagination .ui.pagination.menu {
+  font-size: 1.2rem; /* Adjusted font size for the whole pagination menu */
+}
+
+.item {
+  margin: 4px; /* Reset margin for consistency */
 }

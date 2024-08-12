@@ -1,38 +1,53 @@
 import React, { useContext, useState, useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { NewsContext } from '../context';
-import {
-  CardContainer,
-  CardWrapper,
-  CardInner,
-  CardFront,
-  CardBack,
-  LoadingDiv,
-} from '../Card/index';
+import Card from '../Card/Card';
 import Modal from '../Card/Modal';
+import styled from 'styled-components';
+import { fleurimondColors } from '../CSS/theme.js';
 
 const FantasyFootballRanking = () => {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedNews, setSelectedNews] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
+  const [dataType, setDataType] = useState('');
   const { news, loaded, fetchNews } = useContext(NewsContext);
 
   useEffect(() => {
-    fetchNews(); // No need to pass the API key here
+    const fetchData = async () => {
+      try {
+        console.log('Fetching news data...');
+        await fetchNews();
+        console.log('News data fetched successfully.');
+      } catch (error) {
+        console.error('Error fetching news data:', error);
+      }
+    };
+
+    fetchData();
   }, [fetchNews]);
 
-  const handleClick = useCallback(index => {
+  useEffect(() => {
+    console.log('Current news data:', news);
+    console.log('Loading state:', loaded);
+  }, [news, loaded]);
+
+  const handleCardClick = useCallback((index, type) => {
+    console.log(`Card clicked: Index ${index}, Type ${type}`);
     setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
+    setDataType(type);
   }, []);
 
-  const handleModalOpen = useCallback(newsItem => {
-    setSelectedNews(newsItem);
+  const handleModalOpen = useCallback((data, type) => {
+    console.log(`Opening modal: Data ${data}, Type ${type}`);
+    setSelectedData(data);
+    setDataType(type);
     setModalOpen(true);
   }, []);
 
   const handleModalClose = useCallback(() => {
+    console.log('Closing modal');
     setModalOpen(false);
-    setSelectedNews(null);
+    setSelectedData(null);
   }, []);
 
   if (!loaded) {
@@ -42,53 +57,46 @@ const FantasyFootballRanking = () => {
   return (
     <>
       <CardContainer>
-        {news.map((d, index) => (
-          <CardWrapper key={d.NewsID || index}>
-            <CardInner $isExpanded={isCardFlipped === index}>
-              {/* Card Front */}
-              <CardFront onClick={() => handleClick(index)}>
-                <h3>{d.Title}</h3>
-                <p>Source: {d.Source}</p>
-                <p>Posted: {d.TimeAgo}</p>
-              </CardFront>
-              {/* Card Back */}
-              <CardBack>
-                <p>{d.Content}</p>
-                <p>Author: {d.Author}</p>
-                <p>Team: {d.Team}</p>
-                <a
-                  href={d.OriginalSourceUrl}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  Original Source
-                </a>
-                <button onClick={() => handleModalOpen(d)}>Details</button>
-              </CardBack>
-            </CardInner>
-          </CardWrapper>
-        ))}
+        {news.length > 0 ? (
+          news.map((d, index) => (
+            <Card
+              key={d.ID}
+              data={d}
+              type='news'
+              onClick={() => handleCardClick(index, 'news')}
+              onModalOpen={() => handleModalOpen(d, 'news')}
+              isFlipped={isCardFlipped === index}
+            />
+          ))
+        ) : (
+          <NoDataMessage>No news available.</NoDataMessage>
+        )}
       </CardContainer>
-
-      {isModalOpen && selectedNews && (
-        <Modal
-          title={selectedNews.Title || 'No Title'}
-          content={selectedNews.Content || 'No Content'}
-          source={selectedNews.Source || 'No Source'}
-          updated={selectedNews.TimeAgo || 'No Date'}
-          url={selectedNews.Url || '#'}
-          originalSource={selectedNews.OriginalSourceUrl || '#'}
-          onClose={handleModalClose}
-        />
+      {isModalOpen && selectedData && (
+        <Modal data={selectedData} type={dataType} onClose={handleModalClose} />
       )}
     </>
   );
 };
 
-FantasyFootballRanking.propTypes = {
-  news: PropTypes.array.isRequired,
-  loaded: PropTypes.bool.isRequired,
-  fetchNews: PropTypes.func.isRequired,
-};
+// Styles
+const CardContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+`;
+
+const LoadingDiv = styled.div`
+  text-align: center;
+  font-size: 1.5rem;
+  color: ${fleurimondColors.darkGray};
+`;
+
+const NoDataMessage = styled.div`
+  text-align: center;
+  font-size: 1.5rem;
+  color: ${fleurimondColors.darkGray};
+`;
 
 export default FantasyFootballRanking;
