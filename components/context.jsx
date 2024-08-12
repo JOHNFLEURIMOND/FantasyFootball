@@ -57,15 +57,14 @@ export const NewsProvider = ({ children }) => {
         const data = await response.json();
         console.log('Fetched schedules data:', data);
 
-        // Sort schedules by week and then by date
         const sortedData = data
           .filter(schedule => !schedule.Canceled)
-          .sort((a, b) => {
-            if (a.Week !== b.Week) return a.Week - b.Week;
-            return new Date(a.Date) - new Date(b.Date);
-          });
+          .sort((a, b) =>
+            a.Week !== b.Week
+              ? a.Week - b.Week
+              : new Date(a.Date) - new Date(b.Date)
+          );
 
-        // Paginate schedules
         const totalSchedules = sortedData.length;
         const totalPages = Math.ceil(totalSchedules / itemsPerPage);
 
@@ -142,7 +141,6 @@ export const StatsProvider = ({ children }) => {
       const data = await response.json();
       console.log('Fetched stats data:', data);
 
-      // Deduplicate and sort stats
       const uniqueStats = data
         .filter(
           (value, index, self) =>
@@ -161,7 +159,7 @@ export const StatsProvider = ({ children }) => {
   }, []);
 
   // Fetch Scores
-  const fetchScores = useCallback(async (season, week) => {
+  const fetchScores = useCallback(async (season = '2024', week = '7') => {
     setLoading(true);
     setError(null);
     console.log('Fetching scores...');
@@ -184,7 +182,7 @@ export const StatsProvider = ({ children }) => {
 
   useEffect(() => {
     fetchStats();
-    fetchScores('2024', '7'); // Adjust season and week as needed
+    fetchScores();
   }, [fetchStats, fetchScores]);
 
   // Filter and paginate stats
