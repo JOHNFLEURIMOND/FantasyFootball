@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, {
+  useContext,
+  useState,
+  useCallback,
+  Suspense,
+  lazy,
+} from 'react';
 import { StatsContext } from '../context';
 import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
@@ -12,31 +18,29 @@ import { Helmet } from 'react-helmet';
 
 const PPR = () => {
   const {
-    stats,
+    stats = [], // Default to an empty array to prevent undefined issues
     loading,
     currentPage,
     setCurrentPage,
-    fetchStats,
     totalPages,
+    setSelectedPosition,
   } = useContext(StatsContext);
 
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
   const [sortOption, setSortOption] = useState('');
 
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+  const handleSearchChange = e => setSearch(e.target.value);
+  const handlePositionFilterChange = e => {
+    console.log('Position filter changed to:', e.target.value);
+    setPositionFilter(e.target.value);
+  };
 
-  const handleSearchChange = useCallback(e => setSearch(e.target.value), []);
-  const handlePositionFilterChange = useCallback(
-    e => setPositionFilter(e.target.value),
-    []
-  );
-  const handleSortOptionChange = useCallback(
-    (e, { value }) => setSortOption(value),
-    []
-  );
+  const handlePositionChange = event => {
+    setSelectedPosition(event.target.value);
+  };
+
+  const handleSortOptionChange = (e, { value }) => setSortOption(value);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -45,7 +49,7 @@ const PPR = () => {
   const filteredStats = stats
     .filter(
       player =>
-        !search || player.Name.toLowerCase().includes(search.toLowerCase())
+        !search || player.Name?.toLowerCase().includes(search.toLowerCase())
     )
     .filter(player => !positionFilter || player.Position === positionFilter)
     .sort((a, b) => {
@@ -58,14 +62,6 @@ const PPR = () => {
       }
       return 0;
     });
-
-  const itemsPerPage = 12;
-  const totalFilteredPages = Math.ceil(filteredStats.length / itemsPerPage);
-
-  const currentStats = filteredStats.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   return (
     <>
@@ -90,7 +86,7 @@ const PPR = () => {
               onChange={handleSearchChange}
             />
             <StyledSelect
-              onChange={handlePositionFilterChange}
+              onChange={handlePositionChange}
               aria-label='Filter Players By Position'
             >
               <option value=''>Filter By Position</option>
@@ -131,11 +127,11 @@ const PPR = () => {
             </Form>
           </SearchDiv>
         </FilterContainer>
-        <PlayerCards stats={currentStats} loading={loading} />
+        <PlayerCards stats={filteredStats} loading={loading} />
         <Pagination
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-          totalPages={totalFilteredPages}
+          totalPages={totalPages}
         />
         <Footer />
       </PPRPageContainer>
@@ -143,6 +139,7 @@ const PPR = () => {
   );
 };
 
+// Styled components here...
 const PPRPageContainer = styled.div`
   width: 100%;
   height: 100%;
