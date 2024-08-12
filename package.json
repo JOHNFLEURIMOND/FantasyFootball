@@ -20,7 +20,7 @@
     "start": "nodemon Server.js",
     "clean": "npm run build && npm run build2",
     "restart": "npm run prettier && rm -rvf package-lock.json && rm -rvf node_modules && rm -rf .cache && ncu -u && npm i && npm run clean",
-    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'fix news/home page' && git push origin main",
+    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'fix news/ home page' && git push origin main",
     "kill": "pkill -f node",
     "prettier": "npx prettier --write .",
     "server": "node server.js"
