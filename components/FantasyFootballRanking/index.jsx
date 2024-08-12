@@ -10,7 +10,6 @@ export const MainContainer = styled.div`
   font-size: 1rem;
   text-align: center;
   font-weight: 500;
-  padding: 64px 250px;
   background-color: ${fleurimondColors.white};
 
   @media (max-width: 800px) {

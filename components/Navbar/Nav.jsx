@@ -1,4 +1,4 @@
-import React, { useState, useCallback, Suspense } from 'react';
+import React, { useState, useCallback, useEffect, Suspense } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { CgMenu, CgCloseR } from 'react-icons/cg';
@@ -15,7 +15,10 @@ const shake = keyframes`
 `;
 
 // Styled Nav component
-const Nav = styled.nav`
+const Nav = styled.nav.attrs(props => ({
+  'data-open-menu': props.openMenu,
+  'data-visible': props.visible,
+}))`
   position: fixed;
   width: 100%;
   top: 0;
@@ -25,6 +28,9 @@ const Nav = styled.nav`
   font-family: 'Exo 2', sans-serif;
   padding: 1em;
   z-index: 9999;
+  transition: transform 0.3s ease-in-out;
+  transform: ${({ 'data-visible': visible }) =>
+    visible ? 'translateY(0)' : 'translateY(-100%)'};
 
   .navbar-list {
     display: flex;
@@ -56,12 +62,7 @@ const Nav = styled.nav`
         &.active {
           color: ${fleurimondColors.infrared};
           animation: ${shake} 1s ease;
-          background-color: rgba(
-            255,
-            255,
-            255,
-            0.2
-          ); // Slight background on hover
+          background-color: rgba(255, 255, 255, 0.2);
         }
       }
     }
@@ -93,10 +94,11 @@ const Nav = styled.nav`
       align-items: center;
       flex-direction: column;
       text-align: center;
-      transform: ${({ openMenu }) =>
+      transform: ${({ 'data-open-menu': openMenu }) =>
         openMenu ? 'translateX(0)' : 'translateX(100%)'};
-      visibility: ${({ openMenu }) => (openMenu ? 'visible' : 'hidden')};
-      opacity: ${({ openMenu }) => (openMenu ? 1 : 0)};
+      visibility: ${({ 'data-open-menu': openMenu }) =>
+        openMenu ? 'visible' : 'hidden'};
+      opacity: ${({ 'data-open-menu': openMenu }) => (openMenu ? 1 : 0)};
       transition:
         transform 0.3s ease,
         visibility 0.3s ease,
@@ -128,18 +130,61 @@ const Nav = styled.nav`
       z-index: 1000;
     }
   }
+
+  @media (min-width: 801px) {
+    .mobile-navbar-btn {
+      display: none;
+    }
+  }
 `;
+
+// Debounce function
+const debounce = (func, wait) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+};
 
 // Navbar component
 const Navbar = React.memo(() => {
   const [openMenu, setOpenMenu] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   const handleMenuToggle = useCallback(() => {
     setOpenMenu(prevState => !prevState);
   }, []);
 
+  useEffect(() => {
+    let lastScrollTop = 0;
+
+    const handleScroll = debounce(() => {
+      const scrollTop = window.scrollY;
+      console.log('Scroll position:', scrollTop); // Log scroll position
+      console.log('Last scroll position:', lastScrollTop); // Log last scroll position
+
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down
+        setVisible(false);
+        console.log('Scrolling down, hiding Navbar');
+      } else {
+        // Scrolling up
+        setVisible(true);
+        console.log('Scrolling up, showing Navbar');
+      }
+      lastScrollTop = scrollTop;
+    }, 100); // Debounce delay
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <Nav aria-label='Main Navigation' openMenu={openMenu}>
+    <Nav aria-label='Main Navigation' openMenu={openMenu} visible={visible}>
       <button
         className='mobile-navbar-btn'
         onClick={handleMenuToggle}
@@ -181,6 +226,16 @@ const Navbar = React.memo(() => {
               aria-label='Navigate to PPR'
             >
               PPR
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className='navbar-link'
+              onClick={() => setOpenMenu(false)}
+              to='/Schedule'
+              aria-label='Navigate to Schedule'
+            >
+              Schedule
             </NavLink>
           </li>
           {/* Uncomment if needed

@@ -22,6 +22,7 @@ const WeeklyProjections = lazy(
   () => import('./WeeklyProjections/WeeklyProjections')
 );
 const PPR = lazy(() => import('./PPR/PPR'));
+const Schedule = lazy(() => import('./Schedule/Schedule')); // Import Schedule
 
 // Homepage Component
 const Homepage = () => {
@@ -68,6 +69,8 @@ const App = () => (
                 element={<WeeklyProjections />}
               />
               <Route path='/PPR' element={<PPR />} />
+              <Route path='/Schedule' element={<Schedule />} />{' '}
+              {/* Add route for Schedule */}
             </Routes>
           </Suspense>
         </Router>
