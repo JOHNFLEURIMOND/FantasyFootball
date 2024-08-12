@@ -1,5 +1,4 @@
 // App.test.jsx
-
 import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 import { ThemeProvider } from 'styled-components';
