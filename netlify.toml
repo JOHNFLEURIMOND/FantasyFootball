@@ -4,6 +4,11 @@ from = "/*"
 to = "/index.html"
 status = 200
 
+# Build settings
+[build]
+command = "npm run build"
+publish = "build"
+
 # Functions settings
 [functions]
 node_bundler = "esbuild"
