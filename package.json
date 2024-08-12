@@ -20,7 +20,7 @@
     "start": "nodemon Server.js",
     "clean": "npm run build && npm run build2",
     "restart": "npm run prettier && rm -rvf package-lock.json && rm -rvf node_modules && rm -rf .cache && ncu -u && npm i && npm run clean",
-    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'Fix API calls AND style' && git push",
+    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'fix news/home page' && git push",
     "kill": "pkill -f node",
     "prettier": "npx prettier --write .",
     "server": "node server.js"
@@ -28,6 +28,7 @@
   "dependencies": {
     "@babel/core": "^7.25.2",
     "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "axios": "^1.7.3",
     "body-parser": "^1.20.2",

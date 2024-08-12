@@ -1,4 +1,10 @@
-import React, { createContext, useState, useCallback, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 
 export const NewsContext = createContext();
 export const StatsContext = createContext();
@@ -7,8 +13,6 @@ const apiKey = process.env.REACT_APP_MY_API_KEY;
 
 if (!apiKey) {
   console.error('API key is not defined. Check your .env file.');
-} else {
-  console.log('API Key:', apiKey); // Log API key to ensure it is loaded
 }
 
 export const NewsProvider = ({ children }) => {
@@ -18,34 +22,37 @@ export const NewsProvider = ({ children }) => {
 
   const fetchNews = useCallback(async () => {
     setLoaded(false);
-    console.log('Fetching news...'); // Log fetch start
     try {
       const response = await fetch(
         `https://api.sportsdata.io/v3/nfl/scores/json/News?key=${apiKey}`
       );
-      console.log('Response status:', response.status); // Log response status
       if (!response.ok) throw new Error('Network response was not ok.');
       const data = await response.json();
-      console.log('News data:', data); // Log fetched data
       setNews(data);
     } catch (error) {
       console.error('Error fetching news:', error);
     } finally {
       setLoaded(true);
-      console.log('News fetch complete. Loaded:', loaded); // Log when fetch is complete
     }
-  }, [apiKey]);
+  }, []);
 
   useEffect(() => {
     fetchNews();
   }, [fetchNews]);
 
+  const contextValue = useMemo(
+    () => ({
+      news,
+      search,
+      setSearch,
+      loaded,
+      fetchNews,
+    }),
+    [news, search, loaded, fetchNews]
+  );
+
   return (
-    <NewsContext.Provider
-      value={{ news, search, setSearch, loaded, fetchNews }}
-    >
-      {children}
-    </NewsContext.Provider>
+    <NewsContext.Provider value={contextValue}>{children}</NewsContext.Provider>
   );
 };
 
@@ -55,78 +62,119 @@ export const StatsProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedPosition, setSelectedPosition] = useState('');
+  const itemsPerPage = 12;
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
     setError(null);
-    console.log('Fetching stats...'); // Log fetch start
     try {
       const response = await fetch(
         `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2024REG/7?key=${apiKey}`
       );
-      console.log('Response status:', response.status); // Log response status
       if (!response.ok) throw new Error('Network response was not ok.');
       const data = await response.json();
-      console.log('Stats data:', data); // Log fetched data
-      setStats(data);
+
+      // Ensure no duplicate PlayerIDs
+      const uniqueStats = data.reduce((acc, player) => {
+        if (!acc.some(p => p.PlayerID === player.PlayerID)) {
+          acc.push(player);
+        }
+        return acc;
+      }, []);
+
+      // Sort the stats based on a criteria, e.g., by Player Name
+      uniqueStats.sort((a, b) => a.Name.localeCompare(b.Name));
+
+      setStats(uniqueStats);
     } catch (error) {
       setError(error);
-      console.error('Error fetching stats:', error);
     } finally {
       setLoading(false);
-      console.log('Stats fetch complete. Loading:', loading); // Log when fetch is complete
     }
-  }, [apiKey]);
+  }, []);
 
-  const fetchScores = useCallback(
-    async (season, week) => {
-      setLoading(true);
-      setError(null);
-      console.log('Fetching scores...'); // Log fetch start
-      try {
-        const response = await fetch(
-          `https://api.sportsdata.io/v3/nfl/scores/json/ScoresBasicFinal/${season}/${week}?key=${apiKey}`
-        );
-        console.log('Response status:', response.status); // Log response status
-        if (!response.ok) throw new Error('Network response was not ok.');
-        const data = await response.json();
-        console.log('Scores data:', data); // Log fetched data
-        setScores(data);
-      } catch (error) {
-        setError(error);
-        console.error('Error fetching scores:', error);
-      } finally {
-        setLoading(false);
-        console.log('Scores fetch complete. Loading:', loading); // Log when fetch is complete
-      }
-    },
-    [apiKey]
+  const fetchScores = useCallback(async (season, week) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `https://api.sportsdata.io/v3/nfl/scores/json/ScoresBasicFinal/${season}/${week}?key=${apiKey}`
+      );
+      if (!response.ok) throw new Error('Network response was not ok.');
+      const data = await response.json();
+      setScores(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+    fetchScores();
+  }, [fetchStats, fetchScores]);
+
+  // Filter stats based on the selected position
+  const filteredStats = useMemo(() => {
+    if (selectedPosition) {
+      return stats.filter(player => player.Position === selectedPosition);
+    }
+    return stats;
+  }, [stats, selectedPosition]);
+
+  // Paginate the filtered stats ensuring 12 items per page
+  const paginatedStats = useMemo(() => {
+    const filledStats = [...filteredStats];
+
+    // Fill in any empty slots with other available players to ensure no empty pages
+    while (filledStats.length % itemsPerPage !== 0) {
+      const nextPlayer = stats.find(player => !filledStats.includes(player));
+      if (nextPlayer) filledStats.push(nextPlayer);
+      else break; // Stop if no more players are available
+    }
+
+    return filledStats.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  }, [filteredStats, currentPage, itemsPerPage, stats]);
+
+  const totalPages = useMemo(
+    () => Math.ceil(filteredStats.length / itemsPerPage),
+    [filteredStats.length, itemsPerPage]
   );
 
-  const itemsPerPage = 12;
-  const totalPages = Math.ceil(stats.length / itemsPerPage);
-  const currentStats = stats.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const contextValue = useMemo(
+    () => ({
+      stats: paginatedStats,
+      scores,
+      loading,
+      error,
+      fetchStats,
+      fetchScores,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      selectedPosition,
+      setSelectedPosition,
+    }),
+    [
+      paginatedStats,
+      scores,
+      loading,
+      error,
+      fetchStats,
+      fetchScores,
+      currentPage,
+      totalPages,
+      selectedPosition,
+    ]
   );
-
-  console.log('Total Pages:', totalPages);
-  console.log('Current stats:', currentStats); // Log current stats
 
   return (
-    <StatsContext.Provider
-      value={{
-        stats: currentStats,
-        scores,
-        loading,
-        error,
-        fetchStats,
-        fetchScores,
-        currentPage,
-        setCurrentPage,
-        totalPages,
-      }}
-    >
+    <StatsContext.Provider value={contextValue}>
       {children}
     </StatsContext.Provider>
   );

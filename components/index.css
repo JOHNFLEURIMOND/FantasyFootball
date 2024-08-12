@@ -167,3 +167,7 @@ em,
 i {
   font-style: italic;
 }
+
+.ui.pagination.menu {
+  font-size: 3em;
+}
