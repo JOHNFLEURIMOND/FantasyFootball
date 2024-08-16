@@ -136,7 +136,7 @@ export const StatsProvider = ({ children }) => {
     console.log('Fetching stats...');
     try {
       const response = await fetch(
-        `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2024REG/7?key=${apiKey}`
+        `https://api.sportsdata.io/v3/nfl/projections/json/PlayerGameProjectionStatsByWeek/2024REG/1?key=${apiKey}`
       );
       if (!response.ok) throw new Error('Network response was not ok.');
       const data = await response.json();
