@@ -1,205 +1,141 @@
-# :checkered_flag: Project Overview :checkered_flag::
+# Fantasy Football Command Center
 
-## How It's Made :nut_and_bolt:🔨 :hammer::wrench::
+Fantasy Football Command Center is an incremental modernization of the original FantasyFootball app. The first pull request establishes a Sleeper-only architecture with server-side validation, caching, normalized application models, and a browser UI that consumes only application-facing API data.
 
-This application is built with the following technologies:
+## Current Stack
 
-- **Frontend:** React.js, Semantic UI, styled-components
-- **Backend:** Express.js, Node.js
-- **Build Tool:** Webpack
+- React 18
+- Express 4
+- Webpack 5
+- Styled Components
+- Sleeper API for the current integration slice
+- Zod for runtime response validation
+- Node.js `node:test` for deterministic unit coverage
 
-## Optimizations
-
-This project is optimized for development and production. It features a modern JavaScript setup with Webpack for bundling and Babel for JavaScript compilation.
-
-### Verify Node.js and npm Versions
-
-To check your current Node.js and npm versions:
+## Local Setup
 
 ```bash
-node -v && npm -v
-# Example output:
-# v20.16.0
-# 10.8.1
-```
-
-### Install and Use the Correct Node.js Version
-
-To install and use the correct Node.js version:
-
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-nvm install 20
-```
-
-## My Awesome Project & Lessons Learned :mortar_board::
-
-For more details on the project and the lessons learned, please refer to [My Portfolio](https://johnfleurimond.netlify.app).
-
-## Getting Started :arrow_forward::
-
-### Kill Node Processes
-
-To stop any running Node.js processes:
-
-```bash
-pkill -f node
-```
-
-### Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone {{repository-url}}
-   cd {{repository-directory}}
-   ```
-
-2. **Install Dependencies:**
-   ```bash
-   npm install
-   ```
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm run dev`
-
-**Example Output:**
-
-```
-webpack-dev-server v5.0.4  ready in 107 ms
-
-  ➜  Local:   http://localhost:5000/
-  ➜  Network: use --host to expose
-  ➜  press h + enter to show help
-```
-
-Runs the app in development mode. Open [http://localhost:5000](http://localhost:5000) to view it in your browser. The page will reload if you make edits, and lint errors will be displayed in the console.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder. This bundles React in production mode and optimizes the build for the best performance. The build is minified, and the filenames include hashes. Your app is ready to be deployed.
-
-### `npm run prettier`
-
-Formats the code according to Prettier configuration.
-
-### `npm run clean`
-
-Cleans the npm cache and builds the project. Use this to ensure a fresh start for builds.
-
-## :keyboard::computer_mouse::desktop_computer::computer:: GitHub :computer::desktop_computer::keyboard::
-
-### :broom::soap: Clean Up Code Before Pushing :soap::broom:
-
-Before pushing changes to the repository, clean up the code and update dependencies:
-
-```bash
-npm run prettier
-rm -rf package-lock.json
-rm -rf node_modules
-git add .
-git commit -m "Update README"
-git push
-```
-
-or
-
-```bash
-npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m "Update README" && git push
-```
-
-To update dependencies and handle known issues:
-
-```bash
-rm -rf package-lock.json
-rm -rf node_modules
-npm install -g npm-check-updates
-ncu -u
 npm install
-npm ls ajv
-npm install --save-dev ajv@^8
+npm run dev
 ```
 
-or
+If your global npm cache has permission issues on macOS, use a workspace-local cache:
 
 ```bash
-rm -rf package-lock.json && rm -rf node_modules && npm install -g npm-check-updates && ncu -u && npm install && npm ls ajv && npm install --save-dev ajv@^8
+npm_config_cache="$PWD/.npm-cache" npm install
 ```
 
-### :heavy_plus_sign::heavy_plus_sign: Merging Code :heavy_plus_sign::heavy_plus_sign:
+## Development And Production Commands
 
-1. **Check Your Current Branch:**
-   List all branches and check your current branch:
+```bash
+npm run dev
+npm run server
+npm run build
+npm test
+npm run prettier
+npm audit --omit=dev
+```
 
-   ```bash
-   git branch -a
-   ```
+`npm run dev` starts webpack-dev-server. `npm run server` starts the Express API and static file server on port `8080` by default.
 
-   If you need to create a new branch:
+## Current Sleeper Functionality
 
-   ```bash
-   git checkout -b {{name-of-your-branch}}
-   ```
+The current vertical slice lets you:
 
-2. **Add and Commit Your Changes:**
-   Add and commit your work:
+1. Enter a Sleeper username.
+2. Load that user’s leagues for the current Sleeper season.
+3. Select a league.
+4. Inspect normalized league data, rosters, drafts, and matchups.
+5. Select a valid matchup week when one exists.
+6. See loading, empty, partial-data, stale-data, and error states.
 
-   ```bash
-   git add .
-   git commit -m "{{explain your changes}}"
-   git push
-   ```
+The active API surface is:
 
-3. **Fetch and Pull Updates:**
-   Fetch and pull all changes from remote branches:
+- `GET /api/health`
+- `GET /api/command-center`
+- `POST /api/command-center`
 
-   ```bash
-   git fetch --all
-   git pull --all
-   ```
+The browser never calls Sleeper directly. It only talks to the Express API, which then talks to a provider boundary and returns normalized command-center data.
 
-4. **Merge or Rebase:**
-   Merge changes from the main branch to your branch:
+## Architecture And Data Flow
 
-   ```bash
-   git merge main
-   ```
+```text
+React UI
+  -> application-facing API client
+  -> Express API
+  -> fantasy provider interface
+  -> Sleeper adapter
+  -> Sleeper API
+```
 
-   Alternatively, you can rebase:
+The server boundary validates external payloads, transforms provider-specific data, normalizes domain models, and composes the browser response separately from UI rendering.
 
-   ```bash
-   git rebase main
-   ```
+Normalized response concepts currently include:
 
-   **Important:** Resolve any conflicts that arise, accept the incoming changes as needed, and commit the resolved changes:
+- NFL state
+- User
+- League
+- Roster
+- Draft
+- Matchup
+- Command-center response
+- Provider/cache metadata
+- Normalized errors and warnings
 
-   ```bash
-   git add .
-   git commit -m "Merged main branch into current branch"
-   git push
-   ```
+## Cache And Failure Behavior
 
-   or
+The server includes a small cache abstraction with:
 
-   ```bash
-   git add . && git commit -m "Merged main branch into current branch" && git push
-   ```
+- TTL-based fresh values
+- Request deduplication for concurrent loads
+- Bounded stale fallback when a transient provider error occurs
+- Cache metadata for debugging and UI state
+- No caching of validation or configuration errors
 
-## License
+Critical failures return a safe error shape with:
 
-Fleurimond 2024
+- `code`
+- `message`
+- `retryable`
+- `status`
 
-## Contributing
+Partial data is returned when non-critical resources fail, with normalized warnings instead of raw stack traces or provider payloads.
 
-For details on how to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+## Privacy-Conscious Analytics
 
-## How It Works:white_check_mark::
+The analytics boundary is vendor-neutral and only emits categorical or aggregate event data. It does not include usernames, league IDs, roster IDs, or raw provider payloads.
 
-The application provides real-time fantasy football news and player projections, utilizing React for the frontend and Express for the backend. It interacts with the Sportsdata.io API to fetch data, which is then displayed through a user-friendly interface with Semantic UI and styled-components.
+Current event categories include:
 
-## Contact
+- Username lookup submitted
+- Lookup succeeded or failed
+- League selected
+- Matchup week changed
+- Cache served fresh or stale data
 
-.. For any questions or feedback, please reach out to [Fleur](https://johnfleurimond.netlify.app)..
+Allowed event context is limited to values such as outcome, error category, result count, cache status, selected week, response source, state phase, warning count, and duration bucket.
+
+## Provider Roadmap
+
+1. Sleeper for leagues, users, rosters, drafts, matchups, players, and NFL state.
+2. TheSportsDB for optional team/player presentation enrichment.
+3. SportsDataIO for optional projections and other premium data.
+
+SportsDataIO remains planned as an optional server-side projections provider. It will be implemented behind a provider adapter, use server-only credentials, normalize projection data, and fail without preventing the Sleeper command center from operating.
+
+## Known Limitations
+
+- The current PR is intentionally Sleeper-only.
+- The legacy SportsDataIO screens are retained only as compatibility shims where needed, but they no longer drive the main app flow.
+- There is no live player-enrichment provider yet.
+- The command center currently focuses on league browsing and matchup review rather than the full long-term projections suite.
+
+## Suggested Next PR
+
+Add a normalized player directory and league roster detail view backed by the same provider boundary, then expand week-aware matchup presentation and cached player lookup without changing the UI contract.
+
+## Notes
+
+- `npm test` uses deterministic fixtures and does not depend on live Sleeper availability.
+- `npm audit --omit=dev` currently reports existing transitive vulnerabilities that are outside this PR’s scope.
+- The app is designed to handle preseason, regular-season, postseason, and offseason states without assuming one fixed NFL phase.

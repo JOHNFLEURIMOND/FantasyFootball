@@ -17,20 +17,20 @@
     "dev": "webpack-dev-server --open",
     "build2": "webpack",
     "serve": "concurrently \"npm run dev\" \"npm run server\"",
-    "start": "nodemon Server.js",
+    "start": "node server.js",
     "clean": "npm run build && npm run build2",
     "restart": "npm run prettier && rm -rvf package-lock.json && rm -rvf node_modules && rm -rf .cache && ncu -u && npm i && npm run clean",
     "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'fix news/ home page' && git push --force origin main",
     "kill": "pkill -f node",
     "prettier": "npx prettier --write .",
-    "server": "node server.js"
+    "server": "node server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "@babel/core": "^7.25.2",
     "@emotion/core": "^11.0.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
-    "axios": "^1.7.3",
     "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",
     "core-js": "^3.38.0",
@@ -60,7 +60,8 @@
     "styled-system": "^5.1.5",
     "styletron-engine-atomic": "^1.6.2",
     "styletron-react": "^6.1.1",
-    "web-vitals": "^4.2.3"
+    "web-vitals": "^4.2.3",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.24.7",
