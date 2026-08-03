@@ -203,9 +203,9 @@ const Navbar = React.memo(() => {
               className='navbar-link'
               onClick={() => setOpenMenu(false)}
               to='/'
-              aria-label='Navigate to Home'
+              aria-label='Navigate to Command Center'
             >
-              Home
+              Command Center
             </NavLink>
           </li>
           <li>
