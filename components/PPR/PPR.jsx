@@ -2,8 +2,7 @@ import React, {
   useContext,
   useState,
   useCallback,
-  Suspense,
-  lazy,
+  useEffect,
 } from 'react';
 import { StatsContext } from '../context';
 import Pagination from '../Pagination/Pagination';
@@ -24,6 +23,8 @@ const PPR = () => {
     setCurrentPage,
     totalPages,
     setSelectedPosition,
+    fetchStats,
+    error,
   } = useContext(StatsContext);
 
   const [search, setSearch] = useState('');
@@ -40,6 +41,10 @@ const PPR = () => {
   };
 
   const handleSortOptionChange = (e, { value }) => setSortOption(value);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -127,6 +132,13 @@ const PPR = () => {
           </SearchDiv>
         </FilterContainer>
         <PlayerCards stats={filteredStats} loading={loading} />
+        {error && <p>{error.message}</p>}
+        {!error && filteredStats.length === 0 && (
+          <p>
+            No player data available yet. Load a Sleeper username and league in
+            Command Center first.
+          </p>
+        )}
         <Pagination
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}

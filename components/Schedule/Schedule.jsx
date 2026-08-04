@@ -39,9 +39,16 @@ const Schedule = () => {
       <MainHero />
       <ContentWrapper>
         <CardContainer>
-          {schedules.map(game => (
-            <ScheduleCardWithModal key={game.GameKey} data={game} />
-          ))}
+          {schedules.length > 0 ? (
+            schedules.map(game => (
+              <ScheduleCardWithModal key={game.GameKey} data={game} />
+            ))
+          ) : (
+            <LoadingDiv>
+              No schedule data available yet. Load a Sleeper username and league
+              in Command Center first.
+            </LoadingDiv>
+          )}
         </CardContainer>
         <PaginationWrapper>
           <Pagination

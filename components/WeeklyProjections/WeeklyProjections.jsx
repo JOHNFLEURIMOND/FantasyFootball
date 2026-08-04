@@ -12,8 +12,7 @@ function WeeklyProjections() {
   const { stats, loading, error, fetchStats } = useContext(StatsContext);
 
   useEffect(() => {
-    // Replace 'YOUR_API_KEY' with the actual API key or logic to retrieve it
-    fetchStats('YOUR_API_KEY');
+    fetchStats();
   }, [fetchStats]);
 
   return (
@@ -29,6 +28,12 @@ function WeeklyProjections() {
           <>
             <WeeklyProjectionCards stats={stats} loading={loading} />
             {error && <p>Error loading stats: {error.message}</p>}
+            {!error && stats.length === 0 && (
+              <p>
+                No projection data available yet. Load a Sleeper username and
+                league in Command Center first.
+              </p>
+            )}
           </>
         )}
       </MainContainer>
