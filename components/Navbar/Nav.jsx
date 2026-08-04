@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, Suspense } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from '../routing/SimpleRouter';
 import styled, { keyframes } from 'styled-components';
 import { CgMenu, CgCloseR } from 'react-icons/cg';
 import { fleurimondColors } from '../CSS/theme.js'; // Ensure this path is correct
