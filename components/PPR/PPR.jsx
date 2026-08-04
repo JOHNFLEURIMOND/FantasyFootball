@@ -32,7 +32,6 @@ const PPR = () => {
 
   const handleSearchChange = e => setSearch(e.target.value);
   const handlePositionFilterChange = e => {
-    console.log('Position filter changed to:', e.target.value);
     setPositionFilter(e.target.value);
   };
 
