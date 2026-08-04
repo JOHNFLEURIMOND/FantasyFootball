@@ -9,6 +9,10 @@
     "Fleurimond",
     "BasquiatFPV"
   ],
+  "engines": {
+    "node": ">=20 <21",
+    "npm": ">=10 <11"
+  },
   "main": "./src/components/Main.js",
   "proxy": "http://localhost:8080",
   "scripts": {

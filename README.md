@@ -11,6 +11,9 @@ Fantasy Football Command Center is an incremental modernization of the original 
 - Sleeper API for the current integration slice
 - Zod for runtime response validation
 - Node.js `node:test` for deterministic unit coverage
+- Supported runtime: Node 20.x and npm 10.x
+
+The repo pins Node 20 in [.nvmrc](.nvmrc) and the manifest declares the supported Node/npm range.
 
 ## Local Setup
 
