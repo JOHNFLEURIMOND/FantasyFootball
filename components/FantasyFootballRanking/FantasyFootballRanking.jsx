@@ -15,9 +15,7 @@ const FantasyFootballRanking = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching news data...');
         await fetchNews();
-        console.log('News data fetched successfully.');
       } catch (error) {
         console.error('Error fetching news data:', error);
       }
@@ -26,26 +24,18 @@ const FantasyFootballRanking = () => {
     fetchData();
   }, [fetchNews]);
 
-  useEffect(() => {
-    console.log('Current news data:', news);
-    console.log('Loading state:', loaded);
-  }, [news, loaded]);
-
   const handleCardClick = useCallback((index, type) => {
-    console.log(`Card clicked: Index ${index}, Type ${type}`);
     setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
     setDataType(type);
   }, []);
 
   const handleModalOpen = useCallback((data, type) => {
-    console.log(`Opening modal: Data ${data}, Type ${type}`);
     setSelectedData(data);
     setDataType(type);
     setModalOpen(true);
   }, []);
 
   const handleModalClose = useCallback(() => {
-    console.log('Closing modal');
     setModalOpen(false);
     setSelectedData(null);
   }, []);

@@ -161,17 +161,11 @@ const Navbar = React.memo(() => {
 
     const handleScroll = debounce(() => {
       const scrollTop = window.scrollY;
-      console.log('Scroll position:', scrollTop); // Log scroll position
-      console.log('Last scroll position:', lastScrollTop); // Log last scroll position
 
       if (scrollTop > lastScrollTop) {
-        // Scrolling down
         setVisible(false);
-        console.log('Scrolling down, hiding Navbar');
       } else {
-        // Scrolling up
         setVisible(true);
-        console.log('Scrolling up, showing Navbar');
       }
       lastScrollTop = scrollTop;
     }, 100); // Debounce delay
