@@ -6,7 +6,7 @@ const { createCommandCenterService, createCriticalErrorResponse } = require('./l
 const { createSleeperClient } = require('./lib/sleeperClient');
 const { sleeperRequestSchema } = require('./lib/schemas');
 const { toSafeError } = require('./lib/errors');
-const { createAnalyticsTracker } = require('../lib/analytics');
+const { createAnalyticsTracker } = require('../lib/analytics.cjs');
 
 function readRequestParams(req) {
   return {

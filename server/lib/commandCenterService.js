@@ -1,4 +1,4 @@
-const { createAnalyticsTracker, buildAnalyticsEvent } = require('../../lib/analytics');
+const { createAnalyticsTracker, buildAnalyticsEvent } = require('../../lib/analytics.cjs');
 const {
   createSafeError,
   toSafeError,
