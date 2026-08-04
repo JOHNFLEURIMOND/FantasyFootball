@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from '../routing/SimpleRouter';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import moment from 'moment';
 import { fleurimondColors, media } from '../CSS/theme'; // Adjust path to theme

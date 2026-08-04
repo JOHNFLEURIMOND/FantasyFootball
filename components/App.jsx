@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Router, Route, Routes } from './routing/SimpleRouter';
 import { ThemeProvider } from 'styled-components';
 import theme from './CSS/theme'; // Adjust path as necessary
 import Loading from './Loading'; // Fixed import path
