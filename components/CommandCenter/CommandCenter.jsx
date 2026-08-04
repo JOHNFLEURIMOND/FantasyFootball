@@ -10,6 +10,8 @@ import {
   createAnalyticsTracker,
 } from '../../lib/analytics';
 
+const COMMAND_CENTER_STATE_KEY = 'ff:lastCommandCenterState';
+
 const analytics = createAnalyticsTracker({
   sink: event => {
     if (typeof window === 'undefined') {
@@ -97,6 +99,17 @@ function CommandCenter() {
             warningCount: payload.warnings.length,
             durationBucket: bucketDuration(Date.now() - startedAt),
           });
+        }
+
+        if (typeof window !== 'undefined' && username) {
+          window.localStorage.setItem(
+            COMMAND_CENTER_STATE_KEY,
+            JSON.stringify({
+              username,
+              leagueId: leagueId || '',
+              week: week ?? payload.resolvedWeek ?? '',
+            })
+          );
         }
 
         return payload;
