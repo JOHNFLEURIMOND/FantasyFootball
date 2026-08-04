@@ -8,13 +8,52 @@ import React, {
 } from 'react';
 
 const RouterContext = createContext({
-  pathname: '/',
+  location: {
+    pathname: '/',
+    search: '',
+    hash: '',
+    href: '/',
+  },
   navigate: () => {},
 });
 
+const getBaseUrl = () => {
+  if (typeof window === 'undefined') {
+    return 'http://localhost/';
+  }
+
+  return window.location.href;
+};
+
+const createLocationState = location => ({
+  pathname: location.pathname,
+  search: location.search,
+  hash: location.hash,
+  href: `${location.pathname}${location.search}${location.hash}` || '/',
+});
+
+const resolveToLocation = (to, baseUrl = getBaseUrl()) => {
+  const resolved = new URL(to, baseUrl);
+  const baseOrigin = new URL(baseUrl).origin;
+  const external = resolved.origin !== baseOrigin || !['http:', 'https:'].includes(resolved.protocol);
+
+  return {
+    pathname: resolved.pathname,
+    search: resolved.search,
+    hash: resolved.hash,
+    href: external ? resolved.href : `${resolved.pathname}${resolved.search}${resolved.hash}` || '/',
+    external,
+  };
+};
+
+const isModifiedClick = event =>
+  event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+
+const formatPath = ({ pathname, search, hash }) => `${pathname}${search}${hash}` || '/';
+
 export const Router = ({ children }) => {
-  const [pathname, setPathname] = useState(() =>
-    typeof window === 'undefined' ? '/' : window.location.pathname
+  const [location, setLocation] = useState(() =>
+    typeof window === 'undefined' ? { pathname: '/', search: '', hash: '', href: '/' } : createLocationState(window.location)
   );
 
   useEffect(() => {
@@ -23,7 +62,7 @@ export const Router = ({ children }) => {
     }
 
     const onPopState = () => {
-      setPathname(window.location.pathname);
+      setLocation(createLocationState(window.location));
     };
 
     window.addEventListener('popstate', onPopState);
@@ -38,49 +77,55 @@ export const Router = ({ children }) => {
         return;
       }
 
-      if (to === window.location.pathname) {
+      const nextLocation = resolveToLocation(to);
+
+      if (nextLocation.external) {
+        window.location.assign(nextLocation.href);
+        return;
+      }
+
+      if (nextLocation.href === location.href) {
         return;
       }
 
       if (options.replace) {
-        window.history.replaceState({}, '', to);
+        window.history.replaceState({}, '', nextLocation.href);
       } else {
-        window.history.pushState({}, '', to);
+        window.history.pushState({}, '', nextLocation.href);
       }
 
-      setPathname(window.location.pathname);
+      setLocation(createLocationState(window.location));
     },
-    [setPathname]
+    [location.href]
   );
 
   const value = useMemo(
-    () => ({ pathname, navigate }),
-    [pathname, navigate]
+    () => ({ location, navigate }),
+    [location, navigate]
   );
 
-  return (
-    <RouterContext.Provider value={value}>{children}</RouterContext.Provider>
-  );
+  return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
+
+export const useLocation = () => useContext(RouterContext).location;
 
 export const Route = () => null;
 
-export const Routes = ({ children }) => {
-  const { pathname } = useContext(RouterContext);
-  let matchedElement = null;
+export const Routes = ({ children, fallback = null }) => {
+  const { location } = useContext(RouterContext);
+  const childRoutes = React.Children.toArray(children).filter(React.isValidElement);
 
-  React.Children.forEach(children, child => {
-    if (!React.isValidElement(child) || matchedElement) {
-      return;
-    }
+  const exactMatch = childRoutes.find(child => child.props.path === location.pathname);
+  if (exactMatch) {
+    return exactMatch.props.element;
+  }
 
-    const { path, element } = child.props;
-    if (path === pathname) {
-      matchedElement = element;
-    }
-  });
+  const wildcardMatch = childRoutes.find(child => child.props.path === '*' || child.props.path === '/*');
+  if (wildcardMatch) {
+    return wildcardMatch.props.element;
+  }
 
-  return matchedElement;
+  return fallback;
 };
 
 export const NavLink = ({
@@ -89,10 +134,13 @@ export const NavLink = ({
   onClick,
   children,
   target,
+  download,
+  rel,
   ...rest
 }) => {
-  const { pathname, navigate } = useContext(RouterContext);
-  const isActive = pathname === to;
+  const { location, navigate } = useContext(RouterContext);
+  const resolved = resolveToLocation(to);
+  const isActive = !resolved.external && location.pathname === resolved.pathname;
   const resolvedClassName =
     typeof className === 'function'
       ? className({ isActive })
@@ -106,11 +154,10 @@ export const NavLink = ({
     if (
       event.defaultPrevented ||
       target === '_blank' ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey ||
-      event.button !== 0
+      download != null ||
+      rel === 'external' ||
+      isModifiedClick(event) ||
+      resolved.external
     ) {
       return;
     }
@@ -122,8 +169,10 @@ export const NavLink = ({
   return (
     <a
       {...rest}
-      href={to}
+      href={resolved.external ? resolved.href : formatPath(resolved)}
       target={target}
+      download={download}
+      rel={rel}
       className={resolvedClassName}
       aria-current={isActive ? 'page' : undefined}
       onClick={handleClick}
@@ -131,4 +180,11 @@ export const NavLink = ({
       {children}
     </a>
   );
+};
+
+export {
+  createLocationState,
+  formatPath,
+  isModifiedClick,
+  resolveToLocation,
 };
