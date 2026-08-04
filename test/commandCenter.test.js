@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const analytics = require('../lib/analytics');
+const analytics = require('../lib/analytics.cjs');
 const { createResourceCache } = require('../server/lib/cache');
 const { createCommandCenterService, createCriticalErrorResponse, resolveRequestedSeason, resolveRequestedWeek } = require('../server/lib/commandCenterService');
 const { createSafeError, isTransientError, toSafeError } = require('../server/lib/errors');
