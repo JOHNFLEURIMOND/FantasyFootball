@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme';
-const analyticsHelpers = require('../../lib/analytics');
 import {
   fetchCommandCenterView,
   getOverallCacheStatus,
 } from '../api/commandCenterApi';
-
-const { createAnalyticsTracker, bucketDuration } = analyticsHelpers;
+import {
+  bucketDuration,
+  createAnalyticsTracker,
+} from '../../lib/analytics';
 
 const analytics = createAnalyticsTracker({
   sink: event => {
