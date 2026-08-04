@@ -5,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
-const Dotenv = require('dotenv-webpack'); // dotenv-webpack to manage env variables
 
 const BUILD_DIR = path.resolve(__dirname, 'build');
 const APP_DIR = path.resolve(__dirname, 'components'); // Ensure this points to the correct directory
@@ -45,7 +44,6 @@ module.exports = async (env, argv) => {
             ? 'css/[name].[contenthash].css'
             : 'css/[name].css',
         }),
-        new Dotenv(), // Use dotenv-webpack for environment variables
       ],
       module: {
         rules: [
