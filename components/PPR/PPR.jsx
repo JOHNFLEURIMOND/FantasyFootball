@@ -1,8 +1,8 @@
 import React, {
   useContext,
   useState,
-  useCallback,
   useEffect,
+  useMemo,
 } from 'react';
 import { StatsContext } from '../context';
 import Pagination from '../Pagination/Pagination';
@@ -14,6 +14,7 @@ import { Form, Radio } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme.js';
 import { Helmet } from 'react-helmet';
+import { derivePprPage } from './pagination';
 
 const PPR = () => {
   const {
@@ -21,7 +22,6 @@ const PPR = () => {
     loading,
     currentPage,
     setCurrentPage,
-    totalPages,
     setSelectedPosition,
     fetchStats,
     error,
@@ -31,13 +31,11 @@ const PPR = () => {
   const [positionFilter, setPositionFilter] = useState('');
   const [sortOption, setSortOption] = useState('');
 
-  const handleSearchChange = e => setSearch(e.target.value);
-  const handlePositionFilterChange = e => {
-    setPositionFilter(e.target.value);
-  };
-
+  const handleSearchChange = event => setSearch(event.target.value);
   const handlePositionChange = event => {
-    setSelectedPosition(event.target.value);
+    const { value } = event.target;
+    setPositionFilter(value);
+    setSelectedPosition(value);
   };
 
   const handleSortOptionChange = (e, { value }) => setSortOption(value);
@@ -46,26 +44,29 @@ const PPR = () => {
     fetchStats();
   }, [fetchStats]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, positionFilter, sortOption, setCurrentPage]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  const filteredStats = stats
-    .filter(
-      player =>
-        !search || player.Name?.toLowerCase().includes(search.toLowerCase())
-    )
-    .filter(player => !positionFilter || player.Position === positionFilter)
-    .sort((a, b) => {
-      if (
-        sortOption &&
-        a[sortOption] !== undefined &&
-        b[sortOption] !== undefined
-      ) {
-        return b[sortOption] - a[sortOption];
-      }
-      return 0;
-    });
+  const page = useMemo(
+    () =>
+      derivePprPage({
+        stats,
+        search,
+        position: positionFilter,
+        sortBy: sortOption,
+        currentPage,
+      }),
+    [stats, search, positionFilter, sortOption, currentPage]
+  );
+
+  const handlePageChange = (_event, { activePage }) => {
+    setCurrentPage(Number(activePage));
+  };
 
   return (
     <>
@@ -131,18 +132,18 @@ const PPR = () => {
             </Form>
           </SearchDiv>
         </FilterContainer>
-        <PlayerCards stats={filteredStats} loading={loading} />
+        <PlayerCards stats={page.items} loading={loading} />
         {error && <p>{error.message}</p>}
-        {!error && filteredStats.length === 0 && (
+        {!error && page.totalItems === 0 && (
           <p>
             No player data available yet. Load a Sleeper username and league in
             Command Center first.
           </p>
         )}
         <Pagination
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
+          currentPage={page.activePage}
+          onPageChange={handlePageChange}
+          totalPages={page.totalPages}
         />
         <Footer />
       </PPRPageContainer>
