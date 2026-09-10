@@ -10,3 +10,6 @@ package-lock.json
 # Ignore build output directories
 dist
 build
+
+# SQL migrations are formatted manually
+server/lib/persistence/migrations/*.sql

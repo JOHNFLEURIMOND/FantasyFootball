@@ -95,6 +95,8 @@ Confirmed variables currently used by repository code:
 
 - `PORT`: optional server port for Express (`server.js`), default is `8080`.
 - `NODE_ENV`: influences webpack mode in `webpack.config.js`.
+- `NFL_DATA_DB_PATH`: optional SQLite database path for the NFL data hub,
+  default is `data/nfl-data.sqlite`.
 
 There is no committed `.env.example` in this repository. `.env` and local variants are gitignored.
 
@@ -103,6 +105,7 @@ Minimal local example:
 ```bash
 PORT=8080
 NODE_ENV=production
+NFL_DATA_DB_PATH=data/nfl-data.sqlite
 ```
 
 Do not commit real secrets or credentials.
@@ -139,12 +142,18 @@ Browser (React UI)
   -> Command center service (server/lib/commandCenterService.js)
   -> Sleeper client adapter (server/lib/sleeperClient.js)
   -> Sleeper API
+
+Canonical persistence (not yet wired to ingestion or API routes)
+  -> Repository interface (server/lib/persistence/nflRepository.js)
+  -> Versioned SQLite store (server/lib/persistence/database.js)
 ```
 
 Key backend behaviors:
 
 - External payload validation with Zod schemas.
-- Normalization into app-specific response models.
+- Normalization into strict, versioned application contracts documented in [docs/domain-contracts.md](docs/domain-contracts.md).
+- Service and API response validation before data reaches the client.
+- Versioned SQLite persistence documented in [docs/persistence.md](docs/persistence.md).
 - TTL cache with stale fallback for transient upstream errors.
 - Retry strategy for retryable upstream failures.
 - Safe error shaping (`code`, `message`, `status`, `retryable`).
@@ -187,6 +196,8 @@ If deploying this app, ensure build artifacts are generated and the Node server 
 
 - Command center is the primary maintained flow; legacy routes currently have placeholder/no-op data providers.
 - No committed `.env.example` is provided.
+- Canonical persistence exists, but ingestion and first-class NFL data API routes
+  are not implemented yet.
 - `webpack.config.js` production behavior depends on `NODE_ENV`; `npm run build` does not set it explicitly.
 - Repository currently includes `build/` artifacts in version control.
 - Some package scripts are operationally risky (`restart`, `push`) and not suitable for normal development flow.

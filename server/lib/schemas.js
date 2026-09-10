@@ -10,18 +10,24 @@ const sleeperNflStateSchema = z
       .union([z.string(), z.number()])
       .optional()
       .nullable()
-      .transform(value => (value === null || value === undefined ? null : String(value))),
+      .transform(value =>
+        value === null || value === undefined ? null : String(value)
+      ),
     leg: z.number().int().nonnegative().optional(),
     league_season: z
       .union([z.string(), z.number()])
       .optional()
       .nullable()
-      .transform(value => (value === null || value === undefined ? null : String(value))),
+      .transform(value =>
+        value === null || value === undefined ? null : String(value)
+      ),
     league_create_season: z
       .union([z.string(), z.number()])
       .optional()
       .nullable()
-      .transform(value => (value === null || value === undefined ? null : String(value))),
+      .transform(value =>
+        value === null || value === undefined ? null : String(value)
+      ),
     display_week: z.number().int().nonnegative().optional().nullable(),
   })
   .passthrough();
@@ -84,8 +90,14 @@ const sleeperDraftSchema = z
     metadata: z.record(z.any()).optional(),
     league_id: z.string().optional().nullable(),
     last_picked: z.number().int().nonnegative().optional().nullable(),
-    draft_order: z.record(z.union([z.number(), z.string()])).optional().nullable(),
-    slot_to_roster_id: z.record(z.union([z.number(), z.string()])).optional().nullable(),
+    draft_order: z
+      .record(z.union([z.number(), z.string()]))
+      .optional()
+      .nullable(),
+    slot_to_roster_id: z
+      .record(z.union([z.number(), z.string()]))
+      .optional()
+      .nullable(),
     creators: z.record(z.any()).optional().nullable(),
   })
   .passthrough();
@@ -101,11 +113,26 @@ const sleeperMatchupSchema = z
   })
   .passthrough();
 
+function parseOptionalRequestInteger(value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const normalizedValue = value.trim();
+  return /^\d+$/.test(normalizedValue) ? Number(normalizedValue) : value;
+}
+
 const sleeperRequestSchema = z.object({
   username: z.string().trim().min(1).optional(),
   leagueId: z.string().trim().min(1).optional(),
-  season: z.coerce.number().int().min(2000).max(2100).optional(),
-  week: z.coerce.number().int().min(0).max(30).optional(),
+  season: z.preprocess(
+    parseOptionalRequestInteger,
+    z.number().int().min(2000).max(2100).optional()
+  ),
+  week: z.preprocess(
+    parseOptionalRequestInteger,
+    z.number().int().min(0).max(30).optional()
+  ),
 });
 
 module.exports = {
