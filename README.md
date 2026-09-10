@@ -144,7 +144,8 @@ Browser (React UI)
 Key backend behaviors:
 
 - External payload validation with Zod schemas.
-- Normalization into app-specific response models.
+- Normalization into strict, versioned application contracts documented in [docs/domain-contracts.md](docs/domain-contracts.md).
+- Service and API response validation before data reaches the client.
 - TTL cache with stale fallback for transient upstream errors.
 - Retry strategy for retryable upstream failures.
 - Safe error shaping (`code`, `message`, `status`, `retryable`).
