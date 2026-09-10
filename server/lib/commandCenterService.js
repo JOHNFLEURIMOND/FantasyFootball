@@ -1,8 +1,13 @@
-const { createAnalyticsTracker, buildAnalyticsEvent } = require('../../lib/analytics.cjs');
 const {
-  createSafeError,
-  toSafeError,
-} = require('./errors');
+  createAnalyticsTracker,
+  buildAnalyticsEvent,
+} = require('../../lib/analytics.cjs');
+const { createSafeError, toSafeError } = require('./errors');
+const {
+  CANONICAL_SCHEMA_VERSION,
+  commandCenterViewSchema,
+} = require('./domainSchemas');
+const { parseContract } = require('./contractValidation');
 const {
   attachMatchupOpponents,
   normalizeDraft,
@@ -46,7 +51,11 @@ function buildAvailableWeeks(currentWeek) {
 }
 
 function unwrapProviderResult(result) {
-  if (result && typeof result === 'object' && ('value' in result || 'data' in result || 'meta' in result)) {
+  if (
+    result &&
+    typeof result === 'object' &&
+    ('value' in result || 'data' in result || 'meta' in result)
+  ) {
     return {
       value: result.value ?? result.data ?? result,
       meta: result.meta || {},
@@ -59,13 +68,29 @@ function unwrapProviderResult(result) {
   };
 }
 
-function createCommandCenterService({ provider, tracker = createAnalyticsTracker() } = {}) {
+function buildProvenance(cacheByResource, fallbackFetchedAt) {
+  return Object.entries(cacheByResource).map(([resource, metadata]) => ({
+    provider: 'sleeper',
+    resource,
+    sourceRecordId: null,
+    fetchedAt: metadata.fetchedAt || fallbackFetchedAt,
+    sourceUpdatedAt: null,
+  }));
+}
+
+function createCommandCenterService({
+  provider,
+  tracker = createAnalyticsTracker(),
+  now = () => Date.now(),
+} = {}) {
   if (!provider) {
     throw new Error('A provider implementation is required.');
   }
 
-  async function loadCommandCenterView({ username, leagueId, season, week } = {}) {
-    const requestStartedAt = Date.now();
+  async function loadCommandCenterData(
+    { username, leagueId, season, week } = {},
+    requestStartedAt
+  ) {
     const warnings = [];
 
     const nflStateResult = unwrapProviderResult(await provider.getNflState());
@@ -89,6 +114,8 @@ function createCommandCenterService({ provider, tracker = createAnalyticsTracker
       matchups: [],
       warnings,
       meta: {
+        schemaVersion: CANONICAL_SCHEMA_VERSION,
+        provenance: [],
         cache: {
           nflState: nflStateResult.meta,
         },
@@ -100,20 +127,33 @@ function createCommandCenterService({ provider, tracker = createAnalyticsTracker
       response.user = normalizeUser(userResult.value);
       response.meta.cache.user = userResult.meta;
 
-      const leaguesResult = unwrapProviderResult(await provider.getUserLeagues(response.user.userId, resolvedSeason));
+      const leaguesResult = unwrapProviderResult(
+        await provider.getUserLeagues(response.user.userId, resolvedSeason)
+      );
       response.leagues = leaguesResult.value.map(normalizeLeague);
       response.meta.cache.leagues = leaguesResult.meta;
     }
 
     if (leagueId) {
-      const leagueResult = unwrapProviderResult(await provider.getLeague(leagueId));
+      const leagueResult = unwrapProviderResult(
+        await provider.getLeague(leagueId)
+      );
       response.selectedLeague = normalizeLeague(leagueResult.value);
       response.meta.cache.league = leagueResult.meta;
 
       const [rostersResult, usersResult, draftsResult] = await Promise.all([
-        provider.getLeagueRosters(leagueId).then(unwrapProviderResult).catch(error => ({ error })),
-        provider.getLeagueUsers(leagueId).then(unwrapProviderResult).catch(error => ({ error })),
-        provider.getLeagueDrafts(leagueId).then(unwrapProviderResult).catch(error => ({ error })),
+        provider
+          .getLeagueRosters(leagueId)
+          .then(unwrapProviderResult)
+          .catch(error => ({ error })),
+        provider
+          .getLeagueUsers(leagueId)
+          .then(unwrapProviderResult)
+          .catch(error => ({ error })),
+        provider
+          .getLeagueDrafts(leagueId)
+          .then(unwrapProviderResult)
+          .catch(error => ({ error })),
       ]);
 
       let leagueUsers = [];
@@ -131,7 +171,9 @@ function createCommandCenterService({ provider, tracker = createAnalyticsTracker
         response.meta.cache.leagueUsers = usersResult.meta;
       }
 
-      const leagueUsersById = new Map(leagueUsers.map(user => [user.userId, user]));
+      const leagueUsersById = new Map(
+        leagueUsers.map(user => [user.userId, user])
+      );
 
       if (rostersResult.error) {
         const safeError = toSafeError(rostersResult.error);
@@ -142,8 +184,8 @@ function createCommandCenterService({ provider, tracker = createAnalyticsTracker
           resource: 'rosters',
         });
       } else {
-        response.rosters = (rostersResult.value || rostersResult.data).map(rawRoster =>
-          normalizeRoster(rawRoster, leagueUsersById)
+        response.rosters = (rostersResult.value || rostersResult.data).map(
+          rawRoster => normalizeRoster(rawRoster, leagueUsersById)
         );
         response.meta.cache.rosters = rostersResult.meta;
       }
@@ -162,7 +204,10 @@ function createCommandCenterService({ provider, tracker = createAnalyticsTracker
       }
 
       if (resolvedWeek > 0) {
-        const matchupsResult = await provider.getLeagueMatchups(leagueId, resolvedWeek).then(unwrapProviderResult).catch(error => ({ error }));
+        const matchupsResult = await provider
+          .getLeagueMatchups(leagueId, resolvedWeek)
+          .then(unwrapProviderResult)
+          .catch(error => ({ error }));
 
         if (matchupsResult.error) {
           const safeError = toSafeError(matchupsResult.error);
@@ -186,20 +231,55 @@ function createCommandCenterService({ provider, tracker = createAnalyticsTracker
       season: resolvedSeason,
       week: resolvedWeek,
       durationBucket: buildAnalyticsEvent('command_center_load', {
-        durationMs: Date.now() - requestStartedAt,
+        durationMs: now() - requestStartedAt,
       }).durationBucket,
       warningCount: warnings.length,
     };
 
+    const generatedAt = new Date(now()).toISOString();
+    response.meta.generatedAt = generatedAt;
+    response.meta.provenance = buildProvenance(
+      response.meta.cache,
+      generatedAt
+    );
+
+    const validatedResponse = parseContract(commandCenterViewSchema, response, {
+      code: 'SERVICE_RESPONSE_INVALID',
+      message: 'The command center produced an invalid response.',
+      resource: 'command-center',
+    });
+
     tracker.track('command_center_load', {
       outcome: 'success',
       selectedWeek: resolvedWeek,
-      cacheStatus: response.meta.cache.matchups?.cacheStatus || response.meta.cache.league?.cacheStatus || response.meta.cache.leagues?.cacheStatus || response.meta.cache.nflState?.cacheStatus || 'miss',
+      cacheStatus:
+        response.meta.cache.matchups?.cacheStatus ||
+        response.meta.cache.league?.cacheStatus ||
+        response.meta.cache.leagues?.cacheStatus ||
+        response.meta.cache.nflState?.cacheStatus ||
+        'miss',
       warningCount: warnings.length,
-      durationMs: Date.now() - requestStartedAt,
+      durationMs: now() - requestStartedAt,
     });
 
-    return response;
+    return validatedResponse;
+  }
+
+  async function loadCommandCenterView(params = {}) {
+    const requestStartedAt = now();
+
+    try {
+      return await loadCommandCenterData(params, requestStartedAt);
+    } catch (error) {
+      const safeError = toSafeError(error);
+      tracker.track('command_center_load', {
+        outcome: 'failure',
+        errorCategory: safeError.code,
+        selectedWeek: Number.isInteger(params.week) ? params.week : undefined,
+        durationMs: now() - requestStartedAt,
+      });
+      throw error;
+    }
   }
 
   return {
@@ -225,6 +305,7 @@ function createCriticalErrorResponse(error) {
 }
 
 module.exports = {
+  buildProvenance,
   createCommandCenterService,
   createCriticalErrorResponse,
   createSafeError,

@@ -8,6 +8,7 @@ function createResourceCache({ now = () => Date.now() } = {}) {
       return {
         cacheStatus,
         fromCache: false,
+        fetchedAt: null,
         ageMs: 0,
         ttlMs: 0,
         staleAgeMs: 0,
@@ -21,6 +22,7 @@ function createResourceCache({ now = () => Date.now() } = {}) {
     return {
       cacheStatus,
       fromCache: cacheStatus !== 'miss',
+      fetchedAt: new Date(entry.createdAt).toISOString(),
       ageMs,
       ttlMs,
       staleAgeMs: cacheStatus === 'stale' ? staleAgeMs : 0,
@@ -45,7 +47,10 @@ function createResourceCache({ now = () => Date.now() } = {}) {
 
     const pending = (async () => {
       try {
-        const value = await loader({ staleValue: entry?.value ?? null, meta: buildMeta(entry, entry ? 'stale' : 'miss', currentTime) });
+        const value = await loader({
+          staleValue: entry?.value ?? null,
+          meta: buildMeta(entry, entry ? 'stale' : 'miss', currentTime),
+        });
         store.set(key, {
           value,
           createdAt: now(),

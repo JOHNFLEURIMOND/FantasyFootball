@@ -3,8 +3,17 @@ const assert = require('node:assert/strict');
 
 const analytics = require('../lib/analytics.cjs');
 const { createResourceCache } = require('../server/lib/cache');
-const { createCommandCenterService, createCriticalErrorResponse, resolveRequestedSeason, resolveRequestedWeek } = require('../server/lib/commandCenterService');
-const { createSafeError, isTransientError, toSafeError } = require('../server/lib/errors');
+const {
+  createCommandCenterService,
+  createCriticalErrorResponse,
+  resolveRequestedSeason,
+  resolveRequestedWeek,
+} = require('../server/lib/commandCenterService');
+const {
+  createSafeError,
+  isTransientError,
+  toSafeError,
+} = require('../server/lib/errors');
 const { withRetry } = require('../server/lib/retry');
 const { createSleeperClient } = require('../server/lib/sleeperClient');
 
@@ -17,23 +26,25 @@ test('Sleeper client validates upstream payloads and encodes path parameters', a
         return {
           ok: true,
           status: 200,
-          text: async () => JSON.stringify({
-            user_id: 'user-1',
-            username: 'john doe',
-            display_name: 'John Doe',
-            avatar: 'avatar-1',
-          }),
+          text: async () =>
+            JSON.stringify({
+              user_id: 'user-1',
+              username: 'john doe',
+              display_name: 'John Doe',
+              avatar: 'avatar-1',
+            }),
         };
       }
 
       return {
         ok: true,
         status: 200,
-        text: async () => JSON.stringify({
-          week: 3,
-          season_type: 'regular',
-          season: '2026',
-        }),
+        text: async () =>
+          JSON.stringify({
+            week: 3,
+            season_type: 'regular',
+            season: '2026',
+          }),
       };
     },
   });
@@ -62,13 +73,25 @@ test('Sleeper client validates upstream payloads and encodes path parameters', a
 });
 
 test('season and week resolution handles preseason week zero safely', () => {
-  assert.equal(resolveRequestedSeason({ leagueSeason: '2026', season: '2025' }), '2026');
-  assert.equal(resolveRequestedSeason({ leagueSeason: null, season: '2025' }), '2025');
+  assert.equal(
+    resolveRequestedSeason({ leagueSeason: '2026', season: '2025' }),
+    '2026'
+  );
+  assert.equal(
+    resolveRequestedSeason({ leagueSeason: null, season: '2025' }),
+    '2025'
+  );
   assert.equal(resolveRequestedWeek({ displayWeek: 0, currentWeek: 0 }), 0);
   assert.deepEqual(
     createCommandCenterService({
       provider: {
-        getNflState: async () => ({ week: 0, season_type: 'pre', season: '2026', display_week: 0, league_season: '2026' }),
+        getNflState: async () => ({
+          week: 0,
+          season_type: 'pre',
+          season: '2026',
+          display_week: 0,
+          league_season: '2026',
+        }),
       },
     }).buildAvailableWeeks(0),
     []
@@ -100,6 +123,7 @@ test('cache supports fresh hits, expiration, stale fallback, and deduplication',
 
   assert.equal(loadCount, 1);
   assert.equal(first.meta.cacheStatus, 'fresh');
+  assert.equal(first.meta.fetchedAt, '1970-01-01T00:00:00.000Z');
   assert.equal(second.meta.cacheStatus, 'fresh');
 
   currentTime = 150;
@@ -138,6 +162,7 @@ test('cache supports fresh hits, expiration, stale fallback, and deduplication',
   );
 
   assert.equal(staleResult.meta.cacheStatus, 'stale');
+  assert.equal(staleResult.meta.fetchedAt, '1970-01-01T00:00:00.150Z');
   assert.deepEqual(staleResult.value, { value: 'fresh' });
 
   const pendingCache = createResourceCache({ now: () => 0 });
@@ -171,15 +196,40 @@ test('cache supports fresh hits, expiration, stale fallback, and deduplication',
 });
 
 test('retry classification only retries transient errors', async () => {
-  assert.equal(isTransientError(createSafeError({ code: 'UPSTREAM_ERROR', message: 'retry', status: 503, retryable: true })), true);
-  assert.equal(isTransientError(createSafeError({ code: 'VALIDATION', message: 'stop', status: 400, retryable: false })), false);
+  assert.equal(
+    isTransientError(
+      createSafeError({
+        code: 'UPSTREAM_ERROR',
+        message: 'retry',
+        status: 503,
+        retryable: true,
+      })
+    ),
+    true
+  );
+  assert.equal(
+    isTransientError(
+      createSafeError({
+        code: 'VALIDATION',
+        message: 'stop',
+        status: 400,
+        retryable: false,
+      })
+    ),
+    false
+  );
 
   let attempts = 0;
   const result = await withRetry(
     async attempt => {
       attempts += 1;
       if (attempt === 0) {
-        throw createSafeError({ code: 'UPSTREAM_ERROR', message: 'retry', status: 503, retryable: true });
+        throw createSafeError({
+          code: 'UPSTREAM_ERROR',
+          message: 'retry',
+          status: 503,
+          retryable: true,
+        });
       }
       return 'ok';
     },
@@ -195,7 +245,12 @@ test('retry classification only retries transient errors', async () => {
       withRetry(
         async () => {
           validationAttempts += 1;
-          throw createSafeError({ code: 'VALIDATION', message: 'bad request', status: 400, retryable: false });
+          throw createSafeError({
+            code: 'VALIDATION',
+            message: 'bad request',
+            status: 400,
+            retryable: false,
+          });
         },
         { retries: 2, sleep: async () => {} }
       ),
@@ -210,33 +265,101 @@ test('command center service returns partial data and normalized warnings', asyn
     provider: {
       getNflState: async () => ({
         value: {
-        week: 0,
-        season_type: 'pre',
-        season: '2026',
-        display_week: 0,
-        league_season: '2026',
+          week: 0,
+          season_type: 'pre',
+          season: '2026',
+          display_week: 0,
+          league_season: '2026',
         },
         meta: { cacheStatus: 'fresh' },
       }),
-      getUser: async () => ({ value: { user_id: 'user-1', username: 'alice', display_name: 'Alice', metadata: { team_name: 'A-Team' } }, meta: { cacheStatus: 'fresh' } }),
-      getUserLeagues: async () => ({
-        value: [{ league_id: 'l1', name: 'Alpha', status: 'in_season', sport: 'nfl', season_type: 'regular', season: '2026', total_rosters: 12, roster_positions: ['QB'], settings: {}, scoring_settings: {} }],
+      getUser: async () => ({
+        value: {
+          user_id: 'user-1',
+          username: 'alice',
+          display_name: 'Alice',
+          metadata: { team_name: 'A-Team' },
+        },
         meta: { cacheStatus: 'fresh' },
       }),
-      getLeague: async () => ({ value: { league_id: 'l1', name: 'Alpha', status: 'in_season', sport: 'nfl', season_type: 'regular', season: '2026', total_rosters: 12, roster_positions: ['QB'], settings: {}, scoring_settings: {} }, meta: { cacheStatus: 'fresh' } }),
-      getLeagueUsers: async () => ({ value: [{ user_id: 'user-1', username: 'alice', display_name: 'Alice', metadata: { team_name: 'A-Team' } }], meta: { cacheStatus: 'fresh' } }),
+      getUserLeagues: async () => ({
+        value: [
+          {
+            league_id: 'l1',
+            name: 'Alpha',
+            status: 'in_season',
+            sport: 'nfl',
+            season_type: 'regular',
+            season: '2026',
+            total_rosters: 12,
+            roster_positions: ['QB'],
+            settings: {},
+            scoring_settings: {},
+          },
+        ],
+        meta: { cacheStatus: 'fresh' },
+      }),
+      getLeague: async () => ({
+        value: {
+          league_id: 'l1',
+          name: 'Alpha',
+          status: 'in_season',
+          sport: 'nfl',
+          season_type: 'regular',
+          season: '2026',
+          total_rosters: 12,
+          roster_positions: ['QB'],
+          settings: {},
+          scoring_settings: {},
+        },
+        meta: { cacheStatus: 'fresh' },
+      }),
+      getLeagueUsers: async () => ({
+        value: [
+          {
+            user_id: 'user-1',
+            username: 'alice',
+            display_name: 'Alice',
+            metadata: { team_name: 'A-Team' },
+          },
+        ],
+        meta: { cacheStatus: 'fresh' },
+      }),
       getLeagueRosters: async () => {
-        throw createSafeError({ code: 'UPSTREAM_ERROR', message: 'rotted', status: 503, retryable: true });
+        throw createSafeError({
+          code: 'UPSTREAM_ERROR',
+          message: 'rotted',
+          status: 503,
+          retryable: true,
+        });
       },
-      getLeagueDrafts: async () => ({ value: [{ draft_id: 'd1', type: 'snake', status: 'complete', sport: 'nfl', season_type: 'regular', season: '2026' }], meta: { cacheStatus: 'fresh' } }),
-      getLeagueMatchups: async () => ({ value: [], meta: { cacheStatus: 'fresh' } }),
+      getLeagueDrafts: async () => ({
+        value: [
+          {
+            draft_id: 'd1',
+            type: 'snake',
+            status: 'complete',
+            sport: 'nfl',
+            season_type: 'regular',
+            season: '2026',
+          },
+        ],
+        meta: { cacheStatus: 'fresh' },
+      }),
+      getLeagueMatchups: async () => ({
+        value: [],
+        meta: { cacheStatus: 'fresh' },
+      }),
     },
     tracker: {
       track: (event, details) => trackerEvents.push({ event, details }),
     },
   });
 
-  const payload = await service.loadCommandCenterView({ username: 'alice', leagueId: 'l1' });
+  const payload = await service.loadCommandCenterView({
+    username: 'alice',
+    leagueId: 'l1',
+  });
 
   assert.equal(payload.user.username, 'alice');
   assert.equal(payload.leagues.length, 1);
@@ -245,8 +368,105 @@ test('command center service returns partial data and normalized warnings', asyn
   assert.equal(payload.drafts.length, 1);
   assert.equal(payload.warnings.length, 1);
   assert.equal(payload.warnings[0].resource, 'rosters');
+  assert.equal(payload.meta.schemaVersion, 1);
+  assert.equal(payload.meta.provenance[0].provider, 'sleeper');
+  assert.deepEqual(
+    payload.meta.provenance.map(entry => entry.resource),
+    ['nflState', 'user', 'leagues', 'league', 'leagueUsers', 'drafts']
+  );
   assert.equal(payload.meta.cache.rosters, undefined);
   assert.equal(trackerEvents[0].details.outcome, 'success');
+});
+
+test('command center service rejects invalid normalized output safely', async () => {
+  const trackerEvents = [];
+  const service = createCommandCenterService({
+    provider: {
+      getNflState: async () => ({
+        value: {
+          week: 1,
+          season_type: 'regular',
+          season: 'not-a-season',
+        },
+        meta: { cacheStatus: 'fresh' },
+      }),
+    },
+    tracker: {
+      track: (event, details) => trackerEvents.push({ event, details }),
+    },
+  });
+
+  await assert.rejects(
+    () => service.loadCommandCenterView(),
+    error => {
+      assert.equal(error.code, 'SERVICE_RESPONSE_INVALID');
+      assert.equal(error.status, 500);
+      assert.equal(error.retryable, false);
+      assert.equal(
+        error.message,
+        'The command center produced an invalid response.'
+      );
+      return true;
+    }
+  );
+  assert.equal(trackerEvents.length, 1);
+  assert.equal(trackerEvents[0].details.outcome, 'failure');
+  assert.equal(
+    trackerEvents[0].details.errorCategory,
+    'SERVICE_RESPONSE_INVALID'
+  );
+});
+
+test('command center service tracks critical provider failures', async () => {
+  const trackerEvents = [];
+  const service = createCommandCenterService({
+    provider: {
+      getNflState: async () => {
+        throw createSafeError({
+          code: 'UPSTREAM_ERROR',
+          message: 'Provider unavailable.',
+          status: 503,
+          retryable: true,
+        });
+      },
+    },
+    tracker: {
+      track: (event, details) => trackerEvents.push({ event, details }),
+    },
+  });
+
+  await assert.rejects(
+    () => service.loadCommandCenterView(),
+    error => error.code === 'UPSTREAM_ERROR'
+  );
+  assert.equal(trackerEvents.length, 1);
+  assert.equal(trackerEvents[0].details.outcome, 'failure');
+  assert.equal(trackerEvents[0].details.errorCategory, 'UPSTREAM_ERROR');
+});
+
+test('command center timestamps the response after provider work completes', async () => {
+  let currentTime = Date.parse('2026-09-10T12:00:00.000Z');
+  const service = createCommandCenterService({
+    provider: {
+      getNflState: async () => {
+        currentTime += 5000;
+        return {
+          week: 1,
+          season_type: 'regular',
+          season: '2026',
+        };
+      },
+    },
+    now: () => currentTime,
+  });
+
+  const payload = await service.loadCommandCenterView();
+
+  assert.equal(payload.meta.generatedAt, '2026-09-10T12:00:05.000Z');
+  assert.equal(
+    payload.meta.provenance[0].fetchedAt,
+    '2026-09-10T12:00:05.000Z'
+  );
 });
 
 test('safe errors remain normalized and analytics payloads omit sensitive identifiers', () => {
@@ -254,7 +474,9 @@ test('safe errors remain normalized and analytics payloads omit sensitive identi
   assert.equal(safe.message, 'An unexpected error occurred.');
   assert.equal(safe.retryable, false);
 
-  const critical = createCriticalErrorResponse(new Error('internal stack detail'));
+  const critical = createCriticalErrorResponse(
+    new Error('internal stack detail')
+  );
   assert.equal(critical.ok, false);
   assert.equal(critical.error.message, 'An unexpected error occurred.');
 
