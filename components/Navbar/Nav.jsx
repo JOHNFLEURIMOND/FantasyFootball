@@ -1,18 +1,8 @@
-import React, { useState, useCallback, useEffect, Suspense } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { NavLink } from '../routing/SimpleRouter';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { CgMenu, CgCloseR } from 'react-icons/cg';
 import { fleurimondColors } from '../CSS/theme.js'; // Ensure this path is correct
-
-// Keyframes for shake animation
-const shake = keyframes`
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(6px); }
-  100% { transform: translateX(0); }
-`;
 
 // Styled Nav component
 const Nav = styled.nav.attrs(props => ({
@@ -26,7 +16,7 @@ const Nav = styled.nav.attrs(props => ({
   background-color: ${fleurimondColors.midnight};
   color: ${fleurimondColors.white};
   font-family: 'Exo 2', sans-serif;
-  padding: 1em;
+  padding: 0.75rem clamp(1rem, 4vw, 3rem);
   z-index: 9999;
   transition: transform 0.3s ease-in-out;
   transform: ${({ 'data-visible': visible }) =>
@@ -34,7 +24,7 @@ const Nav = styled.nav.attrs(props => ({
 
   .navbar-list {
     display: flex;
-    gap: 6rem;
+    gap: 0.5rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -47,22 +37,26 @@ const Nav = styled.nav.attrs(props => ({
       .navbar-link {
         display: inline-block;
         text-decoration: none;
-        font-size: 1.8rem;
-        text-transform: uppercase;
+        font-size: 0.95rem;
+        font-weight: 700;
         color: ${fleurimondColors.white};
         transition:
           color 0.3s linear,
-          transform 0.3s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
+          background-color 0.2s ease;
+        padding: 0.7rem 0.9rem;
+        border-radius: 999px;
         background-color: transparent;
 
         &:hover,
         &:focus,
         &.active {
           color: ${fleurimondColors.infrared};
-          animation: ${shake} 1s ease;
           background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        &:focus-visible {
+          outline: 3px solid ${fleurimondColors.sassySaffron};
+          outline-offset: 2px;
         }
       }
     }
@@ -77,7 +71,12 @@ const Nav = styled.nav.attrs(props => ({
       cursor: pointer;
       background: none;
       border: none;
-      outline: none;
+      border-radius: 0.5rem;
+
+      &:focus-visible {
+        outline: 3px solid ${fleurimondColors.sassySaffron};
+        outline-offset: 2px;
+      }
     }
   }
 
@@ -110,7 +109,7 @@ const Nav = styled.nav.attrs(props => ({
       margin: 1rem 0;
 
       .navbar-link {
-        font-size: 3rem;
+        font-size: 1.5rem;
         color: ${fleurimondColors.white};
         padding: 1rem 2rem;
         background-color: transparent;
@@ -134,6 +133,15 @@ const Nav = styled.nav.attrs(props => ({
   @media (min-width: 801px) {
     .mobile-navbar-btn {
       display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    .navbar-list,
+    .navbar-link {
+      transition: none;
     }
   }
 `;
@@ -177,12 +185,30 @@ const Navbar = React.memo(() => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!openMenu) {
+      return undefined;
+    }
+
+    const closeOnEscape = event => {
+      if (event.key === 'Escape') {
+        setOpenMenu(false);
+      }
+    };
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [openMenu]);
+
   return (
-    <Nav aria-label='Main Navigation' openMenu={openMenu} visible={visible}>
+    <Nav aria-label='Primary' openMenu={openMenu} visible={visible}>
       <button
+        type='button'
         className='mobile-navbar-btn'
         onClick={handleMenuToggle}
         aria-label={openMenu ? 'Close menu' : 'Open menu'}
+        aria-controls='primary-navigation'
+        aria-expanded={openMenu}
       >
         {openMenu ? (
           <CgCloseR className='mobile-nav-icon' />
@@ -190,49 +216,48 @@ const Navbar = React.memo(() => {
           <CgMenu className='mobile-nav-icon' />
         )}
       </button>
-      <Suspense fallback={<div>Loading menu...</div>}>
-        <ul className='navbar-list' role='navigation' aria-expanded={openMenu}>
-          <li>
-            <NavLink
-              className='navbar-link'
-              onClick={() => setOpenMenu(false)}
-              to='/'
-              aria-label='Navigate to Command Center'
-            >
-              Command Center
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className='navbar-link'
-              onClick={() => setOpenMenu(false)}
-              to='/WeeklyProjections'
-              aria-label='Navigate to Weekly Projections'
-            >
-              Weekly Projections
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className='navbar-link'
-              onClick={() => setOpenMenu(false)}
-              to='/PPR'
-              aria-label='Navigate to PPR'
-            >
-              PPR
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className='navbar-link'
-              onClick={() => setOpenMenu(false)}
-              to='/Schedule'
-              aria-label='Navigate to Schedule'
-            >
-              Schedule
-            </NavLink>
-          </li>
-          {/* Uncomment if needed
+      <ul className='navbar-list' id='primary-navigation'>
+        <li>
+          <NavLink
+            className='navbar-link'
+            onClick={() => setOpenMenu(false)}
+            to='/'
+            aria-label='Navigate to Command Center'
+          >
+            Command Center
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            className='navbar-link'
+            onClick={() => setOpenMenu(false)}
+            to='/WeeklyProjections'
+            aria-label='Navigate to Weekly Projections'
+          >
+            Weekly Projections
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            className='navbar-link'
+            onClick={() => setOpenMenu(false)}
+            to='/PPR'
+            aria-label='Navigate to PPR'
+          >
+            PPR
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            className='navbar-link'
+            onClick={() => setOpenMenu(false)}
+            to='/Schedule'
+            aria-label='Navigate to Schedule'
+          >
+            Schedule
+          </NavLink>
+        </li>
+        {/* Uncomment if needed
           <li>
             <NavLink
               className='navbar-link'
@@ -243,8 +268,7 @@ const Navbar = React.memo(() => {
               Replays
             </NavLink>
           </li> */}
-        </ul>
-      </Suspense>
+      </ul>
     </Nav>
   );
 });
