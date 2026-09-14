@@ -2,13 +2,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { NavLink } from '../routing/SimpleRouter';
 import styled from 'styled-components';
 import { CgMenu, CgCloseR } from 'react-icons/cg';
-import { fleurimondColors } from '../CSS/theme.js'; // Ensure this path is correct
+import { fleurimondColors } from '../CSS/theme.js';
 
-// Styled Nav component
-const Nav = styled.nav.attrs(props => ({
-  'data-open-menu': props.openMenu,
-  'data-visible': props.visible,
-}))`
+const Nav = styled.nav`
   position: fixed;
   width: 100%;
   top: 0;
@@ -19,8 +15,8 @@ const Nav = styled.nav.attrs(props => ({
   padding: 0.75rem clamp(1rem, 4vw, 3rem);
   z-index: 9999;
   transition: transform 0.3s ease-in-out;
-  transform: ${({ 'data-visible': visible }) =>
-    visible ? 'translateY(0)' : 'translateY(-100%)'};
+  transform: ${({ $visible }) =>
+    $visible ? 'translateY(0)' : 'translateY(-100%)'};
 
   .navbar-list {
     display: flex;
@@ -93,11 +89,10 @@ const Nav = styled.nav.attrs(props => ({
       align-items: center;
       flex-direction: column;
       text-align: center;
-      transform: ${({ 'data-open-menu': openMenu }) =>
-        openMenu ? 'translateX(0)' : 'translateX(100%)'};
-      visibility: ${({ 'data-open-menu': openMenu }) =>
-        openMenu ? 'visible' : 'hidden'};
-      opacity: ${({ 'data-open-menu': openMenu }) => (openMenu ? 1 : 0)};
+      transform: ${({ $openMenu }) =>
+        $openMenu ? 'translateX(0)' : 'translateX(100%)'};
+      visibility: ${({ $openMenu }) => ($openMenu ? 'visible' : 'hidden')};
+      opacity: ${({ $openMenu }) => ($openMenu ? 1 : 0)};
       transition:
         transform 0.3s ease,
         visibility 0.3s ease,
@@ -146,16 +141,14 @@ const Nav = styled.nav.attrs(props => ({
   }
 `;
 
-// Debounce function
 const debounce = (func, wait) => {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
+    timeout = setTimeout(() => func(...args), wait);
   };
 };
 
-// Navbar component
 const Navbar = React.memo(() => {
   const [openMenu, setOpenMenu] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -169,20 +162,12 @@ const Navbar = React.memo(() => {
 
     const handleScroll = debounce(() => {
       const scrollTop = window.scrollY;
-
-      if (scrollTop > lastScrollTop) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
+      setVisible(scrollTop <= lastScrollTop);
       lastScrollTop = scrollTop;
-    }, 100); // Debounce delay
+    }, 100);
 
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -201,7 +186,7 @@ const Navbar = React.memo(() => {
   }, [openMenu]);
 
   return (
-    <Nav aria-label='Primary' openMenu={openMenu} visible={visible}>
+    <Nav aria-label='Primary' $openMenu={openMenu} $visible={visible}>
       <button
         type='button'
         className='mobile-navbar-btn'
@@ -218,12 +203,7 @@ const Navbar = React.memo(() => {
       </button>
       <ul className='navbar-list' id='primary-navigation'>
         <li>
-          <NavLink
-            className='navbar-link'
-            onClick={() => setOpenMenu(false)}
-            to='/'
-            aria-label='Navigate to Command Center'
-          >
+          <NavLink className='navbar-link' onClick={() => setOpenMenu(false)} to='/'>
             Command Center
           </NavLink>
         </li>
@@ -232,7 +212,6 @@ const Navbar = React.memo(() => {
             className='navbar-link'
             onClick={() => setOpenMenu(false)}
             to='/WeeklyProjections'
-            aria-label='Navigate to Weekly Projections'
           >
             Weekly Projections
           </NavLink>
@@ -242,7 +221,6 @@ const Navbar = React.memo(() => {
             className='navbar-link'
             onClick={() => setOpenMenu(false)}
             to='/PPR'
-            aria-label='Navigate to PPR'
           >
             PPR
           </NavLink>
@@ -252,22 +230,10 @@ const Navbar = React.memo(() => {
             className='navbar-link'
             onClick={() => setOpenMenu(false)}
             to='/Schedule'
-            aria-label='Navigate to Schedule'
           >
             Schedule
           </NavLink>
         </li>
-        {/* Uncomment if needed
-          <li>
-            <NavLink
-              className='navbar-link'
-              onClick={() => setOpenMenu(false)}
-              to='/Replays'
-              aria-label='Navigate to Replays'
-            >
-              Replays
-            </NavLink>
-          </li> */}
       </ul>
     </Nav>
   );
