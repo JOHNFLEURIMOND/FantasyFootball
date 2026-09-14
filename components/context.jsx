@@ -8,7 +8,7 @@ import {
   fetchPlayers,
   fetchSchedule,
   fetchWeeklyStats,
-  hasSkippedRecords,
+  isPartialMeta,
   isStaleMeta,
 } from './api/nflverseApi';
 import {
@@ -68,9 +68,9 @@ export const StatsProvider = ({ children }) => {
         const weeklyStats = weeklyResult.value.data;
         const nextPartial =
           playersResult.status === 'rejected' ||
-          hasSkippedRecords(weeklyResult.value.meta) ||
+          isPartialMeta(weeklyResult.value.meta) ||
           (playersResult.status === 'fulfilled' &&
-            hasSkippedRecords(playersResult.value.meta));
+            isPartialMeta(playersResult.value.meta));
         const nextStats =
           mode === 'projection'
             ? buildWeeklyProjections({ players, weeklyStats })
@@ -196,7 +196,7 @@ export const NewsProvider = ({ children }) => {
         setCurrentPage(boundedPage);
         setMeta({ schedule: result.meta, season: selectedSeason });
         setStale(isStaleMeta(result.meta));
-        setPartial(hasSkippedRecords(result.meta));
+        setPartial(isPartialMeta(result.meta));
       } catch (caughtError) {
         setAllSchedules([]);
         setSchedules([]);
