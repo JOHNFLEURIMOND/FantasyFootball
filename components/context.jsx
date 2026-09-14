@@ -5,16 +5,15 @@ import React, {
   useState,
 } from 'react';
 import {
-  fetchPlayers,
+  fetchProjections,
+  fetchRankings,
   fetchSchedule,
-  fetchWeeklyStats,
   isPartialMeta,
   isStaleMeta,
 } from './api/nflverseApi';
 import {
-  buildPprRankings,
   buildScheduleCards,
-  buildWeeklyProjections,
+  mapCanonicalFantasyRows,
 } from './api/nflDataTransforms';
 
 export const NewsContext = createContext();
@@ -54,44 +53,23 @@ export const StatsProvider = ({ children }) => {
       setStale(false);
 
       try {
-        const [playersResult, weeklyResult] = await Promise.allSettled([
-          fetchPlayers(),
-          fetchWeeklyStats(selectedSeason),
-        ]);
-
-        if (weeklyResult.status === 'rejected') {
-          throw weeklyResult.reason;
-        }
-
-        const players =
-          playersResult.status === 'fulfilled' ? playersResult.value.data : [];
-        const weeklyStats = weeklyResult.value.data;
-        const nextPartial =
-          playersResult.status === 'rejected' ||
-          isPartialMeta(weeklyResult.value.meta) ||
-          (playersResult.status === 'fulfilled' &&
-            isPartialMeta(playersResult.value.meta));
-        const nextStats =
+        const result =
           mode === 'projection'
-            ? buildWeeklyProjections({ players, weeklyStats })
-            : buildPprRankings({ players, weeklyStats });
+            ? await fetchProjections(selectedSeason)
+            : await fetchRankings(selectedSeason, 'ppr');
+        const nextStats = mapCanonicalFantasyRows(
+          result.data,
+          mode === 'projection' ? 'projection' : 'ranking'
+        );
 
         setStats(nextStats);
         setScores(nextStats);
         setCurrentPage(1);
         setTotalPages(Math.max(1, Math.ceil(nextStats.length / STATS_PAGE_SIZE)));
-        setPartial(nextPartial);
+        setPartial(isPartialMeta(result.meta));
+        setStale(isStaleMeta(result.meta));
         setDataKind(mode === 'projection' ? 'estimated' : 'observed');
-        setMeta({
-          players: playersResult.status === 'fulfilled' ? playersResult.value.meta : null,
-          weeklyStats: weeklyResult.value.meta,
-          season: selectedSeason,
-        });
-        setStale(
-          (playersResult.status === 'fulfilled' &&
-            isStaleMeta(playersResult.value.meta)) ||
-            isStaleMeta(weeklyResult.value.meta)
-        );
+        setMeta(result.meta);
       } catch (caughtError) {
         setStats([]);
         setScores([]);
@@ -100,7 +78,9 @@ export const StatsProvider = ({ children }) => {
         setError(
           normalizeError(
             caughtError,
-            'Unable to load canonical NFL statistics right now.'
+            mode === 'projection'
+              ? 'Unable to load weekly projections right now.'
+              : 'Unable to load PPR rankings right now.'
           )
         );
       } finally {
@@ -181,20 +161,20 @@ export const NewsProvider = ({ children }) => {
       setPartial(false);
 
       try {
-        const result = await fetchSchedule(selectedSeason);
+        const result = await fetchSchedule(
+          selectedSeason,
+          selectedWeek || undefined
+        );
         const cards = buildScheduleCards(result.data);
-        const filtered = selectedWeek
-          ? cards.filter(game => Number(game.Week) === Number(selectedWeek))
-          : cards;
-        const pages = Math.max(1, Math.ceil(filtered.length / SCHEDULE_PAGE_SIZE));
+        const pages = Math.max(1, Math.ceil(cards.length / SCHEDULE_PAGE_SIZE));
         const boundedPage = Math.min(Math.max(requestedPage, 1), pages);
         const start = (boundedPage - 1) * SCHEDULE_PAGE_SIZE;
 
-        setAllSchedules(filtered);
-        setSchedules(filtered.slice(start, start + SCHEDULE_PAGE_SIZE));
+        setAllSchedules(cards);
+        setSchedules(cards.slice(start, start + SCHEDULE_PAGE_SIZE));
         setTotalPages(pages);
         setCurrentPage(boundedPage);
-        setMeta({ schedule: result.meta, season: selectedSeason });
+        setMeta(result.meta);
         setStale(isStaleMeta(result.meta));
         setPartial(isPartialMeta(result.meta));
       } catch (caughtError) {
