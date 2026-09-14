@@ -65,8 +65,8 @@ export function isStaleMeta(meta) {
   );
 }
 
-export function hasSkippedRecords(meta) {
-  return Number(meta?.recordsSkipped || 0) > 0;
+export function isPartialMeta(meta) {
+  return meta?.partial === true || meta?.status === 'partial';
 }
 
 export async function fetchPlayers(options) {
