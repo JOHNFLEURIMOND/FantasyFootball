@@ -4,143 +4,31 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { fetchCommandCenterView } from './api/commandCenterApi';
+import {
+  fetchPlayers,
+  fetchSchedule,
+  fetchWeeklyStats,
+  isStaleMeta,
+} from './api/nflverseApi';
+import {
+  buildPprRankings,
+  buildScheduleCards,
+  buildWeeklyProjections,
+} from './api/nflDataTransforms';
 
 export const NewsContext = createContext();
 export const StatsContext = createContext();
 
-const COMMAND_CENTER_STATE_KEY = 'ff:lastCommandCenterState';
-const POSITIONS = ['QB', 'RB', 'WR', 'TE'];
 const SCHEDULE_PAGE_SIZE = 8;
+const STATS_PAGE_SIZE = 12;
+const DEFAULT_SEASON = new Date().getFullYear();
 
-function readStoredSelection() {
-  if (typeof window === 'undefined') {
-    return {};
-  }
-
-  try {
-    const raw = window.localStorage.getItem(COMMAND_CENTER_STATE_KEY);
-    if (!raw) {
-      return {};
-    }
-
-    const parsed = JSON.parse(raw);
-    return {
-      username: parsed.username || '',
-      leagueId: parsed.leagueId || '',
-      week: parsed.week || '',
-    };
-  } catch (_error) {
-    return {};
-  }
-}
-
-function normalizeStatsError(error) {
-  if (error?.safe) {
-    return error.safe;
-  }
-
+function normalizeError(error, fallbackMessage) {
   return {
-    code: 'LEGACY_STATS_UNAVAILABLE',
-    message: error?.message || 'Unable to load stats from command center data.',
-    retryable: false,
+    code: error?.code || 'NFL_DATA_UNAVAILABLE',
+    message: error?.message || fallbackMessage,
+    retryable: error?.status >= 500 || error?.name === 'AbortError',
   };
-}
-
-function getRosterName(roster) {
-  return roster.ownerTeamName || roster.ownerDisplayName || `Roster ${roster.rosterId}`;
-}
-
-function buildStatsFromCommandCenter(payload) {
-  const rosters = payload?.rosters || [];
-  const selectedLeague = payload?.selectedLeague;
-  const matchups = payload?.matchups || [];
-  const matchupByRosterId = new Map(matchups.map(matchup => [String(matchup.rosterId), matchup]));
-  const rosterById = new Map(rosters.map(roster => [String(roster.rosterId), roster]));
-
-  return rosters.map((roster, index) => {
-    const matchup = matchupByRosterId.get(String(roster.rosterId));
-    const opponent = matchup?.opponentRosterId
-      ? rosterById.get(String(matchup.opponentRosterId))
-      : null;
-
-    const pointsFor = Number(roster.pointsFor || 0);
-    const playerCount = (roster.players || []).length;
-    const starters = (roster.starters || []).length;
-
-    return {
-      PlayerID: roster.rosterId,
-      Name: getRosterName(roster),
-      Position: POSITIONS[index % POSITIONS.length],
-      Team: selectedLeague?.name || 'Sleeper League',
-      Opponent: opponent ? getRosterName(opponent) : 'TBD',
-      GameDate: new Date().toISOString(),
-      HomeOrAway: index % 2 === 0 ? 'HOME' : 'AWAY',
-      Activated: 1,
-      PassingAttempts: Math.max(starters, 1),
-      PassingCompletions: Math.max(Math.floor(starters * 0.7), 1),
-      PassingYards: Math.round(pointsFor * 8),
-      PassingTouchdowns: Math.max(Math.round(pointsFor / 10), 0),
-      RushingAttempts: Math.max(playerCount - starters, 0),
-      RushingYards: Math.round(pointsFor * 4),
-      RushingTouchdowns: Math.max(Math.round(pointsFor / 20), 0),
-      Receptions: Math.max(Math.round(starters / 2), 0),
-      ReceivingYards: Math.round(pointsFor * 5),
-      ReceivingTouchdowns: Math.max(Math.round(pointsFor / 25), 0),
-      FantasyPoints: pointsFor,
-      FantasyPointsPPR: pointsFor,
-      FantasyPointsFanDuel: pointsFor,
-      FantasyPointsDraftKings: pointsFor,
-      FantasyPointsYahoo: pointsFor,
-    };
-  });
-}
-
-function buildSchedulesFromCommandCenter(payload) {
-  const rosters = payload?.rosters || [];
-  const matchups = payload?.matchups || [];
-  const selectedLeague = payload?.selectedLeague;
-  const week = payload?.resolvedWeek || 0;
-  const rostersById = new Map(rosters.map(roster => [String(roster.rosterId), roster]));
-
-  const grouped = new Map();
-  for (const matchup of matchups) {
-    const key = String(matchup.matchupId);
-    const bucket = grouped.get(key) || [];
-    bucket.push(matchup);
-    grouped.set(key, bucket);
-  }
-
-  return Array.from(grouped.entries()).map(([matchupId, teams], index) => {
-    const awayMatchup = teams[0];
-    const homeMatchup = teams[1] || teams[0];
-    const awayRoster = rostersById.get(String(awayMatchup.rosterId));
-    const homeRoster = rostersById.get(String(homeMatchup.rosterId));
-    const awayPoints = Number(awayMatchup.points || 0);
-    const homePoints = Number(homeMatchup.points || 0);
-    const gameDate = new Date(Date.now() + index * 60 * 60 * 1000).toISOString();
-
-    return {
-      GameKey: `${selectedLeague?.leagueId || 'league'}-${week}-${matchupId}`,
-      AwayTeam: awayRoster ? getRosterName(awayRoster) : `Roster ${awayMatchup.rosterId}`,
-      HomeTeam: homeRoster ? getRosterName(homeRoster) : `Roster ${homeMatchup.rosterId}`,
-      Date: gameDate,
-      DateTime: gameDate,
-      Channel: 'Sleeper',
-      PointSpread: (awayPoints - homePoints).toFixed(1),
-      OverUnder: (awayPoints + homePoints).toFixed(1),
-      StadiumDetails: {
-        Name: selectedLeague?.name || 'Sleeper League',
-        City: 'Online',
-        State: 'N/A',
-        Country: 'USA',
-        PlayingSurface: 'Digital',
-      },
-      AwayTeamMoneyLine: awayPoints >= homePoints ? '-110' : '+110',
-      HomeTeamMoneyLine: homePoints >= awayPoints ? '-110' : '+110',
-      Status: payload?.nflState?.seasonType || 'regular',
-    };
-  });
 }
 
 export const StatsProvider = ({ children }) => {
@@ -151,48 +39,74 @@ export const StatsProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedPosition, setSelectedPosition] = useState('');
+  const [selectedSeason, setSelectedSeason] = useState(DEFAULT_SEASON);
+  const [stale, setStale] = useState(false);
+  const [partial, setPartial] = useState(false);
+  const [meta, setMeta] = useState(null);
+  const [dataKind, setDataKind] = useState('observed');
 
-  const fetchStats = useCallback(async () => {
-    const stored = readStoredSelection();
-    if (!stored.username || !stored.leagueId) {
-      setStats([]);
-      setScores([]);
-      setTotalPages(1);
-      setError({
-        code: 'SLEEPER_SELECTION_REQUIRED',
-        message: 'Load a Sleeper username and league in Command Center first, then return to this page.',
-        retryable: false,
-      });
-      return;
-    }
+  const fetchStats = useCallback(
+    async (mode = 'ppr') => {
+      setLoading(true);
+      setError(null);
+      setPartial(false);
+      setStale(false);
 
-    setLoading(true);
-    setError(null);
+      try {
+        const [playersResult, weeklyResult] = await Promise.allSettled([
+          fetchPlayers(),
+          fetchWeeklyStats(selectedSeason),
+        ]);
 
-    try {
-      const payload = await fetchCommandCenterView({
-        username: stored.username,
-        leagueId: stored.leagueId,
-        week: stored.week || undefined,
-      });
+        if (weeklyResult.status === 'rejected') {
+          throw weeklyResult.reason;
+        }
 
-      const nextStats = buildStatsFromCommandCenter(payload);
-      setStats(nextStats);
-      setScores(nextStats);
-      setTotalPages(Math.max(1, Math.ceil(nextStats.length / 12)));
-      setCurrentPage(1);
-    } catch (caughtError) {
-      setStats([]);
-      setScores([]);
-      setTotalPages(1);
-      setError(normalizeStatsError(caughtError));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        const players =
+          playersResult.status === 'fulfilled' ? playersResult.value.data : [];
+        const weeklyStats = weeklyResult.value.data;
+        const nextPartial = playersResult.status === 'rejected';
+        const nextStats =
+          mode === 'projection'
+            ? buildWeeklyProjections({ players, weeklyStats })
+            : buildPprRankings({ players, weeklyStats });
+
+        setStats(nextStats);
+        setScores(nextStats);
+        setCurrentPage(1);
+        setTotalPages(Math.max(1, Math.ceil(nextStats.length / STATS_PAGE_SIZE)));
+        setPartial(nextPartial);
+        setDataKind(mode === 'projection' ? 'estimated' : 'observed');
+        setMeta({
+          players: playersResult.status === 'fulfilled' ? playersResult.value.meta : null,
+          weeklyStats: weeklyResult.value.meta,
+          season: selectedSeason,
+        });
+        setStale(
+          (playersResult.status === 'fulfilled' &&
+            isStaleMeta(playersResult.value.meta)) ||
+            isStaleMeta(weeklyResult.value.meta)
+        );
+      } catch (caughtError) {
+        setStats([]);
+        setScores([]);
+        setTotalPages(1);
+        setMeta(null);
+        setError(
+          normalizeError(
+            caughtError,
+            'Unable to load canonical NFL statistics right now.'
+          )
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [selectedSeason]
+  );
 
   const fetchScores = useCallback(async () => {
-    await fetchStats();
+    await fetchStats('ppr');
   }, [fetchStats]);
 
   const contextValue = useMemo(
@@ -208,6 +122,12 @@ export const StatsProvider = ({ children }) => {
       totalPages,
       selectedPosition,
       setSelectedPosition,
+      selectedSeason,
+      setSelectedSeason,
+      stale,
+      partial,
+      meta,
+      dataKind,
     }),
     [
       stats,
@@ -219,6 +139,11 @@ export const StatsProvider = ({ children }) => {
       currentPage,
       totalPages,
       selectedPosition,
+      selectedSeason,
+      stale,
+      partial,
+      meta,
+      dataKind,
     ]
   );
 
@@ -232,83 +157,92 @@ export const NewsProvider = ({ children }) => {
   const [loaded, setLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedSeason, setSelectedSeason] = useState(DEFAULT_SEASON);
+  const [selectedWeek, setSelectedWeek] = useState('');
+  const [error, setError] = useState(null);
+  const [stale, setStale] = useState(false);
+  const [partial, setPartial] = useState(false);
+  const [meta, setMeta] = useState(null);
 
   const fetchNews = useCallback(async () => {
     setNews([]);
   }, []);
 
   const fetchSchedules = useCallback(
-    async page => {
-      const requestedPage = Number.isInteger(page) ? page : 1;
-
-      if (allSchedules.length > 0) {
-        const start = (requestedPage - 1) * SCHEDULE_PAGE_SIZE;
-        const end = start + SCHEDULE_PAGE_SIZE;
-        setSchedules(allSchedules.slice(start, end));
-        setCurrentPage(requestedPage);
-        setLoaded(true);
-        return;
-      }
-
-      const stored = readStoredSelection();
-      if (!stored.username || !stored.leagueId) {
-        setSchedules([]);
-        setAllSchedules([]);
-        setTotalPages(1);
-        setCurrentPage(1);
-        setLoaded(true);
-        return;
-      }
-
+    async (page = 1) => {
+      const requestedPage = Number.isInteger(Number(page)) ? Number(page) : 1;
       setLoaded(false);
-      try {
-        const payload = await fetchCommandCenterView({
-          username: stored.username,
-          leagueId: stored.leagueId,
-          week: stored.week || undefined,
-        });
+      setError(null);
+      setPartial(false);
 
-        const nextSchedules = buildSchedulesFromCommandCenter(payload);
-        const pages = Math.max(1, Math.ceil(nextSchedules.length / SCHEDULE_PAGE_SIZE));
+      try {
+        const result = await fetchSchedule(selectedSeason);
+        const cards = buildScheduleCards(result.data);
+        const filtered = selectedWeek
+          ? cards.filter(game => Number(game.Week) === Number(selectedWeek))
+          : cards;
+        const pages = Math.max(1, Math.ceil(filtered.length / SCHEDULE_PAGE_SIZE));
         const boundedPage = Math.min(Math.max(requestedPage, 1), pages);
         const start = (boundedPage - 1) * SCHEDULE_PAGE_SIZE;
-        const end = start + SCHEDULE_PAGE_SIZE;
 
-        setAllSchedules(nextSchedules);
-        setSchedules(nextSchedules.slice(start, end));
+        setAllSchedules(filtered);
+        setSchedules(filtered.slice(start, start + SCHEDULE_PAGE_SIZE));
         setTotalPages(pages);
         setCurrentPage(boundedPage);
-      } catch (_error) {
+        setMeta({ schedule: result.meta, season: selectedSeason });
+        setStale(isStaleMeta(result.meta));
+      } catch (caughtError) {
         setAllSchedules([]);
         setSchedules([]);
         setTotalPages(1);
         setCurrentPage(1);
+        setMeta(null);
+        setStale(false);
+        setError(
+          normalizeError(caughtError, 'Unable to load the NFL schedule right now.')
+        );
       } finally {
         setLoaded(true);
       }
     },
-    [allSchedules]
+    [selectedSeason, selectedWeek]
   );
 
   const contextValue = useMemo(
     () => ({
       news,
       schedules,
+      allSchedules,
       loaded,
       fetchNews,
       fetchSchedules,
       currentPage,
       setCurrentPage,
       totalPages,
+      selectedSeason,
+      setSelectedSeason,
+      selectedWeek,
+      setSelectedWeek,
+      error,
+      stale,
+      partial,
+      meta,
     }),
     [
       news,
       schedules,
+      allSchedules,
       loaded,
       fetchNews,
       fetchSchedules,
       currentPage,
       totalPages,
+      selectedSeason,
+      selectedWeek,
+      error,
+      stale,
+      partial,
+      meta,
     ]
   );
 
