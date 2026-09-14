@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import WeeklyProjectionCards from './WeeklyProjectionCards';
 import { StatsContext } from '../context';
+import { resolveDataRouteState } from '../routing/dataRouteState';
 import MainHero from '../MainHero/MainHero';
 import Nav from '../Navbar/Nav.jsx';
 import Footer from '../Footer/Footer';
@@ -25,6 +26,14 @@ function WeeklyProjections() {
   useEffect(() => {
     fetchStats('projection');
   }, [fetchStats]);
+
+  const routeState = resolveDataRouteState({
+    loading,
+    error,
+    items: stats,
+    stale,
+    partial,
+  });
 
   const seasons = [];
   for (let season = new Date().getFullYear(); season >= FIRST_STATS_SEASON; season -= 1) {
@@ -58,20 +67,22 @@ function WeeklyProjections() {
           </select>
         </ControlRow>
 
-        {loading && <Status role='status'>Loading projections…</Status>}
-        {!loading && error && (
+        {routeState.primary === 'loading' && (
+          <Status role='status'>Loading projections…</Status>
+        )}
+        {routeState.primary === 'failure' && (
           <Status role='alert'>Unable to load projections: {error.message}</Status>
         )}
-        {!loading && !error && stale && (
-          <Status role='status'>Showing stale cached NFL data while the source refreshes.</Status>
-        )}
-        {!loading && !error && partial && (
-          <Status role='status'>Player identity data is partial; projection values remain available.</Status>
-        )}
-        {!loading && !error && stats.length === 0 && (
+        {routeState.primary === 'empty' && (
           <Status role='status'>No projection data is available for this season.</Status>
         )}
-        {!loading && !error && stats.length > 0 && (
+        {routeState.primary === 'success' && routeState.stale && (
+          <Status role='status'>Showing stale cached NFL data while the source refreshes.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.partial && (
+          <Status role='status'>Player identity data is partial; projection values remain available.</Status>
+        )}
+        {routeState.primary === 'success' && (
           <WeeklyProjectionCards stats={stats} loading={false} />
         )}
       </MainContainer>
