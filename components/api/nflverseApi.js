@@ -65,6 +65,10 @@ export function isStaleMeta(meta) {
   );
 }
 
+export function hasSkippedRecords(meta) {
+  return Number(meta?.recordsSkipped || 0) > 0;
+}
+
 export async function fetchPlayers(options) {
   return unwrapResource(await requestJson('/players', options));
 }
