@@ -7,22 +7,28 @@ function formatScore(score) {
   return Number.isFinite(score) ? score : '—';
 }
 
+const TeamIdentity = ({ name, abbreviation, logoUrl }) => (
+  <TeamRow>
+    {logoUrl ? <TeamLogo src={logoUrl} alt='' aria-hidden='true' /> : null}
+    <span>{name || abbreviation}</span>
+  </TeamRow>
+);
+
+TeamIdentity.propTypes = {
+  name: PropTypes.string,
+  abbreviation: PropTypes.string.isRequired,
+  logoUrl: PropTypes.string,
+};
+
 const ScheduleCardWithModal = ({ data }) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleCardClick = () => {
-    setModalOpen(true);
-  };
-
+  const handleCardClick = () => setModalOpen(true);
   const handleCardKeyDown = event => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       setModalOpen(true);
     }
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
   };
 
   return (
@@ -32,61 +38,60 @@ const ScheduleCardWithModal = ({ data }) => {
         onKeyDown={handleCardKeyDown}
         role='button'
         tabIndex={0}
-        aria-label={`${data.AwayTeam} at ${data.HomeTeam}, ${data.Status}`}
+        aria-label={`${data.AwayTeamName || data.AwayTeam} at ${data.HomeTeamName || data.HomeTeam}, ${data.Status}`}
       >
-        <CardHeader>
-          {data.AwayTeam} at {data.HomeTeam}
-        </CardHeader>
+        <Teams>
+          <TeamIdentity
+            name={data.AwayTeamName}
+            abbreviation={data.AwayTeam}
+            logoUrl={data.AwayTeamLogo}
+          />
+          <span aria-hidden='true'>at</span>
+          <TeamIdentity
+            name={data.HomeTeamName}
+            abbreviation={data.HomeTeam}
+            logoUrl={data.HomeTeamLogo}
+          />
+        </Teams>
         <ScoreLine aria-label='Game score'>
           {data.AwayTeam} {formatScore(data.AwayScore)} – {formatScore(data.HomeScore)}{' '}
           {data.HomeTeam}
         </ScoreLine>
         <CardDetails>
-          <DetailItem>
-            Date: {new Date(data.Date).toLocaleDateString()}
-          </DetailItem>
-          <DetailItem>
-            Time: {new Date(data.DateTime).toLocaleTimeString()}
-          </DetailItem>
+          <DetailItem>Date: {new Date(data.Date).toLocaleDateString()}</DetailItem>
+          <DetailItem>Time: {new Date(data.DateTime).toLocaleTimeString()}</DetailItem>
           <DetailItem>Status: {data.Status}</DetailItem>
           <DetailItem>Week: {data.Week}</DetailItem>
         </CardDetails>
       </CardWrapper>
 
       {isModalOpen && (
-        <ModalOverlay onClick={handleCloseModal}>
+        <ModalOverlay onClick={() => setModalOpen(false)}>
           <ModalContent
             role='dialog'
             aria-modal='true'
             aria-labelledby={`game-${data.GameKey}`}
             onClick={event => event.stopPropagation()}
           >
-            <CloseButton onClick={handleCloseModal} aria-label='Close game details'>
+            <CloseButton
+              onClick={() => setModalOpen(false)}
+              aria-label='Close game details'
+            >
               ×
             </CloseButton>
             <ModalTitle id={`game-${data.GameKey}`}>
-              {data.AwayTeam} at {data.HomeTeam}
+              {data.AwayTeamName || data.AwayTeam} at {data.HomeTeamName || data.HomeTeam}
             </ModalTitle>
             <ModalDetails>
               <DetailItem>
                 <Label>Score:</Label> {data.AwayTeam} {formatScore(data.AwayScore)} –{' '}
                 {formatScore(data.HomeScore)} {data.HomeTeam}
               </DetailItem>
-              <DetailItem>
-                <Label>Date:</Label> {new Date(data.Date).toLocaleDateString()}
-              </DetailItem>
-              <DetailItem>
-                <Label>Time:</Label> {new Date(data.DateTime).toLocaleTimeString()}
-              </DetailItem>
-              <DetailItem>
-                <Label>Season:</Label> {data.Season}
-              </DetailItem>
-              <DetailItem>
-                <Label>Week:</Label> {data.Week}
-              </DetailItem>
-              <DetailItem>
-                <Label>Status:</Label> {data.Status}
-              </DetailItem>
+              <DetailItem><Label>Date:</Label> {new Date(data.Date).toLocaleDateString()}</DetailItem>
+              <DetailItem><Label>Time:</Label> {new Date(data.DateTime).toLocaleTimeString()}</DetailItem>
+              <DetailItem><Label>Season:</Label> {data.Season}</DetailItem>
+              <DetailItem><Label>Week:</Label> {data.Week}</DetailItem>
+              <DetailItem><Label>Status:</Label> {data.Status}</DetailItem>
             </ModalDetails>
           </ModalContent>
         </ModalOverlay>
@@ -113,10 +118,23 @@ const CardWrapper = styled.div`
   }
 `;
 
-const CardHeader = styled.h3`
-  font-size: 1.25rem;
+const Teams = styled.div`
+  display: grid;
+  gap: 0.5rem;
+`;
+
+const TeamRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
   color: ${fleurimondColors.deepBlue};
-  margin: 0;
+`;
+
+const TeamLogo = styled.img`
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 `;
 
 const ScoreLine = styled.p`
@@ -189,6 +207,10 @@ ScheduleCardWithModal.propTypes = {
     GameKey: PropTypes.string.isRequired,
     AwayTeam: PropTypes.string.isRequired,
     HomeTeam: PropTypes.string.isRequired,
+    AwayTeamName: PropTypes.string,
+    HomeTeamName: PropTypes.string,
+    AwayTeamLogo: PropTypes.string,
+    HomeTeamLogo: PropTypes.string,
     Date: PropTypes.string.isRequired,
     DateTime: PropTypes.string.isRequired,
     Status: PropTypes.string.isRequired,
