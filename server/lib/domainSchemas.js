@@ -67,6 +67,7 @@ const teamSchema = z
     conference: z.string().nullable(),
     division: z.string().nullable(),
     active: z.boolean(),
+    logoUrl: z.string().url().nullable().optional(),
   })
   .strict();
 

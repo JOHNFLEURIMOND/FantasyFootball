@@ -125,6 +125,9 @@ function normalizeTeam(row) {
     conference: nullableString(row.team_conf),
     division: nullableString(row.team_division),
     active: CURRENT_TEAM_ABBREVIATIONS.has(row.team_abbr),
+    logoUrl: nullableString(
+      row.team_logo_espn || row.team_logo_wikipedia || row.team_wordmark
+    ),
   };
 }
 

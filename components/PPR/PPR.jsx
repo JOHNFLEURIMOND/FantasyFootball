@@ -6,13 +6,22 @@ import PlayerCards from './PlayerCards';
 import Nav from '../Navbar/Nav';
 import Footer from '../Footer/Footer';
 import MainHero from '../MainHero/MainHero';
-import { Form, Radio } from 'semantic-ui-react';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme.js';
 import { Helmet } from 'react-helmet';
 import { derivePprPage } from './pagination';
 
 const FIRST_STATS_SEASON = 1999;
+const SORT_OPTIONS = [
+  'FantasyPointsPPR',
+  'PassingYards',
+  'PassingTouchdowns',
+  'RushingYards',
+  'RushingTouchdowns',
+  'Receptions',
+  'ReceivingYards',
+  'ReceivingTouchdowns',
+];
 
 const PPR = () => {
   const {
@@ -62,7 +71,11 @@ const PPR = () => {
   });
 
   const seasons = [];
-  for (let season = new Date().getFullYear(); season >= FIRST_STATS_SEASON; season -= 1) {
+  for (
+    let season = new Date().getFullYear();
+    season >= FIRST_STATS_SEASON;
+    season -= 1
+  ) {
     seasons.push(season);
   }
 
@@ -128,28 +141,21 @@ const PPR = () => {
                 </option>
               ))}
             </StyledSelect>
-            <Form>
-              {[
-                'FantasyPointsPPR',
-                'PassingYards',
-                'PassingTouchdowns',
-                'RushingYards',
-                'RushingTouchdowns',
-                'Receptions',
-                'ReceivingYards',
-                'ReceivingTouchdowns',
-              ].map(option => (
-                <Form.Field key={option}>
-                  <Radio
-                    label={option.replace(/([A-Z])/g, ' $1').trim()}
+            <SortFieldset>
+              <legend>Sort rankings</legend>
+              {SORT_OPTIONS.map(option => (
+                <label key={option}>
+                  <input
+                    type='radio'
                     name='sortOption'
                     value={option}
-                    onChange={(_event, data) => setSortOption(data.value)}
                     checked={sortOption === option}
+                    onChange={event => setSortOption(event.target.value)}
                   />
-                </Form.Field>
+                  <span>{option.replace(/([A-Z])/g, ' $1').trim()}</span>
+                </label>
               ))}
-            </Form>
+            </SortFieldset>
           </SearchDiv>
         </FilterContainer>
 
@@ -163,10 +169,15 @@ const PPR = () => {
           <Status role='status'>No matching PPR ranking data is available.</Status>
         )}
         {routeState.primary === 'success' && routeState.stale && (
-          <Status role='status'>Showing stale cached NFL data while the source refreshes.</Status>
+          <Status role='status'>
+            Showing stale cached NFL data while the source refreshes.
+          </Status>
         )}
         {routeState.primary === 'success' && routeState.partial && (
-          <Status role='status'>Player identity data is partial; rankings are based on available statistics.</Status>
+          <Status role='status'>
+            Player identity data is partial; rankings are based on available
+            statistics.
+          </Status>
         )}
         {routeState.primary === 'success' && (
           <>
@@ -221,6 +232,29 @@ const StyledInput = styled.input`
   font-size: 1rem;
 
   &:focus-visible {
+    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 2px;
+  }
+`;
+
+const SortFieldset = styled.fieldset`
+  width: min(100%, 720px);
+  border: 1px solid ${fleurimondColors.gray};
+  border-radius: 0.25rem;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  text-align: left;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  input:focus-visible {
     outline: 2px solid ${fleurimondColors.blueSapphire};
     outline-offset: 2px;
   }
