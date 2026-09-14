@@ -48,9 +48,9 @@ function WeeklyProjections() {
       <MainContainer>
         <Title>Weekly Fantasy Football Projections</Title>
         <DataNotice>
-          Estimated projections use a trailing average of up to four observed
-          nflverse game weeks and full-PPR scoring. They are application estimates,
-          not provider-supplied projections.
+          Estimated projections use a trailing average of up to four observed NFL
+          game weeks and full-PPR scoring. They are application estimates, not
+          official provider-supplied projections.
         </DataNotice>
         <ControlRow>
           <label htmlFor='projection-season'>Season</label>
