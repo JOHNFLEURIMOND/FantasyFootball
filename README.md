@@ -146,6 +146,10 @@ Browser (React UI)
 Canonical persistence (not yet wired to ingestion or API routes)
   -> Repository interface (server/lib/persistence/nflRepository.js)
   -> Versioned SQLite store (server/lib/persistence/database.js)
+
+Public NFL data provider (not yet wired to API routes)
+  -> nflverse provider boundary (server/lib/providers/nflverse/)
+  -> Validated players, teams, rosters, schedules, and player statistics
 ```
 
 Key backend behaviors:
@@ -154,6 +158,8 @@ Key backend behaviors:
 - Normalization into strict, versioned application contracts documented in [docs/domain-contracts.md](docs/domain-contracts.md).
 - Service and API response validation before data reaches the client.
 - Versioned SQLite persistence documented in [docs/persistence.md](docs/persistence.md).
+- Public nflverse provider boundary documented in
+  [docs/providers/nflverse.md](docs/providers/nflverse.md).
 - TTL cache with stale fallback for transient upstream errors.
 - Retry strategy for retryable upstream failures.
 - Safe error shaping (`code`, `message`, `status`, `retryable`).
