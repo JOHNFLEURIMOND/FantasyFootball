@@ -1,18 +1,48 @@
-import React, { useState, useCallback, memo } from 'react';
-import TextInput from './TextInput'; // Import the TextInput component
-import styled, { keyframes } from 'styled-components'; // Import keyframes along with styled
-import { fleurimondColors } from '../CSS/theme'; // Import the color theme
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  memo,
+} from 'react';
+import TextInput from './TextInput';
+import Pagination from '../Pagination/Pagination';
+import { deriveProjectionPage } from './pagination';
+import styled, { keyframes } from 'styled-components';
+import { fleurimondColors } from '../CSS/theme';
 
 const WeeklyProjectionCards = ({ stats, loading }) => {
   const [isCardFlipped, setIsCardFlipped] = useState(-1);
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
+  const [sortBy, setSortBy] = useState('FantasyPointsPPR');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleClick = useCallback(index => {
     setIsCardFlipped(prevIndex => (prevIndex === index ? -1 : index));
   }, []);
 
-  const filterPositionItems = [...new Set(stats.map(item => item.Position))];
+  useEffect(() => {
+    setCurrentPage(1);
+    setIsCardFlipped(-1);
+  }, [search, positionFilter, sortBy]);
+
+  const filterPositionItems = useMemo(
+    () => [...new Set(stats.map(item => item.Position).filter(Boolean))].sort(),
+    [stats]
+  );
+
+  const page = useMemo(
+    () =>
+      deriveProjectionPage({
+        stats,
+        search,
+        position: positionFilter,
+        sortBy,
+        currentPage,
+      }),
+    [stats, search, positionFilter, sortBy, currentPage]
+  );
 
   if (loading) {
     return (
@@ -35,96 +65,110 @@ const WeeklyProjectionCards = ({ stats, loading }) => {
           title='Search'
           placeholder='Search For Players'
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={event => setSearch(event.target.value)}
         />
       </SearchDiv>
       <SelectDiv>
         <StyledSelect
-          onChange={e => setPositionFilter(e.target.value)}
+          value={positionFilter}
+          onChange={event => setPositionFilter(event.target.value)}
           aria-label='Filter Players By Position'
         >
-          <option value=''>Filter By Position</option>
-          {filterPositionItems.map((item, index) => (
-            <option key={index} value={item}>
-              Filter {item}
+          <option value=''>All positions</option>
+          {filterPositionItems.map(item => (
+            <option key={item} value={item}>
+              {item}
             </option>
           ))}
         </StyledSelect>
+        <StyledSelect
+          value={sortBy}
+          onChange={event => setSortBy(event.target.value)}
+          aria-label='Sort projections'
+        >
+          <option value='FantasyPointsPPR'>Projected PPR points</option>
+          <option value='PassingYards'>Passing yards</option>
+          <option value='RushingYards'>Rushing yards</option>
+          <option value='ReceivingYards'>Receiving yards</option>
+          <option value='Receptions'>Receptions</option>
+        </StyledSelect>
       </SelectDiv>
-      <CardContainer>
-        {stats
-          .filter(
-            value =>
-              search === '' ||
-              value.Name.toLowerCase().includes(search.toLowerCase())
-          )
-          .filter(
-            value =>
-              positionFilter === '' || value.Position.includes(positionFilter)
-          )
-          .map((d, index) => (
-            <Card key={index}>
-              <CardBody
-                onClick={() => handleClick(index)}
-                role='contentInfo'
-                aria-pressed={isCardFlipped === index}
-                aria-label='Player Card with a list of fantasy projection stats and match info.'
-              >
-                {isCardFlipped === index ? (
-                  <>
-                    <CardHeader role='info' aria-label='Stats'>
-                      <NameFieldset aria-label='Active or not'>
-                        Active: {d.Activated === 1 ? 'Active' : 'Not Active'}
+
+      {page.totalItems === 0 ? (
+        <EmptyState role='status'>No projections match the current filters.</EmptyState>
+      ) : (
+        <>
+          <CardContainer>
+            {page.items.map((player, index) => (
+              <Card key={player.PlayerID || `${player.Name}-${index}`}>
+                <CardBody
+                  onClick={() => handleClick(index)}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handleClick(index);
+                    }
+                  }}
+                  role='button'
+                  tabIndex={0}
+                  aria-expanded={isCardFlipped === index}
+                  aria-label={`Projection card for ${player.Name}`}
+                >
+                  {isCardFlipped === index ? (
+                    <>
+                      <CardHeader>
+                        <NameFieldset>
+                          Active: {player.Activated === 1 ? 'Active' : 'Not Active'}
+                        </NameFieldset>
+                      </CardHeader>
+                      <NameFieldset>
+                        Projected Fantasy Points: {player.FantasyPoints}
                       </NameFieldset>
-                    </CardHeader>
-                    <NameFieldset aria-label='Fanduel points'>
-                      Fantasy Points FanDuel: {d.FantasyPointsFanDuel}
-                    </NameFieldset>
-                    <NameFieldset aria-label='Fantasy Football Point'>
-                      Fantasy Points: {d.FantasyPoints}
-                    </NameFieldset>
-                    <NameFieldset aria-label='PPR Points'>
-                      Fantasy Points PPR: {d.FantasyPointsPPR}
-                    </NameFieldset>
-                  </>
-                ) : (
-                  <>
-                    <CardHeader
-                      role='img'
-                      aria-label='Description of the player and match'
-                    >
-                      <HeaderTitle aria-label='Name and Position'>
-                        {d.Name} : {d.Position}
-                      </HeaderTitle>
-                    </CardHeader>
-                    <Description aria-label='Match'>
-                      Players Team: {d.Team} VS: {d.Opponent}
-                    </Description>
-                    <Description aria-label='Playing home or away'>
-                      {d.HomeOrAway === 'AWAY'
-                        ? 'Playing Away'
-                        : 'Playing At Home'}
-                    </Description>
-                    <Description aria-label='Game Date'>
-                      Game Date: {d.GameDate}
-                    </Description>
-                  </>
-                )}
-              </CardBody>
-            </Card>
-          ))}
-      </CardContainer>
+                      <NameFieldset>
+                        Projected PPR Points: {player.FantasyPointsPPR}
+                      </NameFieldset>
+                      <Description>{player.DataLabel}</Description>
+                    </>
+                  ) : (
+                    <>
+                      <CardHeader>
+                        <HeaderTitle>
+                          {player.Name} : {player.Position}
+                        </HeaderTitle>
+                      </CardHeader>
+                      <Description>Team: {player.Team}</Description>
+                      <Description>Projected Week: {player.Week}</Description>
+                      <Description>
+                        Projected PPR Points: {player.FantasyPointsPPR}
+                      </Description>
+                      <Description>{player.DataLabel}</Description>
+                    </>
+                  )}
+                </CardBody>
+              </Card>
+            ))}
+          </CardContainer>
+          <PaginationWrapper>
+            <Pagination
+              currentPage={page.activePage}
+              totalPages={page.totalPages}
+              onPageChange={(_event, { activePage }) => {
+                setCurrentPage(Number(activePage));
+                setIsCardFlipped(-1);
+              }}
+            />
+          </PaginationWrapper>
+        </>
+      )}
     </div>
   );
 };
 
-// Keyframes for Loader
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-// Styled Components
 export const LoaderWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -149,15 +193,10 @@ export const StyledSelect = styled.select`
   border: 1px solid ${fleurimondColors.black};
   font-size: 1rem;
   box-sizing: border-box;
-  transition: border-color 0.3s;
 
-  &:focus {
-    border-color: ${fleurimondColors.blue};
-    outline: none;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem;
+  &:focus-visible {
+    outline: 3px solid ${fleurimondColors.blue};
+    outline-offset: 2px;
   }
 `;
 
@@ -166,7 +205,7 @@ export const CardContainer = styled.div`
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
 `;
 
 export const LoadingDiv = styled.div`
@@ -186,26 +225,21 @@ export const LoadingDiv = styled.div`
 export const SearchDiv = styled.div`
   margin-bottom: 1.5rem;
   width: 100%;
-
-  @media (max-width: 768px) {
-    margin-bottom: 1rem;
-  }
 `;
 
 export const SelectDiv = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
   width: 100%;
-
-  @media (max-width: 768px) {
-    margin-bottom: 1rem;
-  }
 `;
 
 export const Card = styled.div`
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
+  width: min(100%, 320px);
 `;
 
 export const CardHeader = styled.div`
@@ -216,6 +250,13 @@ export const CardHeader = styled.div`
 
 export const CardBody = styled.div`
   padding: 1rem;
+  min-height: 220px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid ${fleurimondColors.blue};
+    outline-offset: -3px;
+  }
 `;
 
 export const NameFieldset = styled.div`
@@ -229,6 +270,14 @@ export const Description = styled.div`
 export const HeaderTitle = styled.h3`
   font-size: 1.25rem;
   margin: 0;
+`;
+
+const PaginationWrapper = styled.div`
+  margin-top: 1.5rem;
+`;
+
+const EmptyState = styled.p`
+  padding: 1rem;
 `;
 
 export default memo(WeeklyProjectionCards);
