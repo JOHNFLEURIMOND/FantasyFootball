@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useCallback } from 'react';
 import { NewsContext } from '../context';
+import { resolveDataRouteState } from '../routing/dataRouteState';
 import ScheduleCardWithModal from './ScheduleCard';
 import Pagination from '../Pagination/Pagination';
 import styled from 'styled-components';
@@ -7,6 +8,9 @@ import { fleurimondColors } from '../CSS/theme';
 import Nav from '../Navbar/Nav';
 import Footer from '../Footer/Footer';
 import MainHero from '../MainHero/MainHero';
+
+const FIRST_SCHEDULE_SEASON = 1920;
+const WEEKS = Array.from({ length: 22 }, (_, index) => index + 1);
 
 const Schedule = () => {
   const {
@@ -16,21 +20,43 @@ const Schedule = () => {
     currentPage,
     setCurrentPage,
     totalPages,
+    selectedSeason,
+    setSelectedSeason,
+    selectedWeek,
+    setSelectedWeek,
+    error,
+    stale,
+    partial,
   } = useContext(NewsContext);
 
   useEffect(() => {
-    fetchSchedules(currentPage);
-  }, [fetchSchedules, currentPage]);
+    fetchSchedules(1);
+  }, [fetchSchedules]);
 
   const handlePageChange = useCallback(
-    (e, { activePage }) => {
-      setCurrentPage(activePage);
+    (_event, { activePage }) => {
+      const page = Number(activePage);
+      setCurrentPage(page);
+      fetchSchedules(page);
     },
-    [setCurrentPage]
+    [fetchSchedules, setCurrentPage]
   );
 
-  if (!loaded) {
-    return <LoadingDiv>Loading...</LoadingDiv>;
+  const routeState = resolveDataRouteState({
+    loading: !loaded,
+    error,
+    items: schedules,
+    stale,
+    partial,
+  });
+
+  const seasons = [];
+  for (
+    let season = new Date().getFullYear();
+    season >= FIRST_SCHEDULE_SEASON;
+    season -= 1
+  ) {
+    seasons.push(season);
   }
 
   return (
@@ -38,64 +64,134 @@ const Schedule = () => {
       <Nav />
       <MainHero />
       <ContentWrapper>
-        <CardContainer>
-          {schedules.length > 0 ? (
-            schedules.map(game => (
-              <ScheduleCardWithModal key={game.GameKey} data={game} />
-            ))
-          ) : (
-            <LoadingDiv>
-              No schedule data available yet. Load a Sleeper username and league
-              in Command Center first.
-            </LoadingDiv>
-          )}
-        </CardContainer>
-        <PaginationWrapper>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </PaginationWrapper>
+        <Title>NFL Schedule & Results</Title>
+        <ControlRow>
+          <label htmlFor='schedule-season'>Season</label>
+          <select
+            id='schedule-season'
+            value={selectedSeason}
+            onChange={event => {
+              setCurrentPage(1);
+              setSelectedSeason(Number(event.target.value));
+            }}
+          >
+            {seasons.map(season => (
+              <option key={season} value={season}>
+                {season}
+              </option>
+            ))}
+          </select>
+          <label htmlFor='schedule-week'>Week</label>
+          <select
+            id='schedule-week'
+            value={selectedWeek}
+            onChange={event => {
+              setCurrentPage(1);
+              setSelectedWeek(event.target.value);
+            }}
+          >
+            <option value=''>All weeks</option>
+            {WEEKS.map(week => (
+              <option key={week} value={week}>
+                Week {week}
+              </option>
+            ))}
+          </select>
+        </ControlRow>
+
+        {routeState.primary === 'loading' && (
+          <Status role='status'>Loading schedule…</Status>
+        )}
+        {routeState.primary === 'failure' && (
+          <Status role='alert'>{error.message}</Status>
+        )}
+        {routeState.primary === 'empty' && (
+          <Status role='status'>No games are available for the selected season and week.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.stale && (
+          <Status role='status'>Showing stale cached schedule data while the source refreshes.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.partial && (
+          <Status role='status'>Some provider schedule records were skipped because they did not satisfy the canonical contract.</Status>
+        )}
+        {routeState.primary === 'success' && (
+          <>
+            <CardContainer>
+              {schedules.map(game => (
+                <ScheduleCardWithModal key={game.GameKey} data={game} />
+              ))}
+            </CardContainer>
+            <PaginationWrapper>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </PaginationWrapper>
+          </>
+        )}
       </ContentWrapper>
       <Footer />
     </>
   );
 };
 
-const ContentWrapper = styled.div`
-  padding: 2rem 1rem; /* Adds padding around the content */
-  background-color: ${fleurimondColors.lightGray}; /* Light background for contrast */
+const ContentWrapper = styled.main`
+  padding: 2rem 1rem;
+  background-color: ${fleurimondColors.lightGray};
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem; /* Spacing between the grid and pagination */
-  min-height: 100vh; /* Ensures the container takes at least full viewport height */
-  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+  gap: 1.5rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+`;
+
+const Title = styled.h1`
+  margin: 0;
+`;
+
+const ControlRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
+  select {
+    min-width: 7rem;
+    padding: 0.5rem;
+  }
+
+  select:focus-visible {
+    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 2px;
+  }
 `;
 
 const CardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns of equal width */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
   width: 100%;
-  max-width: 1200px; /* Limits the container width */
-  margin: 0 auto; /* Centers the grid horizontally */
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 const PaginationWrapper = styled.div`
   width: 100%;
-  max-width: 1200px; /* Same max width as CardContainer for alignment */
-  margin: 0 auto; /* Centers the pagination horizontally */
-  padding: 1rem 0; /* Adds vertical padding to ensure space around the pagination */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 0;
 `;
 
-const LoadingDiv = styled.div`
+const Status = styled.p`
+  width: min(100%, 72ch);
   text-align: center;
-  font-size: 1.5rem;
   color: ${fleurimondColors.darkGray};
-  padding: 2rem;
-  background-color: ${fleurimondColors.lightGray}; /* Background color to match ContentWrapper */
+  padding: 1rem;
+  background-color: ${fleurimondColors.white};
+  border-radius: 0.25rem;
 `;
 
 export default Schedule;

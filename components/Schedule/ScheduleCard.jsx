@@ -3,11 +3,22 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { fleurimondColors } from '../CSS/theme.js';
 
+function formatScore(score) {
+  return Number.isFinite(score) ? score : '—';
+}
+
 const ScheduleCardWithModal = ({ data }) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleCardClick = () => {
     setModalOpen(true);
+  };
+
+  const handleCardKeyDown = event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
@@ -16,10 +27,20 @@ const ScheduleCardWithModal = ({ data }) => {
 
   return (
     <>
-      <CardWrapper onClick={handleCardClick}>
+      <CardWrapper
+        onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
+        role='button'
+        tabIndex={0}
+        aria-label={`${data.AwayTeam} at ${data.HomeTeam}, ${data.Status}`}
+      >
         <CardHeader>
-          {data.AwayTeam} vs {data.HomeTeam}
+          {data.AwayTeam} at {data.HomeTeam}
         </CardHeader>
+        <ScoreLine aria-label='Game score'>
+          {data.AwayTeam} {formatScore(data.AwayScore)} – {formatScore(data.HomeScore)}{' '}
+          {data.HomeTeam}
+        </ScoreLine>
         <CardDetails>
           <DetailItem>
             Date: {new Date(data.Date).toLocaleDateString()}
@@ -27,47 +48,41 @@ const ScheduleCardWithModal = ({ data }) => {
           <DetailItem>
             Time: {new Date(data.DateTime).toLocaleTimeString()}
           </DetailItem>
-          <DetailItem>Channel: {data.Channel}</DetailItem>
-          <DetailItem>Point Spread: {data.PointSpread}</DetailItem>
-          <DetailItem>Over/Under: {data.OverUnder}</DetailItem>
-          <DetailItem>Stadium: {data.StadiumDetails.Name}</DetailItem>
+          <DetailItem>Status: {data.Status}</DetailItem>
+          <DetailItem>Week: {data.Week}</DetailItem>
         </CardDetails>
       </CardWrapper>
 
       {isModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <CloseButton onClick={handleCloseModal}>×</CloseButton>
-            <ModalTitle>
-              {data.AwayTeam} vs {data.HomeTeam}
+        <ModalOverlay onClick={handleCloseModal}>
+          <ModalContent
+            role='dialog'
+            aria-modal='true'
+            aria-labelledby={`game-${data.GameKey}`}
+            onClick={event => event.stopPropagation()}
+          >
+            <CloseButton onClick={handleCloseModal} aria-label='Close game details'>
+              ×
+            </CloseButton>
+            <ModalTitle id={`game-${data.GameKey}`}>
+              {data.AwayTeam} at {data.HomeTeam}
             </ModalTitle>
             <ModalDetails>
+              <DetailItem>
+                <Label>Score:</Label> {data.AwayTeam} {formatScore(data.AwayScore)} –{' '}
+                {formatScore(data.HomeScore)} {data.HomeTeam}
+              </DetailItem>
               <DetailItem>
                 <Label>Date:</Label> {new Date(data.Date).toLocaleDateString()}
               </DetailItem>
               <DetailItem>
-                <Label>Channel:</Label> {data.Channel}
+                <Label>Time:</Label> {new Date(data.DateTime).toLocaleTimeString()}
               </DetailItem>
               <DetailItem>
-                <Label>Point Spread:</Label> {data.PointSpread}
+                <Label>Season:</Label> {data.Season}
               </DetailItem>
               <DetailItem>
-                <Label>Over/Under:</Label> {data.OverUnder}
-              </DetailItem>
-              <DetailItem>
-                <Label>Money Line:</Label> {data.AwayTeamMoneyLine} (Away) /{' '}
-                {data.HomeTeamMoneyLine} (Home)
-              </DetailItem>
-              <DetailItem>
-                <Label>Stadium:</Label> {data.StadiumDetails.Name}
-              </DetailItem>
-              <DetailItem>
-                <Label>Location:</Label> {data.StadiumDetails.City},{' '}
-                {data.StadiumDetails.State || data.StadiumDetails.Country}
-              </DetailItem>
-              <DetailItem>
-                <Label>Playing Surface:</Label>{' '}
-                {data.StadiumDetails.PlayingSurface}
+                <Label>Week:</Label> {data.Week}
               </DetailItem>
               <DetailItem>
                 <Label>Status:</Label> {data.Status}
@@ -80,25 +95,33 @@ const ScheduleCardWithModal = ({ data }) => {
   );
 };
 
-// ScheduleCard Styles
 const CardWrapper = styled.div`
   background: ${fleurimondColors.white};
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  margin-bottom: 1.5rem;
   width: 100%;
-  max-width: 600px;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto auto;
-  gap: 1rem;
+  gap: 0.75rem;
+
+  &:focus-visible {
+    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 3px;
+  }
 `;
 
 const CardHeader = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: ${fleurimondColors.deepBlue};
+  margin: 0;
+`;
+
+const ScoreLine = styled.p`
+  margin: 0;
+  font-weight: 700;
 `;
 
 const CardDetails = styled.div`
@@ -112,14 +135,13 @@ const DetailItem = styled.div`
 
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+  z-index: 10000;
 `;
 
 const ModalContent = styled.div`
@@ -140,6 +162,11 @@ const CloseButton = styled.button`
   font-size: 1.5rem;
   color: ${fleurimondColors.deepBlue};
   cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 2px;
+  }
 `;
 
 const ModalTitle = styled.h3`
@@ -164,19 +191,11 @@ ScheduleCardWithModal.propTypes = {
     HomeTeam: PropTypes.string.isRequired,
     Date: PropTypes.string.isRequired,
     DateTime: PropTypes.string.isRequired,
-    Channel: PropTypes.string.isRequired,
-    PointSpread: PropTypes.string.isRequired,
-    OverUnder: PropTypes.string.isRequired,
-    StadiumDetails: PropTypes.shape({
-      Name: PropTypes.string.isRequired,
-      City: PropTypes.string.isRequired,
-      State: PropTypes.string,
-      Country: PropTypes.string,
-      PlayingSurface: PropTypes.string,
-    }).isRequired,
-    AwayTeamMoneyLine: PropTypes.string.isRequired,
-    HomeTeamMoneyLine: PropTypes.string.isRequired,
     Status: PropTypes.string.isRequired,
+    Week: PropTypes.number.isRequired,
+    Season: PropTypes.string.isRequired,
+    AwayScore: PropTypes.number,
+    HomeScore: PropTypes.number,
   }).isRequired,
 };
 

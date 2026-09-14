@@ -1,10 +1,6 @@
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-} from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { StatsContext } from '../context';
+import { resolveDataRouteState } from '../routing/dataRouteState';
 import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
 import Nav from '../Navbar/Nav';
@@ -16,41 +12,34 @@ import { fleurimondColors } from '../CSS/theme.js';
 import { Helmet } from 'react-helmet';
 import { derivePprPage } from './pagination';
 
+const FIRST_STATS_SEASON = 1999;
+
 const PPR = () => {
   const {
-    stats = [], // Default to an empty array to prevent undefined issues
+    stats = [],
     loading,
     currentPage,
     setCurrentPage,
     setSelectedPosition,
     fetchStats,
     error,
+    selectedSeason,
+    setSelectedSeason,
+    stale,
+    partial,
   } = useContext(StatsContext);
 
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
-  const [sortOption, setSortOption] = useState('');
-
-  const handleSearchChange = event => setSearch(event.target.value);
-  const handlePositionChange = event => {
-    const { value } = event.target;
-    setPositionFilter(value);
-    setSelectedPosition(value);
-  };
-
-  const handleSortOptionChange = (e, { value }) => setSortOption(value);
+  const [sortOption, setSortOption] = useState('FantasyPointsPPR');
 
   useEffect(() => {
-    fetchStats();
+    fetchStats('ppr');
   }, [fetchStats]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [search, positionFilter, sortOption, setCurrentPage]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   const page = useMemo(
     () =>
@@ -64,6 +53,25 @@ const PPR = () => {
     [stats, search, positionFilter, sortOption, currentPage]
   );
 
+  const routeState = resolveDataRouteState({
+    loading,
+    error,
+    items: page.totalItems > 0 ? page.items : [],
+    stale,
+    partial,
+  });
+
+  const seasons = [];
+  for (let season = new Date().getFullYear(); season >= FIRST_STATS_SEASON; season -= 1) {
+    seasons.push(season);
+  }
+
+  const handlePositionChange = event => {
+    const { value } = event.target;
+    setPositionFilter(value);
+    setSelectedPosition(value);
+  };
+
   const handlePageChange = (_event, { activePage }) => {
     setCurrentPage(Number(activePage));
   };
@@ -71,48 +79,60 @@ const PPR = () => {
   return (
     <>
       <Helmet>
-        <title>Player Points Projection</title>
+        <title>PPR Rankings</title>
         <meta
           name='description'
-          content='View player points projections, filter by position, and sort based on various stats.'
+          content='Full-PPR rankings calculated from observed canonical NFL statistics.'
         />
       </Helmet>
       <PPRPageContainer>
         <Nav />
         <MainHero />
-        <Title>Player Points Projection</Title>
+        <Title>PPR Rankings</Title>
+        <DataNotice>
+          Rankings use observed nflverse statistics and application-calculated
+          full-PPR scoring: 1 point per reception, 0.1 per rushing or receiving
+          yard, 0.04 per passing yard, 6 per rushing or receiving touchdown, and
+          4 per passing touchdown. These are rankings, not projections.
+        </DataNotice>
         <FilterContainer>
           <SearchDiv>
             <StyledInput
-              type='text'
+              type='search'
               name='search'
+              aria-label='Search players'
               placeholder='Search For Players'
               value={search}
-              onChange={handleSearchChange}
+              onChange={event => setSearch(event.target.value)}
             />
             <StyledSelect
+              value={selectedSeason}
+              onChange={event => setSelectedSeason(Number(event.target.value))}
+              aria-label='Select NFL season'
+            >
+              {seasons.map(season => (
+                <option key={season} value={season}>
+                  {season} season
+                </option>
+              ))}
+            </StyledSelect>
+            <StyledSelect
+              value={positionFilter}
               onChange={handlePositionChange}
               aria-label='Filter Players By Position'
             >
-              <option value=''>Filter By Position</option>
+              <option value=''>All positions</option>
               {['QB', 'RB', 'WR', 'TE'].map(position => (
                 <option key={position} value={position}>
-                  {position === 'QB'
-                    ? 'Quarterback'
-                    : position === 'RB'
-                      ? 'Running Back'
-                      : position === 'WR'
-                        ? 'Wide Receiver'
-                        : 'Tight End'}
+                  {position}
                 </option>
               ))}
             </StyledSelect>
             <Form>
               {[
-                'PassingAttempts',
+                'FantasyPointsPPR',
                 'PassingYards',
                 'PassingTouchdowns',
-                'RushingAttempts',
                 'RushingYards',
                 'RushingTouchdowns',
                 'Receptions',
@@ -121,10 +141,10 @@ const PPR = () => {
               ].map(option => (
                 <Form.Field key={option}>
                   <Radio
-                    label={option.replace(/([A-Z])/g, ' $1')}
+                    label={option.replace(/([A-Z])/g, ' $1').trim()}
                     name='sortOption'
                     value={option}
-                    onChange={handleSortOptionChange}
+                    onChange={(_event, data) => setSortOption(data.value)}
                     checked={sortOption === option}
                   />
                 </Form.Field>
@@ -132,29 +152,41 @@ const PPR = () => {
             </Form>
           </SearchDiv>
         </FilterContainer>
-        <PlayerCards stats={page.items} loading={loading} />
-        {error && <p>{error.message}</p>}
-        {!error && page.totalItems === 0 && (
-          <p>
-            No player data available yet. Load a Sleeper username and league in
-            Command Center first.
-          </p>
+
+        {routeState.primary === 'loading' && (
+          <Status role='status'>Loading PPR rankings…</Status>
         )}
-        <Pagination
-          currentPage={page.activePage}
-          onPageChange={handlePageChange}
-          totalPages={page.totalPages}
-        />
+        {routeState.primary === 'failure' && (
+          <Status role='alert'>{error.message}</Status>
+        )}
+        {routeState.primary === 'empty' && (
+          <Status role='status'>No matching PPR ranking data is available.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.stale && (
+          <Status role='status'>Showing stale cached NFL data while the source refreshes.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.partial && (
+          <Status role='status'>Player identity data is partial; rankings are based on available statistics.</Status>
+        )}
+        {routeState.primary === 'success' && (
+          <>
+            <PlayerCards stats={page.items} loading={false} />
+            <Pagination
+              currentPage={page.activePage}
+              onPageChange={handlePageChange}
+              totalPages={page.totalPages}
+            />
+          </>
+        )}
         <Footer />
       </PPRPageContainer>
     </>
   );
 };
 
-// Styled components here...
 const PPRPageContainer = styled.div`
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   box-sizing: border-box;
   font-size: 1rem;
   text-align: center;
@@ -170,25 +202,12 @@ const StyledSelect = styled.select`
   padding: 0.75rem;
   border-radius: 0.25rem;
   border: 1px solid ${fleurimondColors.black};
-  outline: none;
   box-sizing: border-box;
   font-size: 1rem;
-  margin: 0 0.5rem;
-  transition: border-color 0.3s ease;
 
-  &:focus {
-    border-color: ${fleurimondColors.blueSapphire};
-    box-shadow: 0 0 0 2px ${fleurimondColors.blueSapphire};
-  }
-
-  @media (max-width: 1200px) {
-    padding: 1rem;
-    max-width: 90%;
-  }
-
-  @media (max-width: 600px) {
-    padding: 1rem;
-    max-width: 95%;
+  &:focus-visible {
+    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 2px;
   }
 `;
 
@@ -198,25 +217,12 @@ const StyledInput = styled.input`
   padding: 0.75rem;
   border-radius: 0.25rem;
   border: 1px solid ${fleurimondColors.black};
-  outline: none;
   box-sizing: border-box;
   font-size: 1rem;
-  margin: 0 0.5rem;
-  transition: border-color 0.3s ease;
 
-  &:focus {
-    border-color: ${fleurimondColors.blueSapphire};
-    box-shadow: 0 0 0 2px ${fleurimondColors.blueSapphire};
-  }
-
-  @media (max-width: 1200px) {
-    padding: 1rem;
-    max-width: 90%;
-  }
-
-  @media (max-width: 600px) {
-    padding: 1rem;
-    max-width: 95%;
+  &:focus-visible {
+    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 2px;
   }
 `;
 
@@ -228,21 +234,6 @@ const SearchDiv = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem;
-  background-color: ${fleurimondColors.white};
-
-  @media (max-width: 1200px) {
-    max-width: 900px;
-  }
-
-  @media (max-width: 900px) {
-    max-width: 600px;
-  }
-
-  @media (max-width: 600px) {
-    font-size: 0.875rem;
-    padding: 1rem;
-  }
 `;
 
 const FilterContainer = styled.div`
@@ -251,32 +242,28 @@ const FilterContainer = styled.div`
   align-items: center;
   width: 100%;
   padding: 1.5rem;
+  box-sizing: border-box;
   background-color: ${fleurimondColors.white};
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-
-  @media (max-width: 800px) {
-    padding: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    padding: 0.75rem;
-  }
 `;
 
 const Title = styled.h1`
   font-size: 2.5rem;
   text-align: center;
-  margin: 2rem 0;
+  margin: 2rem 0 1rem;
+`;
 
-  @media (max-width: 800px) {
-    font-size: 2rem;
-    margin: 1.5rem 0;
-  }
+const DataNotice = styled.p`
+  max-width: 76ch;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+`;
 
-  @media (max-width: 320px) {
-    font-size: 1.75rem;
-    margin: 1rem 0;
-  }
+const Status = styled.p`
+  max-width: 76ch;
+  margin: 1.5rem auto;
+  padding: 1rem;
+  border: 1px solid ${fleurimondColors.gray};
+  border-radius: 0.25rem;
 `;
 
 export default PPR;
