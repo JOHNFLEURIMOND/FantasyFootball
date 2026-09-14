@@ -12,6 +12,8 @@ const { createSleeperClient } = require('./lib/sleeperClient');
 const { sleeperRequestSchema } = require('./lib/schemas');
 const { createSafeError, toSafeError } = require('./lib/errors');
 const { createAnalyticsTracker } = require('../lib/analytics.cjs');
+const { createNflverseRouter } = require('./routes/nflverseRoutes');
+const { createNflverseProvider } = require('./lib/providers/nflverse');
 
 function readRequestParams(req) {
   return {
@@ -73,19 +75,26 @@ function createDefaultCommandCenterService() {
   });
 }
 
+function createDefaultNflverseProvider() {
+  const cache = createResourceCache();
+  return createNflverseProvider({ cache });
+}
+
 function createApp({
   commandCenterService = createDefaultCommandCenterService(),
+  nflverseProvider = createDefaultNflverseProvider(),
 } = {}) {
   const app = express();
   const buildDir = path.join(__dirname, '..', 'build');
 
   app.use(cors());
   app.use(express.json());
-  app.use(express.static(buildDir));
 
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true, service: 'fantasy-football-command-center' });
   });
+
+  app.use('/api/nflverse', createNflverseRouter({ nflverseProvider }));
 
   app.get('/api/command-center', async (req, res) => {
     try {
@@ -113,6 +122,8 @@ function createApp({
     }
   });
 
+  app.use(express.static(buildDir));
+
   app.get('*', (_req, res) => {
     res.sendFile(path.join(buildDir, 'index.html'));
   });
@@ -133,6 +144,7 @@ module.exports = {
   createApp,
   createCommandCenterSuccessResponse,
   createDefaultCommandCenterService,
+  createDefaultNflverseProvider,
   normalizeRequestBodyError,
   parseRequestParams,
 };
