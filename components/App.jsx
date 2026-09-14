@@ -18,6 +18,11 @@ const PublicDashboard = lazy(() => import('./Dashboard/PublicDashboard'));
 const WeeklyProjections = lazy(() => import('./WeeklyProjections/WeeklyProjections'));
 const PPR = lazy(() => import('./PPR/PPR'));
 const Schedule = lazy(() => import('./Schedule/Schedule'));
+const PlayerProfile = lazy(() => import('./Players/PlayerProfile'));
+const ComparePlayers = lazy(() => import('./Players/ComparePlayers'));
+const Leaderboards = lazy(() => import('./Players/Leaderboards'));
+
+const Shell = ({ children }) => <><Nav />{children}<Footer /></>;
 
 const App = () => (
   <ThemeProvider theme={theme}>
@@ -30,7 +35,7 @@ const App = () => (
               <Route
                 path='/'
                 element={
-                  <>
+                  <Shell>
                     <ReactHelmet>
                       <title>NFL & Fantasy Football Dashboard</title>
                       <meta
@@ -38,16 +43,17 @@ const App = () => (
                         content='Browse public NFL players, teams, schedules, statistics, projections, rankings, comparisons, and leaderboards without an account.'
                       />
                     </ReactHelmet>
-                    <Nav />
                     <PublicDashboard />
-                    <Footer />
-                  </>
+                  </Shell>
                 }
               />
-              <Route path='/players' element={<><Nav /><PlayersPage /><Footer /></>} />
-              <Route path='/teams' element={<><Nav /><TeamsPage /><Footer /></>} />
-              <Route path='/standings' element={<><Nav /><StandingsPage /><Footer /></>} />
-              <Route path='/stats' element={<><Nav /><StatsPage /><Footer /></>} />
+              <Route path='/players' element={<Shell><PlayersPage /></Shell>} />
+              <Route path='/players/:id' element={<Shell><PlayerProfile /></Shell>} />
+              <Route path='/teams' element={<Shell><TeamsPage /></Shell>} />
+              <Route path='/standings' element={<Shell><StandingsPage /></Shell>} />
+              <Route path='/stats' element={<Shell><StatsPage /></Shell>} />
+              <Route path='/compare' element={<Shell><ComparePlayers /></Shell>} />
+              <Route path='/leaderboards' element={<Shell><Leaderboards /></Shell>} />
               <Route path='/WeeklyProjections' element={<WeeklyProjections />} />
               <Route path='/PPR' element={<PPR />} />
               <Route path='/Schedule' element={<Schedule />} />
