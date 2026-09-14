@@ -130,7 +130,7 @@ test(
       );
 
       const announcer = document.querySelector('[role="status"]');
-      assert.equal(announcer.textContent, 'Command Center page loaded');
+      assert.equal(announcer.textContent, 'NFL dashboard page loaded');
 
       act(() => {
         click(document.querySelector('a'));
