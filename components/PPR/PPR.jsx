@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { StatsContext } from '../context';
+import { resolveDataRouteState } from '../routing/dataRouteState';
 import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
 import Nav from '../Navbar/Nav';
@@ -51,6 +52,14 @@ const PPR = () => {
       }),
     [stats, search, positionFilter, sortOption, currentPage]
   );
+
+  const routeState = resolveDataRouteState({
+    loading,
+    error,
+    items: page.totalItems > 0 ? page.items : [],
+    stale,
+    partial,
+  });
 
   const seasons = [];
   for (let season = new Date().getFullYear(); season >= FIRST_STATS_SEASON; season -= 1) {
@@ -144,18 +153,22 @@ const PPR = () => {
           </SearchDiv>
         </FilterContainer>
 
-        {loading && <Status role='status'>Loading PPR rankings…</Status>}
-        {!loading && error && <Status role='alert'>{error.message}</Status>}
-        {!loading && !error && stale && (
-          <Status role='status'>Showing stale cached NFL data while the source refreshes.</Status>
+        {routeState.primary === 'loading' && (
+          <Status role='status'>Loading PPR rankings…</Status>
         )}
-        {!loading && !error && partial && (
-          <Status role='status'>Player identity data is partial; rankings are based on available statistics.</Status>
+        {routeState.primary === 'failure' && (
+          <Status role='alert'>{error.message}</Status>
         )}
-        {!loading && !error && page.totalItems === 0 && (
+        {routeState.primary === 'empty' && (
           <Status role='status'>No matching PPR ranking data is available.</Status>
         )}
-        {!loading && !error && page.totalItems > 0 && (
+        {routeState.primary === 'success' && routeState.stale && (
+          <Status role='status'>Showing stale cached NFL data while the source refreshes.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.partial && (
+          <Status role='status'>Player identity data is partial; rankings are based on available statistics.</Status>
+        )}
+        {routeState.primary === 'success' && (
           <>
             <PlayerCards stats={page.items} loading={false} />
             <Pagination
