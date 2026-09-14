@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useCallback } from 'react';
 import { NewsContext } from '../context';
+import { resolveDataRouteState } from '../routing/dataRouteState';
 import ScheduleCardWithModal from './ScheduleCard';
 import Pagination from '../Pagination/Pagination';
 import styled from 'styled-components';
@@ -40,6 +41,14 @@ const Schedule = () => {
     },
     [fetchSchedules, setCurrentPage]
   );
+
+  const routeState = resolveDataRouteState({
+    loading: !loaded,
+    error,
+    items: schedules,
+    stale,
+    partial,
+  });
 
   const seasons = [];
   for (
@@ -90,19 +99,22 @@ const Schedule = () => {
           </select>
         </ControlRow>
 
-        {!loaded && <Status role='status'>Loading schedule…</Status>}
-        {loaded && error && <Status role='alert'>{error.message}</Status>}
-        {loaded && !error && stale && (
-          <Status role='status'>Showing stale cached schedule data while the source refreshes.</Status>
+        {routeState.primary === 'loading' && (
+          <Status role='status'>Loading schedule…</Status>
         )}
-        {loaded && !error && partial && (
-          <Status role='status'>Some schedule records are unavailable.</Status>
+        {routeState.primary === 'failure' && (
+          <Status role='alert'>{error.message}</Status>
         )}
-        {loaded && !error && schedules.length === 0 && (
+        {routeState.primary === 'empty' && (
           <Status role='status'>No games are available for the selected season and week.</Status>
         )}
-
-        {loaded && !error && schedules.length > 0 && (
+        {routeState.primary === 'success' && routeState.stale && (
+          <Status role='status'>Showing stale cached schedule data while the source refreshes.</Status>
+        )}
+        {routeState.primary === 'success' && routeState.partial && (
+          <Status role='status'>Some provider schedule records were skipped because they did not satisfy the canonical contract.</Status>
+        )}
+        {routeState.primary === 'success' && (
           <>
             <CardContainer>
               {schedules.map(game => (
