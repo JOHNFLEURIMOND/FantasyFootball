@@ -21,16 +21,11 @@ async function requestJson(path, { signal } = {}) {
   try {
     payload = await response.json();
   } catch (_error) {
-    if (!response.ok) {
-      throw normalizeError(null, response);
-    }
+    if (!response.ok) throw normalizeError(null, response);
     throw new Error('NFL data service returned an invalid JSON response.');
   }
 
-  if (!response.ok) {
-    throw normalizeError(payload, response);
-  }
-
+  if (!response.ok) throw normalizeError(payload, response);
   return payload;
 }
 
@@ -38,10 +33,7 @@ function unwrapResource(payload) {
   const wrapped = payload?.data;
 
   if (Array.isArray(wrapped)) {
-    return {
-      data: wrapped,
-      meta: payload?.provenance || null,
-    };
+    return { data: wrapped, meta: payload?.provenance || null };
   }
 
   if (wrapped && Array.isArray(wrapped.data)) {
@@ -57,11 +49,24 @@ function unwrapResource(payload) {
   };
 }
 
+function queryString(values) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(values)) {
+    if (value !== undefined && value !== null && value !== '') {
+      params.set(key, String(value));
+    }
+  }
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
 export function isStaleMeta(meta) {
   return (
+    meta?.stale === true ||
     meta?.cacheState === 'stale' ||
     meta?.cacheStatus === 'stale' ||
-    meta?.cache?.status === 'stale'
+    meta?.cache?.status === 'stale' ||
+    meta?.cache?.cacheStatus === 'stale'
   );
 }
 
@@ -77,14 +82,40 @@ export async function fetchTeams(options) {
   return unwrapResource(await requestJson('/teams', options));
 }
 
+export async function fetchProjections(season, options) {
+  return unwrapResource(
+    await requestJson(`/projections${queryString({ season })}`, options)
+  );
+}
+
+export async function fetchRankings(season, format = 'ppr', options) {
+  return unwrapResource(
+    await requestJson(`/rankings${queryString({ season, format })}`, options)
+  );
+}
+
+export async function fetchSchedule(season, week, options) {
+  return unwrapResource(
+    await requestJson(`/schedule${queryString({ season, week })}`, options)
+  );
+}
+
+export async function fetchStandings(season, options) {
+  return unwrapResource(
+    await requestJson(`/standings${queryString({ season })}`, options)
+  );
+}
+
 export async function fetchWeeklyStats(season, options) {
   return unwrapResource(
     await requestJson(`/stats/weekly/${encodeURIComponent(season)}`, options)
   );
 }
 
-export async function fetchSchedule(season, options) {
+export async function fetchSeasonalStats(season, options) {
   return unwrapResource(
-    await requestJson(`/schedules/${encodeURIComponent(season)}`, options)
+    await requestJson(`/stats/seasonal/${encodeURIComponent(season)}`, options)
   );
 }
+
+export { requestJson, unwrapResource };
