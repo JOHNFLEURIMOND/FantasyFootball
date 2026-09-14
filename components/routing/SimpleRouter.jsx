@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import styled from 'styled-components';
 
 const RouterContext = createContext({
   location: {
@@ -35,25 +36,36 @@ const createLocationState = location => ({
 const resolveToLocation = (to, baseUrl = getBaseUrl()) => {
   const resolved = new URL(to, baseUrl);
   const baseOrigin = new URL(baseUrl).origin;
-  const external = resolved.origin !== baseOrigin || !['http:', 'https:'].includes(resolved.protocol);
+  const external =
+    resolved.origin !== baseOrigin ||
+    !['http:', 'https:'].includes(resolved.protocol);
 
   return {
     pathname: resolved.pathname,
     search: resolved.search,
     hash: resolved.hash,
-    href: external ? resolved.href : `${resolved.pathname}${resolved.search}${resolved.hash}` || '/',
+    href: external
+      ? resolved.href
+      : `${resolved.pathname}${resolved.search}${resolved.hash}` || '/',
     external,
   };
 };
 
 const isModifiedClick = event =>
-  event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+  event.metaKey ||
+  event.ctrlKey ||
+  event.shiftKey ||
+  event.altKey ||
+  event.button !== 0;
 
-const formatPath = ({ pathname, search, hash }) => `${pathname}${search}${hash}` || '/';
+const formatPath = ({ pathname, search, hash }) =>
+  `${pathname}${search}${hash}` || '/';
 
 export const Router = ({ children }) => {
   const [location, setLocation] = useState(() =>
-    typeof window === 'undefined' ? { pathname: '/', search: '', hash: '', href: '/' } : createLocationState(window.location)
+    typeof window === 'undefined'
+      ? { pathname: '/', search: '', hash: '', href: '/' }
+      : createLocationState(window.location)
   );
 
   useEffect(() => {
@@ -99,28 +111,63 @@ export const Router = ({ children }) => {
     [location.href]
   );
 
-  const value = useMemo(
-    () => ({ location, navigate }),
-    [location, navigate]
-  );
+  const value = useMemo(() => ({ location, navigate }), [location, navigate]);
 
-  return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
+  return (
+    <RouterContext.Provider value={value}>{children}</RouterContext.Provider>
+  );
 };
 
 export const useLocation = () => useContext(RouterContext).location;
 
+const routeNames = {
+  '/': 'Command Center',
+  '/WeeklyProjections': 'Weekly Projections',
+  '/PPR': 'PPR Rankings',
+  '/Schedule': 'Schedule',
+};
+
+export const RouteAnnouncer = () => {
+  const { pathname } = useLocation();
+  const routeName = routeNames[pathname] || 'Page not found';
+
+  return (
+    <VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
+      {routeName} page loaded
+    </VisuallyHidden>
+  );
+};
+
 export const Route = () => null;
+
+const VisuallyHidden = styled.p`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+`;
 
 export const Routes = ({ children, fallback = null }) => {
   const { location } = useContext(RouterContext);
-  const childRoutes = React.Children.toArray(children).filter(React.isValidElement);
+  const childRoutes = React.Children.toArray(children).filter(
+    React.isValidElement
+  );
 
-  const exactMatch = childRoutes.find(child => child.props.path === location.pathname);
+  const exactMatch = childRoutes.find(
+    child => child.props.path === location.pathname
+  );
   if (exactMatch) {
     return exactMatch.props.element;
   }
 
-  const wildcardMatch = childRoutes.find(child => child.props.path === '*' || child.props.path === '/*');
+  const wildcardMatch = childRoutes.find(
+    child => child.props.path === '*' || child.props.path === '/*'
+  );
   if (wildcardMatch) {
     return wildcardMatch.props.element;
   }
@@ -140,7 +187,8 @@ export const NavLink = ({
 }) => {
   const { location, navigate } = useContext(RouterContext);
   const resolved = resolveToLocation(to);
-  const isActive = !resolved.external && location.pathname === resolved.pathname;
+  const isActive =
+    !resolved.external && location.pathname === resolved.pathname;
   const resolvedClassName =
     typeof className === 'function'
       ? className({ isActive })
@@ -182,9 +230,4 @@ export const NavLink = ({
   );
 };
 
-export {
-  createLocationState,
-  formatPath,
-  isModifiedClick,
-  resolveToLocation,
-};
+export { createLocationState, formatPath, isModifiedClick, resolveToLocation };

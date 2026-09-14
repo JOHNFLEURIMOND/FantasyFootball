@@ -15,12 +15,22 @@ const { JSDOM } = require('jsdom');
 
 const { act } = React;
 
-const { Router, Route, Routes, NavLink, useLocation } = require('../components/routing/SimpleRouter.jsx');
+const {
+  Router,
+  Route,
+  RouteAnnouncer,
+  Routes,
+  NavLink,
+  useLocation,
+} = require('../components/routing/SimpleRouter.jsx');
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 const createDom = url => {
-  const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url });
+  const dom = new JSDOM(
+    '<!doctype html><html><body><div id="root"></div></body></html>',
+    { url }
+  );
   const previous = {
     window: globalThis.window,
     document: globalThis.document,
@@ -104,6 +114,35 @@ const waitForPopState = () =>
   });
 
 test(
+  'route announcer reports the active route after navigation',
+  { concurrency: false },
+  () => {
+    const dom = createDom('http://localhost/');
+
+    try {
+      render(
+        React.createElement(
+          Router,
+          null,
+          React.createElement(RouteAnnouncer),
+          React.createElement(NavLink, { to: '/Schedule' }, 'Schedule')
+        )
+      );
+
+      const announcer = document.querySelector('[role="status"]');
+      assert.equal(announcer.textContent, 'Command Center page loaded');
+
+      act(() => {
+        click(document.querySelector('a'));
+      });
+      assert.equal(announcer.textContent, 'Schedule page loaded');
+    } finally {
+      dom.restore();
+    }
+  }
+);
+
+test(
   'router matches pathnames while preserving query strings and fragments',
   { concurrency: false },
   () => {
@@ -123,20 +162,34 @@ test(
               null,
               React.createElement(Route, {
                 path: '/Schedule',
-                element: React.createElement('div', { 'data-testid': 'schedule' }, 'Schedule'),
+                element: React.createElement(
+                  'div',
+                  { 'data-testid': 'schedule' },
+                  'Schedule'
+                ),
               }),
               React.createElement(Route, {
                 path: '*',
-                element: React.createElement('div', { 'data-testid': 'fallback' }, 'Fallback'),
+                element: React.createElement(
+                  'div',
+                  { 'data-testid': 'fallback' },
+                  'Fallback'
+                ),
               })
             )
           )
         )
       );
 
-      assert.equal(document.querySelector('[data-testid="schedule"]').textContent, 'Schedule');
+      assert.equal(
+        document.querySelector('[data-testid="schedule"]').textContent,
+        'Schedule'
+      );
       assert.equal(document.querySelector('[data-testid="fallback"]'), null);
-      assert.equal(document.querySelector('[data-testid="location"]').textContent, '/Schedule?week=2#top');
+      assert.equal(
+        document.querySelector('[data-testid="location"]').textContent,
+        '/Schedule?week=2#top'
+      );
     } finally {
       dom.restore();
     }
@@ -159,18 +212,29 @@ test(
             null,
             React.createElement(Route, {
               path: '/Schedule',
-              element: React.createElement('div', { 'data-testid': 'schedule' }, 'Schedule'),
+              element: React.createElement(
+                'div',
+                { 'data-testid': 'schedule' },
+                'Schedule'
+              ),
             }),
             React.createElement(Route, {
               path: '*',
-              element: React.createElement('div', { 'data-testid': 'fallback' }, 'Not Found'),
+              element: React.createElement(
+                'div',
+                { 'data-testid': 'fallback' },
+                'Not Found'
+              ),
             })
           )
         )
       );
 
       assert.equal(document.querySelector('[data-testid="schedule"]'), null);
-      assert.equal(document.querySelector('[data-testid="fallback"]').textContent, 'Not Found');
+      assert.equal(
+        document.querySelector('[data-testid="fallback"]').textContent,
+        'Not Found'
+      );
     } finally {
       dom.restore();
     }
@@ -211,15 +275,23 @@ test(
           React.createElement(
             'div',
             null,
-            React.createElement(NavLink, {
-              to: '/PPR?week=5#details',
-              'data-testid': 'internal',
-            }, 'Internal'),
-            React.createElement(NavLink, {
-              to: 'https://example.com/report',
-              target: '_blank',
-              'data-testid': 'external',
-            }, 'External'),
+            React.createElement(
+              NavLink,
+              {
+                to: '/PPR?week=5#details',
+                'data-testid': 'internal',
+              },
+              'Internal'
+            ),
+            React.createElement(
+              NavLink,
+              {
+                to: 'https://example.com/report',
+                target: '_blank',
+                'data-testid': 'external',
+              },
+              'External'
+            ),
             React.createElement(LocationProbe)
           )
         );
@@ -228,7 +300,10 @@ test(
       const internal = document.querySelector('[data-testid="internal"]');
       const external = document.querySelector('[data-testid="external"]');
 
-      assert.equal(document.querySelector('[data-testid="location"]').textContent, '/');
+      assert.equal(
+        document.querySelector('[data-testid="location"]').textContent,
+        '/'
+      );
 
       act(() => {
         click(internal);
@@ -236,12 +311,18 @@ test(
       assert.equal(window.location.pathname, '/PPR');
       assert.equal(window.location.search, '?week=5');
       assert.equal(window.location.hash, '#details');
-      assert.equal(document.querySelector('[data-testid="location"]').textContent, '/PPR?week=5#details');
+      assert.equal(
+        document.querySelector('[data-testid="location"]').textContent,
+        '/PPR?week=5#details'
+      );
       assert.equal(internal.getAttribute('aria-current'), 'page');
 
       const ctrlClick = click(internal, { ctrlKey: true });
       assert.equal(ctrlClick.defaultPrevented, false);
-      assert.equal(document.querySelector('[data-testid="location"]').textContent, '/PPR?week=5#details');
+      assert.equal(
+        document.querySelector('[data-testid="location"]').textContent,
+        '/PPR?week=5#details'
+      );
 
       const externalClick = click(external);
       assert.equal(externalClick.defaultPrevented, false);
@@ -254,14 +335,20 @@ test(
         window.history.back();
         await backPromise;
       });
-      assert.equal(document.querySelector('[data-testid="location"]').textContent, '/');
+      assert.equal(
+        document.querySelector('[data-testid="location"]').textContent,
+        '/'
+      );
 
       const forwardPromise = waitForPopState();
       await act(async () => {
         window.history.forward();
         await forwardPromise;
       });
-      assert.equal(document.querySelector('[data-testid="location"]').textContent, '/PPR?week=5#details');
+      assert.equal(
+        document.querySelector('[data-testid="location"]').textContent,
+        '/PPR?week=5#details'
+      );
 
       unmount();
       assert.ok(addCalls.length >= 1);

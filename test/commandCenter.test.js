@@ -32,6 +32,7 @@ test('Sleeper client validates upstream payloads and encodes path parameters', a
               username: 'john doe',
               display_name: 'John Doe',
               avatar: 'avatar-1',
+              metadata: null,
             }),
         };
       }
