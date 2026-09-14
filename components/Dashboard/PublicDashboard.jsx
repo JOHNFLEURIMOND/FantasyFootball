@@ -60,6 +60,10 @@ function searchItems(players, teams, query) {
   return [...playerResults, ...teamResults].slice(0, 12);
 }
 
+function fulfilledValue(result, fallback = { data: [], meta: null }) {
+  return result.status === 'fulfilled' ? result.value : fallback;
+}
+
 const PublicDashboard = () => {
   const [players, setPlayers] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -77,19 +81,36 @@ const PublicDashboard = () => {
       setLoading(true);
       setError(null);
       try {
-        const [playersResult, teamsResult, standingsResult] = await Promise.all([
+        const results = await Promise.allSettled([
           fetchPlayers({ signal: controller.signal }),
           fetchTeams({ signal: controller.signal }),
           fetchStandings(DEFAULT_SEASON, { signal: controller.signal }),
         ]);
-        setPlayers(playersResult.data);
-        setTeams(teamsResult.data);
-        setStandings(standingsResult.data);
-        setStale(
-          [playersResult.meta, teamsResult.meta, standingsResult.meta].some(isStaleMeta)
-        );
+
+        if (controller.signal.aborted) return;
+
+        const [playersResult, teamsResult, standingsResult] = results;
+        const playerFeed = fulfilledValue(playersResult);
+        const teamFeed = fulfilledValue(teamsResult);
+        const standingsFeed = fulfilledValue(standingsResult);
+        const coreFeedsUnavailable =
+          playersResult.status === 'rejected' && teamsResult.status === 'rejected';
+
+        if (coreFeedsUnavailable) {
+          throw playersResult.reason || teamsResult.reason || new Error('Player and team feeds are unavailable.');
+        }
+
+        const fulfilledMeta = results
+          .filter(result => result.status === 'fulfilled')
+          .map(result => result.value.meta);
+
+        setPlayers(playerFeed.data);
+        setTeams(teamFeed.data);
+        setStandings(standingsFeed.data);
+        setStale(fulfilledMeta.some(isStaleMeta));
         setPartial(
-          [playersResult.meta, teamsResult.meta, standingsResult.meta].some(isPartialMeta)
+          results.some(result => result.status === 'rejected') ||
+            fulfilledMeta.some(isPartialMeta)
         );
       } catch (caughtError) {
         if (caughtError.name !== 'AbortError') {
@@ -271,5 +292,5 @@ const SummaryCard = styled.div`
   strong { font-size: 2rem; }
 `;
 
-export { searchItems };
+export { fulfilledValue, searchItems };
 export default PublicDashboard;
