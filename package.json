@@ -40,7 +40,6 @@
     "concurrently": "^8.2.2",
     "core-js": "^3.38.0",
     "cors": "^2.8.5",
-    "csv-parse": "^7.0.2",
     "express": "^4.19.2",
     "formik": "^2.4.6",
     "graphql": "^16.9.0",

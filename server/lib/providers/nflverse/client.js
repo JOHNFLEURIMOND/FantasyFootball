@@ -1,8 +1,8 @@
-const { parse } = require('csv-parse/sync');
 const { createResourceCache } = require('../../cache');
 const { createSafeError, isTransientError } = require('../../errors');
 const { withRetry } = require('../../retry');
 const { buildDatasetDescriptor } = require('./config');
+const { parseCsvObjects } = require('./csv');
 
 const DEFAULT_MAX_RESPONSE_BYTES = 64 * 1024 * 1024;
 
@@ -21,12 +21,7 @@ function buildHttpError(status, dataset) {
 
 function parseCsv(text, dataset) {
   try {
-    return parse(text, {
-      bom: true,
-      columns: true,
-      skip_empty_lines: true,
-      trim: true,
-    });
+    return parseCsvObjects(text);
   } catch (error) {
     const safeError = createSafeError({
       code: 'NFLVERSE_CSV_INVALID',

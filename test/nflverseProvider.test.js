@@ -95,6 +95,24 @@ test('documented nflverse release URLs are constructed exactly', () => {
   );
 });
 
+test('CSV parsing handles quoted commas, escaped quotes, and multiline fields', async () => {
+  const client = createNflverseClient({
+    fetchImpl: async () =>
+      response(
+        'gsis_id,display_name,first_name,last_name,status,last_season\n' +
+          'player-1,"Doe, Jane",Jane,Doe,ACT,2026\n' +
+          'player-2,"John ""Johnny""\nSmith",John,Smith,ACT,2026\n'
+      ),
+    retries: 0,
+    now: () => NOW,
+  });
+  const provider = createNflverseProvider({ client, now: () => NOW });
+  const result = await provider.getPlayers();
+
+  assert.equal(result.data[0].displayName, 'Doe, Jane');
+  assert.equal(result.data[1].displayName, 'John "Johnny"\nSmith');
+});
+
 test('unsupported datasets and seasons fail before a network request', () => {
   assert.throws(
     () => buildDatasetDescriptor('weeklyStats', 1998, { now: NOW }),
@@ -192,7 +210,7 @@ test('client caches successful downloads without repeating network work', async 
 
 test('malformed provider rows fail with a normalized safe error', async () => {
   const client = createNflverseClient({
-    fetchImpl: async () => response('gsis_id,display_name\n,\n'),
+    fetchImpl: async () => response('gsis_id,display_name\n,Missing ID\n'),
     retries: 0,
     now: () => NOW,
   });
