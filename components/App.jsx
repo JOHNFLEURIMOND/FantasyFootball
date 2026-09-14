@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Router, Route, Routes } from './routing/SimpleRouter';
+import { Router, Route, RouteAnnouncer, Routes } from './routing/SimpleRouter';
 import { ThemeProvider } from 'styled-components';
 import theme from './CSS/theme'; // Adjust path as necessary
 import Loading from './Loading'; // Fixed import path
@@ -22,6 +22,7 @@ const App = () => (
     <StatsProvider>
       <NewsProvider>
         <Router>
+          <RouteAnnouncer />
           <Suspense fallback={<Loading percentage={100} />}>
             <Routes>
               <Route
@@ -41,7 +42,10 @@ const App = () => (
                   </>
                 }
               />
-              <Route path='/WeeklyProjections' element={<WeeklyProjections />} />
+              <Route
+                path='/WeeklyProjections'
+                element={<WeeklyProjections />}
+              />
               <Route path='/PPR' element={<PPR />} />
               <Route path='/Schedule' element={<Schedule />} />
             </Routes>

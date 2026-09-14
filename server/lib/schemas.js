@@ -43,7 +43,8 @@ const sleeperUserSchema = z
         team_name: z.string().optional(),
       })
       .passthrough()
-      .optional(),
+      .optional()
+      .nullable(),
   })
   .passthrough();
 
