@@ -8,6 +8,7 @@ import {
   fetchPlayers,
   fetchSchedule,
   fetchWeeklyStats,
+  hasSkippedRecords,
   isStaleMeta,
 } from './api/nflverseApi';
 import {
@@ -65,7 +66,11 @@ export const StatsProvider = ({ children }) => {
         const players =
           playersResult.status === 'fulfilled' ? playersResult.value.data : [];
         const weeklyStats = weeklyResult.value.data;
-        const nextPartial = playersResult.status === 'rejected';
+        const nextPartial =
+          playersResult.status === 'rejected' ||
+          hasSkippedRecords(weeklyResult.value.meta) ||
+          (playersResult.status === 'fulfilled' &&
+            hasSkippedRecords(playersResult.value.meta));
         const nextStats =
           mode === 'projection'
             ? buildWeeklyProjections({ players, weeklyStats })
@@ -191,6 +196,7 @@ export const NewsProvider = ({ children }) => {
         setCurrentPage(boundedPage);
         setMeta({ schedule: result.meta, season: selectedSeason });
         setStale(isStaleMeta(result.meta));
+        setPartial(hasSkippedRecords(result.meta));
       } catch (caughtError) {
         setAllSchedules([]);
         setSchedules([]);
@@ -198,6 +204,7 @@ export const NewsProvider = ({ children }) => {
         setCurrentPage(1);
         setMeta(null);
         setStale(false);
+        setPartial(false);
         setError(
           normalizeError(caughtError, 'Unable to load the NFL schedule right now.')
         );
