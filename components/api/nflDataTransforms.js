@@ -42,8 +42,8 @@ function toLegacyPlayerShape(player, stat, fantasyPoints, label) {
   const metrics = stat.metrics || {};
   return {
     PlayerID: stat.playerId,
-    Name: player?.displayName || stat.playerId,
-    Position: player?.position || 'N/A',
+    Name: player?.displayName || stat.displayName || stat.playerId,
+    Position: player?.position || stat.position || 'N/A',
     Team: stat.teamId || player?.teamId || 'FA',
     Opponent: 'N/A',
     GameDate: null,
@@ -59,15 +59,29 @@ function toLegacyPlayerShape(player, stat, fantasyPoints, label) {
     Receptions: numberMetric(metrics, 'receptions'),
     ReceivingYards: numberMetric(metrics, 'receiving_yards'),
     ReceivingTouchdowns: numberMetric(metrics, 'receiving_tds'),
-    FantasyPoints: Number(fantasyPoints.toFixed(2)),
-    FantasyPointsPPR: Number(fantasyPoints.toFixed(2)),
+    FantasyPoints: Number(Number(fantasyPoints || 0).toFixed(2)),
+    FantasyPointsPPR: Number(Number(fantasyPoints || 0).toFixed(2)),
     FantasyPointsFanDuel: null,
     FantasyPointsDraftKings: null,
     FantasyPointsYahoo: null,
     DataLabel: label,
     Season: stat.season,
-    Week: stat.week,
+    Week: stat.week || stat.throughWeek || 0,
+    Rank: stat.rank || null,
   };
+}
+
+export function mapCanonicalFantasyRows(rows = [], kind = 'ranking') {
+  return rows.map(row =>
+    toLegacyPlayerShape(
+      null,
+      row,
+      row.fantasyPointsPpr,
+      kind === 'projection'
+        ? `Estimated projection · ${row.sourceSampleSize || 0}-game trailing average · full PPR`
+        : 'Observed statistics · application-calculated full PPR'
+    )
+  );
 }
 
 export function buildPprRankings({ players = [], weeklyStats = [] }) {
@@ -124,9 +138,10 @@ export function buildWeeklyProjections({ players = [], weeklyStats = [] }) {
 
   return Array.from(byPlayer.entries())
     .map(([playerId, stats]) => {
-      const ordered = [...stats].sort((a, b) => Number(a.week) - Number(b.week));
-      const completed = ordered.filter(stat => Number(stat.week) > 0);
-      const recent = completed.slice(-4);
+      const recent = [...stats]
+        .sort((a, b) => Number(a.week) - Number(b.week))
+        .filter(stat => Number(stat.week) > 0)
+        .slice(-4);
       if (recent.length === 0) return null;
 
       const averageMetrics = {};
@@ -148,12 +163,10 @@ export function buildWeeklyProjections({ players = [], weeklyStats = [] }) {
         week: Math.min((Number(latest.week) || 0) + 1, 30),
         metrics: averageMetrics,
       };
-      const projectedPoints = calculatePprPoints(averageMetrics);
-
       return toLegacyPlayerShape(
         playersById.get(playerId),
         projectionStat,
-        projectedPoints,
+        calculatePprPoints(averageMetrics),
         `Estimated projection · ${recent.length}-game trailing average · full PPR`
       );
     })
@@ -164,8 +177,16 @@ export function buildWeeklyProjections({ players = [], weeklyStats = [] }) {
 export function buildScheduleCards(games = []) {
   return games.map(game => ({
     GameKey: game.gameId,
-    AwayTeam: game.awayTeamId,
-    HomeTeam: game.homeTeamId,
+    AwayTeam: game.awayTeam?.abbreviation || game.awayTeamId,
+    HomeTeam: game.homeTeam?.abbreviation || game.homeTeamId,
+    AwayTeamName: game.awayTeam
+      ? [game.awayTeam.city, game.awayTeam.name].filter(Boolean).join(' ')
+      : game.awayTeamId,
+    HomeTeamName: game.homeTeam
+      ? [game.homeTeam.city, game.homeTeam.name].filter(Boolean).join(' ')
+      : game.homeTeamId,
+    AwayTeamLogo: game.awayTeam?.logoUrl || null,
+    HomeTeamLogo: game.homeTeam?.logoUrl || null,
     Date: game.startTime,
     DateTime: game.startTime,
     Channel: 'NFL schedule',
