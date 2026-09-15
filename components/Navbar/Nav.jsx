@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { NavLink } from '../routing/SimpleRouter';
 import styled from 'styled-components';
 import { CgMenu, CgCloseR } from 'react-icons/cg';
@@ -124,6 +124,8 @@ const debounce = (func, wait) => {
 const Navbar = React.memo(() => {
   const [openMenu, setOpenMenu] = useState(false);
   const [visible, setVisible] = useState(true);
+  const toggleRef = useRef(null);
+  const firstLinkRef = useRef(null);
   const handleMenuToggle = useCallback(() => setOpenMenu(value => !value), []);
 
   useEffect(() => {
@@ -139,16 +141,21 @@ const Navbar = React.memo(() => {
 
   useEffect(() => {
     if (!openMenu) return undefined;
+    firstLinkRef.current?.focus();
     const closeOnEscape = event => {
-      if (event.key === 'Escape') setOpenMenu(false);
+      if (event.key === 'Escape') {
+        setOpenMenu(false);
+        toggleRef.current?.focus();
+      }
     };
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [openMenu]);
 
   return (
-    <Nav aria-label='Primary' $openMenu={openMenu} $visible={visible}>
+    <Nav aria-label='Primary navigation' $openMenu={openMenu} $visible={visible}>
       <button
+        ref={toggleRef}
         type='button'
         className='mobile-navbar-btn'
         onClick={handleMenuToggle}
@@ -156,12 +163,17 @@ const Navbar = React.memo(() => {
         aria-controls='primary-navigation'
         aria-expanded={openMenu}
       >
-        {openMenu ? <CgCloseR className='mobile-nav-icon' /> : <CgMenu className='mobile-nav-icon' />}
+        {openMenu ? <CgCloseR className='mobile-nav-icon' aria-hidden='true' /> : <CgMenu className='mobile-nav-icon' aria-hidden='true' />}
       </button>
       <ul className='navbar-list' id='primary-navigation'>
-        {navItems.map(([label, to]) => (
+        {navItems.map(([label, to], index) => (
           <li key={to}>
-            <NavLink className='navbar-link' onClick={() => setOpenMenu(false)} to={to}>
+            <NavLink
+              ref={index === 0 ? firstLinkRef : undefined}
+              className='navbar-link'
+              onClick={() => setOpenMenu(false)}
+              to={to}
+            >
               {label}
             </NavLink>
           </li>
