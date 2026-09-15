@@ -55,7 +55,7 @@ const rankingSchema = z.object({
   rank: z.number().int().positive(),
 }).strict();
 
-const scheduleGameSchema = gameSchema.extend({
+const scheduleGameSchema = gameSchema.safeExtend({
   homeTeam: teamSchema.nullable(),
   awayTeam: teamSchema.nullable(),
 });
