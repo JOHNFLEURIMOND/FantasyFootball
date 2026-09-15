@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import styled from 'styled-components';
@@ -131,6 +132,31 @@ function routeName(pathname) {
 
 export const RouteAnnouncer = () => {
   const { pathname } = useLocation();
+  const previousPath = useRef(pathname);
+
+  useEffect(() => {
+    if (previousPath.current === pathname) return undefined;
+    previousPath.current = pathname;
+
+    const focusMain = () => {
+      const main = document.getElementById('main-content');
+      if (main && typeof main.focus === 'function') main.focus({ preventScroll: true });
+    };
+
+    const frame =
+      typeof window.requestAnimationFrame === 'function'
+        ? window.requestAnimationFrame(focusMain)
+        : window.setTimeout(focusMain, 0);
+
+    return () => {
+      if (typeof window.cancelAnimationFrame === 'function') {
+        window.cancelAnimationFrame(frame);
+      } else {
+        window.clearTimeout(frame);
+      }
+    };
+  }, [pathname]);
+
   return (
     <VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
       {routeName(pathname)} page loaded
