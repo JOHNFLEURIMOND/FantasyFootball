@@ -51,14 +51,13 @@ const PPR = () => {
   }, [search, positionFilter, sortOption, setCurrentPage]);
 
   const page = useMemo(
-    () =>
-      derivePprPage({
-        stats,
-        search,
-        position: positionFilter,
-        sortBy: sortOption,
-        currentPage,
-      }),
+    () => derivePprPage({
+      stats,
+      search,
+      position: positionFilter,
+      sortBy: sortOption,
+      currentPage,
+    }),
     [stats, search, positionFilter, sortOption, currentPage]
   );
 
@@ -101,94 +100,99 @@ const PPR = () => {
       <PPRPageContainer>
         <Nav />
         <MainHero />
-        <Title>PPR Rankings</Title>
-        <DataNotice>
-          Rankings use observed canonical NFL statistics and application-calculated
-          full-PPR scoring: 1 point per reception, 0.1 per rushing or receiving
-          yard, 0.04 per passing yard, 6 per rushing or receiving touchdown, and
-          4 per passing touchdown. These are rankings, not projections.
-        </DataNotice>
-        <FilterContainer>
-          <SearchDiv>
-            <StyledInput
-              type='search'
-              name='search'
-              aria-label='Search players'
-              placeholder='Search For Players'
-              value={search}
-              onChange={event => setSearch(event.target.value)}
-            />
-            <StyledSelect
-              value={selectedSeason}
-              onChange={event => setSelectedSeason(Number(event.target.value))}
-              aria-label='Select NFL season'
-            >
-              {seasons.map(season => (
-                <option key={season} value={season}>
-                  {season} season
-                </option>
-              ))}
-            </StyledSelect>
-            <StyledSelect
-              value={positionFilter}
-              onChange={handlePositionChange}
-              aria-label='Filter Players By Position'
-            >
-              <option value=''>All positions</option>
-              {['QB', 'RB', 'WR', 'TE'].map(position => (
-                <option key={position} value={position}>
-                  {position}
-                </option>
-              ))}
-            </StyledSelect>
-            <SortFieldset>
-              <legend>Sort rankings</legend>
-              {SORT_OPTIONS.map(option => (
-                <label key={option}>
-                  <input
-                    type='radio'
-                    name='sortOption'
-                    value={option}
-                    checked={sortOption === option}
-                    onChange={event => setSortOption(event.target.value)}
-                  />
-                  <span>{option.replace(/([A-Z])/g, ' $1').trim()}</span>
-                </label>
-              ))}
-            </SortFieldset>
-          </SearchDiv>
-        </FilterContainer>
+        <MainContent id='main-content' tabIndex='-1'>
+          <Title>PPR Rankings</Title>
+          <DataNotice>
+            Rankings use observed canonical NFL statistics and application-calculated
+            full-PPR scoring: 1 point per reception, 0.1 per rushing or receiving
+            yard, 0.04 per passing yard, 6 per rushing or receiving touchdown, and
+            4 per passing touchdown. These are rankings, not projections.
+          </DataNotice>
+          <FilterContainer>
+            <SearchDiv>
+              <StyledInput
+                type='search'
+                name='search'
+                aria-label='Search players'
+                placeholder='Search For Players'
+                value={search}
+                onChange={event => setSearch(event.target.value)}
+              />
+              <StyledSelect
+                value={selectedSeason}
+                onChange={event => setSelectedSeason(Number(event.target.value))}
+                aria-label='Select NFL season'
+              >
+                {seasons.map(season => (
+                  <option key={season} value={season}>
+                    {season} season
+                  </option>
+                ))}
+              </StyledSelect>
+              <StyledSelect
+                value={positionFilter}
+                onChange={handlePositionChange}
+                aria-label='Filter Players By Position'
+              >
+                <option value=''>All positions</option>
+                {['QB', 'RB', 'WR', 'TE'].map(position => (
+                  <option key={position} value={position}>
+                    {position}
+                  </option>
+                ))}
+              </StyledSelect>
+              <SortFieldset>
+                <legend>Sort rankings</legend>
+                {SORT_OPTIONS.map(option => (
+                  <label key={option}>
+                    <input
+                      type='radio'
+                      name='sortOption'
+                      value={option}
+                      checked={sortOption === option}
+                      onChange={event => setSortOption(event.target.value)}
+                    />
+                    <span>{option.replace(/([A-Z])/g, ' $1').trim()}</span>
+                  </label>
+                ))}
+              </SortFieldset>
+            </SearchDiv>
+          </FilterContainer>
 
-        {routeState.primary === 'loading' && (
-          <Status role='status'>Loading PPR rankings…</Status>
-        )}
-        {routeState.primary === 'failure' && (
-          <Status role='alert'>{error.message}</Status>
-        )}
-        {routeState.primary === 'empty' && (
-          <Status role='status'>No matching PPR ranking data is available.</Status>
-        )}
-        {routeState.primary === 'success' && routeState.stale && (
-          <Status role='status'>
-            Showing stale cached NFL data while the source refreshes.
-          </Status>
-        )}
-        {routeState.primary === 'success' && routeState.partial && (
-          <Status role='status'>
-            Player identity data is partial; rankings are based on available
-            statistics.
-          </Status>
-        )}
-        {routeState.primary === 'success' && (
-          <>
-            <PlayerCards stats={page.items} loading={false} />
-            <Pagination
-              currentPage={page.activePage}
-              onPageChange={handlePageChange}
-              totalPages={page.totalPages}
-            />
-          </>
-        )}
+          {routeState.primary === 'loading' && (
+            <Status role='status'>Loading PPR rankings…</Status>
+          )}
+          {routeState.primary === 'failure' && (
+            <Status role='alert'>{error.message}</Status>
+          )}
+          {routeState.primary === 'empty' && (
+            <Status role='status'>No matching PPR ranking data is available.</Status>
+          )}
+          {routeState.primary === 'success' && routeState.stale && (
+            <Status role='status'>
+              Showing stale cached NFL data while the source refreshes.
+            </Status>
+          )}
+          {routeState.primary === 'success' && routeState.partial && (
+            <Status role='status'>
+              Player identity data is partial; rankings are based on available
+              statistics.
+            </Status>
+          )}
+          {routeState.primary === 'success' && (
+            <>
+              <PlayerCards stats={page.items} loading={false} />
+              <PageStatus role='status' aria-live='polite'>
+                Page {page.activePage} of {page.totalPages}. {page.totalItems} matching players.
+              </PageStatus>
+              <Pagination
+                currentPage={page.activePage}
+                onPageChange={handlePageChange}
+                totalPages={page.totalPages}
+              />
+            </>
+          )}
+        </MainContent>
         <Footer />
       </PPRPageContainer>
     </>
@@ -205,6 +209,12 @@ const PPRPageContainer = styled.div`
   margin: 0;
   line-height: 1.5;
   background-color: ${fleurimondColors.white};
+`;
+
+const MainContent = styled.main`
+  width: 100%;
+
+  &:focus { outline: none; }
 `;
 
 const StyledSelect = styled.select`
@@ -298,6 +308,10 @@ const Status = styled.p`
   padding: 1rem;
   border: 1px solid ${fleurimondColors.gray};
   border-radius: 0.25rem;
+`;
+
+const PageStatus = styled.p`
+  margin: 1rem auto;
 `;
 
 export default PPR;

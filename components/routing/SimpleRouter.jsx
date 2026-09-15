@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import styled from 'styled-components';
@@ -131,6 +132,26 @@ function routeName(pathname) {
 
 export const RouteAnnouncer = () => {
   const { pathname } = useLocation();
+  const previousPath = useRef(pathname);
+
+  useEffect(() => {
+    if (previousPath.current === pathname) return undefined;
+    previousPath.current = pathname;
+
+    const focusMain = () => {
+      const main = document.getElementById('main-content');
+      if (main && typeof main.focus === 'function') {
+        main.focus();
+        return true;
+      }
+      return false;
+    };
+
+    if (focusMain()) return undefined;
+    const retry = window.setTimeout(focusMain, 50);
+    return () => window.clearTimeout(retry);
+  }, [pathname]);
+
   return (
     <VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
       {routeName(pathname)} page loaded
@@ -174,16 +195,19 @@ export const Routes = ({ children, fallback = null }) => {
   return wildcardMatch ? wildcardMatch.props.element : fallback;
 };
 
-export const NavLink = ({
-  to,
-  className,
-  onClick,
-  children,
-  target,
-  download,
-  rel,
-  ...rest
-}) => {
+export const NavLink = React.forwardRef(function NavLink(
+  {
+    to,
+    className,
+    onClick,
+    children,
+    target,
+    download,
+    rel,
+    ...rest
+  },
+  ref
+) {
   const { location, navigate } = useContext(RouterContext);
   const resolved = resolveToLocation(to);
   const isActive = !resolved.external && location.pathname === resolved.pathname;
@@ -209,6 +233,7 @@ export const NavLink = ({
   return (
     <a
       {...rest}
+      ref={ref}
       href={resolved.external ? resolved.href : formatPath(resolved)}
       target={target}
       download={download}
@@ -220,6 +245,6 @@ export const NavLink = ({
       {children}
     </a>
   );
-};
+});
 
 export { createLocationState, formatPath, isModifiedClick, resolveToLocation, routeName };

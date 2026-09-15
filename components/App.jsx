@@ -5,6 +5,7 @@ import theme from './CSS/theme';
 import Loading from './Loading';
 import ReactHelmet from 'react-helmet';
 import { NewsProvider, StatsProvider } from './context';
+import { SkipLink } from './accessibility/Accessibility';
 import {
   PlayersPage,
   TeamsPage,
@@ -29,6 +30,7 @@ const App = () => (
     <StatsProvider>
       <NewsProvider>
         <Router>
+          <SkipLink />
           <RouteAnnouncer />
           <Suspense fallback={<Loading percentage={100} />}>
             <Routes>
