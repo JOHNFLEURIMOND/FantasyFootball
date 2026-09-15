@@ -45,7 +45,7 @@ function WeeklyProjections() {
       <GlobalStyle />
       <Nav />
       <MainHero />
-      <MainContainer>
+      <MainContainer id='main-content' tabIndex='-1'>
         <Title>Weekly Fantasy Football Projections</Title>
         <DataNotice>
           Estimated projections use a trailing average of up to four observed NFL
@@ -94,6 +94,8 @@ function WeeklyProjections() {
 export const MainContainer = styled.main`
   padding: 2rem;
   background-color: ${fleurimondColors.white};
+
+  &:focus { outline: none; }
 `;
 
 export const Title = styled.h1`
@@ -117,6 +119,11 @@ const ControlRow = styled.div`
   select {
     min-width: 7rem;
     padding: 0.5rem;
+  }
+
+  select:focus-visible {
+    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline-offset: 2px;
   }
 `;
 
