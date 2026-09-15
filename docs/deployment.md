@@ -75,6 +75,7 @@ npm audit --omit=dev --audit-level=critical
 `netlify.toml` is the source of truth for the deployment target:
 
 - build command: `NODE_ENV=production npm run build`
+- npm install flags: `--include=dev` so the production build toolchain is available
 - publish directory: `build`
 - functions directory: `netlify/functions`
 - function bundler: `esbuild`
