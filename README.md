@@ -1,231 +1,298 @@
-# Fantasy Football Command Center
+# NFL & Fantasy Football Dashboard
 
-Fantasy Football Command Center is a React + Express fantasy football app focused on a Sleeper-backed command center workflow. The current repository contains an actively maintained command center slice plus legacy projections/schedule UI routes.
+A public React and Express dashboard for researching NFL players, teams,
+schedules, standings, statistics, rankings, and estimated projections. The
+primary experience does not require an account or fantasy-platform connection.
 
-## Project Overview
+The application keeps provider-specific data behind server-side boundaries and
+returns validated, canonical NFL data to the browser. Sleeper remains available
+as secondary compatibility support for the legacy command-center workflow.
 
-The app serves a browser UI and an application-facing API from the same Node.js process.
+## Features
 
-- Frontend: React single-page app bundled with Webpack.
-- Backend: Express server exposing command center endpoints.
-- Data provider: Sleeper API via server-side adapter, validation, and normalization.
+- Search and browse NFL players and teams.
+- View player profiles with weekly and seasonal statistics.
+- Review schedules, results, and standings by season.
+- Compare multiple players and browse statistical leaderboards.
+- Review full-PPR rankings derived from observed statistics.
+- View estimated weekly projections based on a trailing average of up to four
+  observed game weeks.
+- See loading, empty, error, partial-data, and stale-data states.
+- Use keyboard-accessible navigation, skip links, route announcements, and
+  accessible data tables.
+- Optionally use the legacy Sleeper command center to inspect league data by
+  username.
 
-The main user flow today is on the home route, where users can look up a Sleeper username, choose a league, and inspect normalized league data.
+Estimated projections are application-generated estimates. They are not
+official projections supplied by the upstream data provider.
 
 ## Screenshots
 
-Homepage and branding assets in this repository:
+Branding assets included in the repository:
 
 ![Fantasy Football Home](public/fantasyfootballHomePage.jpeg)
 ![Fantasy Football](public/fantasyfootball.jpeg)
 ![Players](public/Players.jpeg)
 
-## Current Features
+## Application Routes
 
-### Active command center flow
+| Route | Purpose |
+| --- | --- |
+| `/` | Public dashboard with player and team search |
+| `/players` | Player directory |
+| `/players/:id` | Player profile and statistics |
+| `/teams` | Team directory |
+| `/Schedule` | Schedules and results |
+| `/standings` | Season standings derived from completed games |
+| `/stats` | Seasonal player statistics |
+| `/WeeklyProjections` | Estimated weekly projections |
+| `/PPR` | Full-PPR rankings from observed statistics |
+| `/compare` | Player comparison |
+| `/leaderboards` | Statistical leaderboards |
 
-- Sleeper username lookup.
-- League list for resolved season.
-- League selection and normalized detail view.
-- Roster, draft, and matchup sections (when data is available).
-- Week selector based on resolved NFL state.
-- Safe error handling and warning surfaces for partial upstream failures.
-- Cache status signaling (`fresh`, `stale`, `miss`) in the UI response metadata.
+## API Endpoints
 
-### API endpoints
+The Express server and Netlify function expose the same canonical API surface
+under `/api`.
+
+### Health and compatibility
 
 - `GET /api/health`
 - `GET /api/command-center`
 - `POST /api/command-center`
 
-### Existing legacy routes
+The command-center endpoints are the secondary Sleeper compatibility flow.
 
-- `/WeeklyProjections`
-- `/PPR`
-- `/Schedule`
+### Public NFL data
 
-These routes still exist in routing and navigation, but their underlying data contexts are currently placeholder/no-op implementations.
+- `GET /api/nflverse/players`
+- `GET /api/nflverse/players/:id`
+- `GET /api/nflverse/teams`
+- `GET /api/nflverse/teams/:id`
+- `GET /api/nflverse/schedule?season=YYYY&week=N`
+- `GET /api/nflverse/standings?season=YYYY`
+- `GET /api/nflverse/stats/weekly?season=YYYY&week=N`
+- `GET /api/nflverse/stats/seasonal?season=YYYY`
+- `GET /api/nflverse/projections?season=YYYY`
+- `GET /api/nflverse/rankings?season=YYYY&format=ppr`
+- `GET /api/nflverse/metadata`
+- `POST /api/nflverse/refresh`
+
+List endpoints support pagination and resource-specific filtering and sorting.
+Compatibility endpoints also remain available for season-specific schedules and
+statistics. See `server/routes/nflverseRoutes.js` for the complete request
+contract.
+
+The `/api/nflverse` path is an internal compatibility name. User-facing copy
+uses provider-neutral terms such as “public NFL data” and “canonical NFL data.”
 
 ## Technology Stack
 
-- Node.js + npm
+- Node.js 20 and npm 10
 - React 18
 - Express 4
-- Webpack 5 + Babel
-- Styled Components + Semantic UI React
-- Zod (server-side runtime schema validation)
-- `node:test` (test runner)
-- JSDOM + `@babel/register` (router and integration-style tests)
+- Webpack 5 and Babel
+- Styled Components and Semantic UI React
+- Zod runtime validation
+- SQLite through `better-sqlite3`
+- Node's built-in test runner, JSDOM, Supertest, and `@babel/register`
+- Netlify hosting and Functions
 
-## Requirements
+Runtime constraints are defined in [package.json](package.json), and
+[.nvmrc](.nvmrc) pins Node.js 20.
 
-- Node.js: `>=20 <21`
-- npm: `>=10 <11`
+## Local Development
 
-Version constraints are defined in [package.json](package.json) and Node is pinned in [.nvmrc](.nvmrc) to `20`.
-
-## Installation And Local Setup
+Install the locked dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
-Start server and frontend in separate terminals:
+Optionally create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Start the browser development server and Express API together:
+
+```bash
+npm run serve
+```
+
+You can also run them in separate terminals:
 
 ```bash
 npm run server
 npm run dev
 ```
 
-Or run both together:
-
-```bash
-npm run serve
-```
-
-Notes:
-
-- `npm run server` starts Express on `PORT` (default `8080`).
-- `npm run dev` starts `webpack-dev-server` on an available port starting at `5000`.
-- `package.json` has `proxy: http://localhost:8080`, so frontend API calls in dev proxy to the Express server.
+The Express server defaults to port `8080`. Webpack Dev Server starts on an
+available port beginning at `5000` and proxies `/api` requests to Express.
 
 ## Environment Variables
 
-Confirmed variables currently used by repository code:
+| Variable | Required | Default | Purpose |
+| --- | --- | --- | --- |
+| `NODE_ENV` | No | `development` | Runtime mode: `development`, `test`, or `production` |
+| `PORT` | No | `8080` | Local Express port; Netlify Functions do not use it |
+| `NFL_DATA_DB_PATH` | No | `./data/nfl-data.sqlite` | Local SQLite path for ingestion and persistence tooling |
 
-- `PORT`: optional server port for Express (`server.js`), default is `8080`.
-- `NODE_ENV`: influences webpack mode in `webpack.config.js`.
-- `NFL_DATA_DB_PATH`: optional SQLite database path for the NFL data hub,
-  default is `data/nfl-data.sqlite`.
-
-There is no committed `.env.example` in this repository. `.env` and local variants are gitignored.
-
-Minimal local example:
-
-```bash
-PORT=8080
-NODE_ENV=production
-NFL_DATA_DB_PATH=data/nfl-data.sqlite
-```
-
-Do not commit real secrets or credentials.
+Run `npm run validate:env` to validate the environment. Production builds run
+the same check automatically. The public data provider does not require an API
+key. Do not commit `.env` files, credentials, or machine-specific paths.
 
 ## npm Scripts
 
-All script names below are defined in [package.json](package.json):
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start Webpack Dev Server in development mode |
+| `npm run server` | Start the local Express server |
+| `npm run serve` | Start the frontend and backend together |
+| `npm start` | Start the Express production runtime |
+| `npm run build` | Validate the environment and create a production bundle |
+| `npm run ingest:nflverse -- YYYY` | Download and store versioned local snapshots |
+| `npm run validate:env` | Validate supported runtime configuration |
+| `npm run lint` | Run repository lint checks |
+| `npm run test:a11y` | Run the automated accessibility baseline |
+| `npm test` | Run the complete Node test suite |
+| `npm run prettier` | Format supported repository files |
 
-- `npm run dev`: start webpack dev server.
-- `npm run server`: start Express server.
-- `npm run serve`: run frontend and backend concurrently.
-- `npm run start`: start Express server (same runtime target as `server`).
-- `npm run build`: run webpack build.
-- `npm run build2`: duplicate webpack build command.
-- `npm run clean`: runs `build` then `build2`.
-- `npm test`: run Node test suite.
-- `npm run prettier`: format repository with Prettier.
-- `npm run kill`: kill node processes by name.
-- `npm run babel-node`: utility Babel node command.
-
-Maintenance scripts that are present but potentially destructive:
-
-- `npm run restart` (removes lockfile and `node_modules`, updates dependencies).
-- `npm run push` (contains `git add .` and force push behavior).
-
-Use caution with these scripts.
-
-## High-Level Architecture
+## Architecture
 
 ```text
-Browser (React UI)
-  -> components/api/commandCenterApi.js
-  -> Express API (server/createApp.js)
-  -> Command center service (server/lib/commandCenterService.js)
-  -> Sleeper client adapter (server/lib/sleeperClient.js)
-  -> Sleeper API
-
-Canonical persistence (not yet wired to ingestion or API routes)
-  -> Repository interface (server/lib/persistence/nflRepository.js)
-  -> Versioned SQLite store (server/lib/persistence/database.js)
-
-Public NFL data provider (not yet wired to API routes)
-  -> nflverse provider boundary (server/lib/providers/nflverse/)
-  -> Validated players, teams, rosters, schedules, and player statistics
+React public NFL/fantasy dashboard
+    ↓
+Canonical frontend API layer
+    ↓
+Express / Netlify function API
+    ↓
+Canonical NFL service contracts
+    ↓
+nflverse provider boundary
+    ↓
+Validated public NFL datasets
 ```
 
-Key backend behaviors:
+Provider-specific response shapes do not flow into React components. The
+backend validates downloaded records, normalizes them into strict domain
+contracts, applies bounded retries and timeouts, and returns safe error and
+freshness metadata.
 
-- External payload validation with Zod schemas.
-- Normalization into strict, versioned application contracts documented in [docs/domain-contracts.md](docs/domain-contracts.md).
-- Service and API response validation before data reaches the client.
-- Versioned SQLite persistence documented in [docs/persistence.md](docs/persistence.md).
-- Public nflverse provider boundary documented in
-  [docs/providers/nflverse.md](docs/providers/nflverse.md).
-- TTL cache with stale fallback for transient upstream errors.
-- Retry strategy for retryable upstream failures.
-- Safe error shaping (`code`, `message`, `status`, `retryable`).
+The legacy command center follows a separate compatibility path:
 
-Key frontend routing behavior:
+```text
+Legacy command-center UI
+    ↓
+Command-center API and service
+    ↓
+Sleeper client boundary
+```
 
-- Custom client router in `components/routing/SimpleRouter.jsx`.
-- Main route (`/`) renders the command center flow.
-- Legacy routes are still navigable but currently depend on placeholder context providers.
+Technical references:
 
-## Testing, Build, And Audit Commands
+- [Domain contracts](docs/domain-contracts.md)
+- [Public data provider](docs/providers/nflverse.md)
+- [Ingestion pipeline](docs/ingestion.md)
+- [Persistence](docs/persistence.md)
+- [Deployment and runtime](docs/deployment.md)
 
-Primary validation commands:
+## Persistence and Ingestion
+
+The ingestion command downloads validated public datasets and stores versioned,
+immutable local snapshots in SQLite:
 
 ```bash
+npm run ingest:nflverse -- 2026
+```
+
+An optional comma-separated dataset list can follow the season. See
+[docs/ingestion.md](docs/ingestion.md) for supported datasets, checkpoint
+behavior, cache semantics, and failure handling.
+
+SQLite is suitable for local ingestion history and tooling when
+`NFL_DATA_DB_PATH` points to a durable writable filesystem. Netlify Functions
+use ephemeral filesystems, so the repository's SQLite file is **not** a durable
+production database on Netlify. Production API routes currently fetch public
+data through the server-side provider boundary and do not depend on persisted
+SQLite snapshots.
+
+## Testing and CI
+
+Run the complete local validation set before opening a pull request:
+
+```bash
+npm ci
 npm test
+npm run lint
+npm run test:a11y
 npm run build
-npm audit --omit=dev
+npm audit --omit=dev --audit-level=critical
 git diff --check
 ```
 
-CI workflow exists at [.github/workflows/ci.yml](.github/workflows/ci.yml) and runs:
+The GitHub Actions workflow runs dependency installation, tests, lint,
+accessibility checks, the production build, and a critical-level production
+dependency audit for pull requests targeting `main` and configured branch
+pushes.
 
-- `npm ci`
-- `npm test`
-- `npm run build`
-- `npm audit --omit=dev --audit-level=critical`
+Automated checks provide a baseline; they do not replace keyboard, screen-reader,
+responsive-layout, and production smoke testing.
 
-## Deployment Information
+## Netlify Deployment
 
-Confirmed in repository:
+[netlify.toml](netlify.toml) defines the production build:
 
-- Express serves static assets from the `build/` directory.
-- A catch-all route sends `build/index.html` for client-side routing.
-- No platform-specific deployment config is present (no Dockerfile, Procfile, Vercel config, or Netlify config in this repository).
+- Build command: `NODE_ENV=production npm run build`
+- Dependency installation includes development packages required by Webpack.
+- Publish directory: `build`
+- Functions directory: `netlify/functions`
+- `/api/*` requests rewrite to the API function.
+- Other routes fall back to `index.html` for client-side routing.
 
-If deploying this app, ensure build artifacts are generated and the Node server process runs `server.js`.
+After deployment, verify `/api/health`, representative public API endpoints,
+the home page, `/players`, `/leaderboards`, and a player-profile deep link.
+See [docs/deployment.md](docs/deployment.md) for the complete deployment and
+smoke-test procedure.
 
 ## Known Limitations
 
-- Command center is the primary maintained flow; legacy routes currently have placeholder/no-op data providers.
-- No committed `.env.example` is provided.
-- Canonical persistence exists, but ingestion and first-class NFL data API routes
-  are not implemented yet.
-- `webpack.config.js` production behavior depends on `NODE_ENV`; `npm run build` does not set it explicitly.
-- Repository currently includes `build/` artifacts in version control.
-- Some package scripts are operationally risky (`restart`, `push`) and not suitable for normal development flow.
+- Public source data can lag live games and may be corrected after publication.
+- Estimated projections use recent observed statistics; they are not official or
+  provider-authored forecasts.
+- PPR is the only ranking/scoring format currently exposed.
+- Standings are calculated from completed schedule results and do not include
+  every league tiebreaking rule.
+- Production Netlify Functions do not persist the local SQLite database.
+- Sleeper support remains a secondary compatibility flow and is not required for
+  the public dashboard.
+- Automated accessibility checks do not prove full accessibility conformance.
 
-## Development Roadmap
+## Roadmap
 
-Repository-confirmed direction from current code and docs:
+- Refine the public dashboard's visual hierarchy and responsive presentation
+  while preserving the existing hero artwork and navy, red, and white identity.
+- Improve data freshness visibility and operational monitoring.
+- Expand projection methodology and scoring formats only when supported by clear
+  source data and documented calculations.
+- Add optional fantasy-provider connections behind server-side boundaries.
+- Move persisted production snapshots to durable storage if production serving
+  begins to depend on ingestion history.
 
-1. Continue expanding normalized Sleeper-backed command center capabilities.
-2. Improve league detail workflows (deeper roster/matchup presentation).
-3. Revisit legacy projections/schedule routes so they either use active providers or are clearly retired.
-4. Add a committed environment template (`.env.example`) with non-sensitive defaults.
+## Contributing
 
-## Contribution And Development Guidance
+- Use Node.js 20 and npm 10.
+- Keep provider integrations server-side and preserve canonical application
+  contracts.
+- Prefer small, reviewable changes over broad rewrites.
+- Add tests for new behavior and failure paths.
+- Run the validation commands before opening a pull request.
+- Do not commit secrets, local databases, generated build output, or
+  machine-specific files.
 
-- Use Node 20 and npm 10 to match engine constraints.
-- Prefer incremental changes aligned with existing architecture.
-- Run tests and build locally before opening changes.
-- Avoid committing secrets, local environment files, or machine-specific artifacts.
+## Links
 
-## Useful Links
-
-- Portfolio/site from package metadata: https://johnfleurimond.netlify.app
-- GitHub profile link used in app footer: https://github.com/JOHNFLEURIMOND
-- LinkedIn link used in app footer: https://www.linkedin.com/in/john-fleurimond/
+- [GitHub repository](https://github.com/JOHNFLEURIMOND/FantasyFootball)
+- [John Fleurimond on GitHub](https://github.com/JOHNFLEURIMOND)
+- [John Fleurimond on LinkedIn](https://www.linkedin.com/in/john-fleurimond/)

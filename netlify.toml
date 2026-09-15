@@ -1,7 +1,10 @@
 [build]
-  command = "npm run build"
+  command = "NODE_ENV=production npm run build"
   publish = "build"
   functions = "netlify/functions"
+
+[build.environment]
+  NPM_FLAGS = "--include=dev"
 
 [functions]
   node_bundler = "esbuild"
