@@ -102,6 +102,34 @@ function paginate(items, query = {}) {
   };
 }
 
+function compareValues(left, right) {
+  if (left === right) return 0;
+  if (left === null || left === undefined) return 1;
+  if (right === null || right === undefined) return -1;
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right));
+}
+
+function sortItems(items, query = {}, allowed = {}, defaultKey) {
+  const sortKey = String(query.sort || defaultKey || '').trim();
+  const order = String(query.order || 'asc').toLowerCase();
+  if (!['asc', 'desc'].includes(order)) {
+    throw invalidRequest('Invalid sort order.');
+  }
+  if (!sortKey || !Object.prototype.hasOwnProperty.call(allowed, sortKey)) {
+    throw invalidRequest('Invalid sort field.');
+  }
+  const selector = allowed[sortKey];
+  const direction = order === 'desc' ? -1 : 1;
+  return [...items].sort((a, b) => {
+    const primary = compareValues(selector(a), selector(b));
+    if (primary !== 0) return primary * direction;
+    const aId = a.playerId || a.teamId || a.gameId || a.statId || '';
+    const bId = b.playerId || b.teamId || b.gameId || b.statId || '';
+    return String(aId).localeCompare(String(bId));
+  });
+}
+
 function validateCollection(schema, items, resource) {
   const result = z.array(schema).safeParse(items);
   if (!result.success) {
@@ -144,6 +172,7 @@ module.exports = {
   projectionSchema,
   rankingSchema,
   scheduleGameSchema,
+  sortItems,
   standingsSchema,
   validateCollection,
   validateOne,
