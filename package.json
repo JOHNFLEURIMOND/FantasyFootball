@@ -2,7 +2,7 @@
   "name": "fantasyfootball",
   "version": "0.1.0",
   "private": true,
-  "description": "Public NFL and fantasy football dashboard backed by canonical nflverse data APIs.",
+  "description": "Public NFL and fantasy football dashboard backed by validated canonical data APIs.",
   "author": "John Fleurimond",
   "repository": {
     "type": "git",
