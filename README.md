@@ -245,6 +245,7 @@ responsive-layout, and production smoke testing.
 [netlify.toml](netlify.toml) defines the production build:
 
 - Build command: `NODE_ENV=production npm run build`
+- Dependency installation includes development packages required by Webpack.
 - Publish directory: `build`
 - Functions directory: `netlify/functions`
 - `/api/*` requests rewrite to the API function.
