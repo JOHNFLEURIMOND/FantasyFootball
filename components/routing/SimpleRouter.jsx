@@ -140,21 +140,16 @@ export const RouteAnnouncer = () => {
 
     const focusMain = () => {
       const main = document.getElementById('main-content');
-      if (main && typeof main.focus === 'function') main.focus({ preventScroll: true });
-    };
-
-    const frame =
-      typeof window.requestAnimationFrame === 'function'
-        ? window.requestAnimationFrame(focusMain)
-        : window.setTimeout(focusMain, 0);
-
-    return () => {
-      if (typeof window.cancelAnimationFrame === 'function') {
-        window.cancelAnimationFrame(frame);
-      } else {
-        window.clearTimeout(frame);
+      if (main && typeof main.focus === 'function') {
+        main.focus();
+        return true;
       }
+      return false;
     };
+
+    if (focusMain()) return undefined;
+    const retry = window.setTimeout(focusMain, 50);
+    return () => window.clearTimeout(retry);
   }, [pathname]);
 
   return (
