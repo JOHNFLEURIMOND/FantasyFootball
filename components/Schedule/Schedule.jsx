@@ -63,7 +63,7 @@ const Schedule = () => {
     <>
       <Nav />
       <MainHero />
-      <ContentWrapper>
+      <ContentWrapper id='main-content' tabIndex='-1'>
         <Title>NFL Schedule & Results</Title>
         <ControlRow>
           <label htmlFor='schedule-season'>Season</label>
@@ -145,6 +145,8 @@ const ContentWrapper = styled.main`
   gap: 1.5rem;
   min-height: 100vh;
   box-sizing: border-box;
+
+  &:focus { outline: none; }
 `;
 
 const Title = styled.h1`
