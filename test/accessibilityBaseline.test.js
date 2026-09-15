@@ -29,6 +29,8 @@ function setupDom() {
   const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', {
     url: 'http://localhost/',
   });
+  dom.window.requestAnimationFrame = callback => dom.window.setTimeout(callback, 0);
+  dom.window.cancelAnimationFrame = timer => dom.window.clearTimeout(timer);
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
   globalThis.navigator = dom.window.navigator;
