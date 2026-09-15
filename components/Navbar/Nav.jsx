@@ -4,6 +4,19 @@ import styled from 'styled-components';
 import { CgMenu, CgCloseR } from 'react-icons/cg';
 import { fleurimondColors } from '../CSS/theme.js';
 
+const navItems = [
+  ['Home', '/'],
+  ['Players', '/players'],
+  ['Teams', '/teams'],
+  ['Schedule', '/Schedule'],
+  ['Standings', '/standings'],
+  ['Stats', '/stats'],
+  ['Projections', '/WeeklyProjections'],
+  ['PPR', '/PPR'],
+  ['Compare', '/compare'],
+  ['Leaderboards', '/leaderboards'],
+];
+
 const Nav = styled.nav`
   position: fixed;
   width: 100%;
@@ -15,129 +28,88 @@ const Nav = styled.nav`
   padding: 0.75rem clamp(1rem, 4vw, 3rem);
   z-index: 9999;
   transition: transform 0.3s ease-in-out;
-  transform: ${({ $visible }) =>
-    $visible ? 'translateY(0)' : 'translateY(-100%)'};
+  transform: ${({ $visible }) => $visible ? 'translateY(0)' : 'translateY(-100%)'};
 
   .navbar-list {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.35rem;
     list-style: none;
     margin: 0;
     padding: 0;
     justify-content: center;
+  }
 
-    li {
-      margin: 0;
-      padding: 0;
+  .navbar-link {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: ${fleurimondColors.white};
+    padding: 0.6rem 0.75rem;
+    border-radius: 999px;
 
-      .navbar-link {
-        display: inline-block;
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: ${fleurimondColors.white};
-        transition:
-          color 0.3s linear,
-          background-color 0.2s ease;
-        padding: 0.7rem 0.9rem;
-        border-radius: 999px;
-        background-color: transparent;
+    &:hover,
+    &:focus,
+    &.active {
+      color: ${fleurimondColors.infrared};
+      background-color: rgba(255, 255, 255, 0.2);
+    }
 
-        &:hover,
-        &:focus,
-        &.active {
-          color: ${fleurimondColors.infrared};
-          background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        &:focus-visible {
-          outline: 3px solid ${fleurimondColors.sassySaffron};
-          outline-offset: 2px;
-        }
-      }
+    &:focus-visible {
+      outline: 3px solid ${fleurimondColors.sassySaffron};
+      outline-offset: 2px;
     }
   }
 
   .mobile-navbar-btn {
     display: none;
+    background: none;
+    border: none;
+    color: ${fleurimondColors.white};
 
-    .mobile-nav-icon {
-      font-size: 4.2rem;
-      color: ${fleurimondColors.white};
-      cursor: pointer;
-      background: none;
-      border: none;
-      border-radius: 0.5rem;
-
-      &:focus-visible {
-        outline: 3px solid ${fleurimondColors.sassySaffron};
-        outline-offset: 2px;
-      }
+    &:focus-visible {
+      outline: 3px solid ${fleurimondColors.sassySaffron};
+      outline-offset: 2px;
     }
   }
 
-  @media (max-width: 800px) {
+  .mobile-nav-icon {
+    font-size: 2.5rem;
+  }
+
+  @media (max-width: 900px) {
     .navbar-list {
       width: 100vw;
       height: 100vh;
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       background-color: ${fleurimondColors.midnight};
-      display: flex;
       justify-content: center;
       align-items: center;
+      align-content: center;
       flex-direction: column;
-      text-align: center;
-      transform: ${({ $openMenu }) =>
-        $openMenu ? 'translateX(0)' : 'translateX(100%)'};
-      visibility: ${({ $openMenu }) => ($openMenu ? 'visible' : 'hidden')};
-      opacity: ${({ $openMenu }) => ($openMenu ? 1 : 0)};
-      transition:
-        transform 0.3s ease,
-        visibility 0.3s ease,
-        opacity 0.3s ease;
+      transform: ${({ $openMenu }) => $openMenu ? 'translateX(0)' : 'translateX(100%)'};
+      visibility: ${({ $openMenu }) => $openMenu ? 'visible' : 'hidden'};
+      opacity: ${({ $openMenu }) => $openMenu ? 1 : 0};
       z-index: 9999;
     }
 
-    .navbar-list li {
-      margin: 1rem 0;
-
-      .navbar-link {
-        font-size: 1.5rem;
-        color: ${fleurimondColors.white};
-        padding: 1rem 2rem;
-        background-color: transparent;
-        border-radius: 0.5rem;
-
-        &:hover,
-        &:focus,
-        &.active {
-          color: ${fleurimondColors.infrared};
-          background-color: rgba(255, 255, 255, 0.2);
-        }
-      }
+    .navbar-link {
+      font-size: 1.2rem;
+      padding: 0.65rem 1rem;
     }
 
     .mobile-navbar-btn {
       display: inline-block;
-      z-index: 1000;
-    }
-  }
-
-  @media (min-width: 801px) {
-    .mobile-navbar-btn {
-      display: none;
+      position: relative;
+      z-index: 10000;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
-
-    .navbar-list,
-    .navbar-link {
-      transition: none;
-    }
+    .navbar-list, .navbar-link { transition: none; }
   }
 `;
 
@@ -152,35 +124,24 @@ const debounce = (func, wait) => {
 const Navbar = React.memo(() => {
   const [openMenu, setOpenMenu] = useState(false);
   const [visible, setVisible] = useState(true);
-
-  const handleMenuToggle = useCallback(() => {
-    setOpenMenu(prevState => !prevState);
-  }, []);
+  const handleMenuToggle = useCallback(() => setOpenMenu(value => !value), []);
 
   useEffect(() => {
     let lastScrollTop = 0;
-
     const handleScroll = debounce(() => {
       const scrollTop = window.scrollY;
       setVisible(scrollTop <= lastScrollTop);
       lastScrollTop = scrollTop;
     }, 100);
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
-    if (!openMenu) {
-      return undefined;
-    }
-
+    if (!openMenu) return undefined;
     const closeOnEscape = event => {
-      if (event.key === 'Escape') {
-        setOpenMenu(false);
-      }
+      if (event.key === 'Escape') setOpenMenu(false);
     };
-
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [openMenu]);
@@ -195,45 +156,16 @@ const Navbar = React.memo(() => {
         aria-controls='primary-navigation'
         aria-expanded={openMenu}
       >
-        {openMenu ? (
-          <CgCloseR className='mobile-nav-icon' />
-        ) : (
-          <CgMenu className='mobile-nav-icon' />
-        )}
+        {openMenu ? <CgCloseR className='mobile-nav-icon' /> : <CgMenu className='mobile-nav-icon' />}
       </button>
       <ul className='navbar-list' id='primary-navigation'>
-        <li>
-          <NavLink className='navbar-link' onClick={() => setOpenMenu(false)} to='/'>
-            Command Center
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            className='navbar-link'
-            onClick={() => setOpenMenu(false)}
-            to='/WeeklyProjections'
-          >
-            Weekly Projections
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            className='navbar-link'
-            onClick={() => setOpenMenu(false)}
-            to='/PPR'
-          >
-            PPR
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            className='navbar-link'
-            onClick={() => setOpenMenu(false)}
-            to='/Schedule'
-          >
-            Schedule
-          </NavLink>
-        </li>
+        {navItems.map(([label, to]) => (
+          <li key={to}>
+            <NavLink className='navbar-link' onClick={() => setOpenMenu(false)} to={to}>
+              {label}
+            </NavLink>
+          </li>
+        ))}
       </ul>
     </Nav>
   );

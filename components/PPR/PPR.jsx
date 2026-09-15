@@ -103,7 +103,7 @@ const PPR = () => {
         <MainHero />
         <Title>PPR Rankings</Title>
         <DataNotice>
-          Rankings use observed nflverse statistics and application-calculated
+          Rankings use observed canonical NFL statistics and application-calculated
           full-PPR scoring: 1 point per reception, 0.1 per rushing or receiving
           yard, 0.04 per passing yard, 6 per rushing or receiving touchdown, and
           4 per passing touchdown. These are rankings, not projections.

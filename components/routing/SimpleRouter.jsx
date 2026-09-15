@@ -9,22 +9,13 @@ import React, {
 import styled from 'styled-components';
 
 const RouterContext = createContext({
-  location: {
-    pathname: '/',
-    search: '',
-    hash: '',
-    href: '/',
-  },
+  location: { pathname: '/', search: '', hash: '', href: '/' },
   navigate: () => {},
 });
+const ParamsContext = createContext({});
 
-const getBaseUrl = () => {
-  if (typeof window === 'undefined') {
-    return 'http://localhost/';
-  }
-
-  return window.location.href;
-};
+const getBaseUrl = () =>
+  typeof window === 'undefined' ? 'http://localhost/' : window.location.href;
 
 const createLocationState = location => ({
   pathname: location.pathname,
@@ -61,6 +52,27 @@ const isModifiedClick = event =>
 const formatPath = ({ pathname, search, hash }) =>
   `${pathname}${search}${hash}` || '/';
 
+export function matchPath(pattern, pathname) {
+  if (pattern === pathname) return { matched: true, params: {} };
+  if (pattern === '*' || pattern === '/*') return { matched: true, params: {} };
+
+  const patternParts = pattern.split('/').filter(Boolean);
+  const pathParts = pathname.split('/').filter(Boolean);
+  if (patternParts.length !== pathParts.length) return { matched: false, params: {} };
+
+  const params = {};
+  for (let index = 0; index < patternParts.length; index += 1) {
+    const expected = patternParts[index];
+    const actual = pathParts[index];
+    if (expected.startsWith(':')) {
+      params[expected.slice(1)] = decodeURIComponent(actual);
+    } else if (expected !== actual) {
+      return { matched: false, params: {} };
+    }
+  }
+  return { matched: true, params };
+}
+
 export const Router = ({ children }) => {
   const [location, setLocation] = useState(() =>
     typeof window === 'undefined'
@@ -69,71 +81,59 @@ export const Router = ({ children }) => {
   );
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-
-    const onPopState = () => {
-      setLocation(createLocationState(window.location));
-    };
-
+    if (typeof window === 'undefined') return undefined;
+    const onPopState = () => setLocation(createLocationState(window.location));
     window.addEventListener('popstate', onPopState);
-    return () => {
-      window.removeEventListener('popstate', onPopState);
-    };
+    return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
   const navigate = useCallback(
     (to, options = {}) => {
-      if (typeof window === 'undefined') {
-        return;
-      }
-
+      if (typeof window === 'undefined') return;
       const nextLocation = resolveToLocation(to);
-
       if (nextLocation.external) {
         window.location.assign(nextLocation.href);
         return;
       }
-
-      if (nextLocation.href === location.href) {
-        return;
-      }
-
-      if (options.replace) {
-        window.history.replaceState({}, '', nextLocation.href);
-      } else {
-        window.history.pushState({}, '', nextLocation.href);
-      }
-
+      if (nextLocation.href === location.href) return;
+      if (options.replace) window.history.replaceState({}, '', nextLocation.href);
+      else window.history.pushState({}, '', nextLocation.href);
       setLocation(createLocationState(window.location));
     },
     [location.href]
   );
 
   const value = useMemo(() => ({ location, navigate }), [location, navigate]);
-
-  return (
-    <RouterContext.Provider value={value}>{children}</RouterContext.Provider>
-  );
+  return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
 
 export const useLocation = () => useContext(RouterContext).location;
+export const useParams = () => useContext(ParamsContext);
 
 const routeNames = {
-  '/': 'Command Center',
+  '/': 'NFL dashboard',
+  '/players': 'Players',
+  '/teams': 'Teams',
+  '/standings': 'Standings',
+  '/stats': 'Statistics',
   '/WeeklyProjections': 'Weekly Projections',
   '/PPR': 'PPR Rankings',
   '/Schedule': 'Schedule',
+  '/compare': 'Player comparison',
+  '/leaderboards': 'Leaderboards',
 };
+
+function routeName(pathname) {
+  if (routeNames[pathname]) return routeNames[pathname];
+  if (matchPath('/players/:id', pathname).matched) return 'Player profile';
+  return 'Page not found';
+}
 
 export const RouteAnnouncer = () => {
   const { pathname } = useLocation();
-  const routeName = routeNames[pathname] || 'Page not found';
-
   return (
     <VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
-      {routeName} page loaded
+      {routeName(pathname)} page loaded
     </VisuallyHidden>
   );
 };
@@ -154,25 +154,24 @@ const VisuallyHidden = styled.p`
 
 export const Routes = ({ children, fallback = null }) => {
   const { location } = useContext(RouterContext);
-  const childRoutes = React.Children.toArray(children).filter(
-    React.isValidElement
-  );
+  const childRoutes = React.Children.toArray(children).filter(React.isValidElement);
 
-  const exactMatch = childRoutes.find(
-    child => child.props.path === location.pathname
-  );
-  if (exactMatch) {
-    return exactMatch.props.element;
+  for (const child of childRoutes) {
+    if (child.props.path === '*' || child.props.path === '/*') continue;
+    const match = matchPath(child.props.path, location.pathname);
+    if (match.matched) {
+      return (
+        <ParamsContext.Provider value={match.params}>
+          {child.props.element}
+        </ParamsContext.Provider>
+      );
+    }
   }
 
   const wildcardMatch = childRoutes.find(
     child => child.props.path === '*' || child.props.path === '/*'
   );
-  if (wildcardMatch) {
-    return wildcardMatch.props.element;
-  }
-
-  return fallback;
+  return wildcardMatch ? wildcardMatch.props.element : fallback;
 };
 
 export const NavLink = ({
@@ -187,18 +186,14 @@ export const NavLink = ({
 }) => {
   const { location, navigate } = useContext(RouterContext);
   const resolved = resolveToLocation(to);
-  const isActive =
-    !resolved.external && location.pathname === resolved.pathname;
+  const isActive = !resolved.external && location.pathname === resolved.pathname;
   const resolvedClassName =
     typeof className === 'function'
       ? className({ isActive })
       : [className, isActive ? 'active' : ''].filter(Boolean).join(' ');
 
   const handleClick = event => {
-    if (onClick) {
-      onClick(event);
-    }
-
+    if (onClick) onClick(event);
     if (
       event.defaultPrevented ||
       target === '_blank' ||
@@ -206,10 +201,7 @@ export const NavLink = ({
       rel === 'external' ||
       isModifiedClick(event) ||
       resolved.external
-    ) {
-      return;
-    }
-
+    ) return;
     event.preventDefault();
     navigate(to);
   };
@@ -230,4 +222,4 @@ export const NavLink = ({
   );
 };
 
-export { createLocationState, formatPath, isModifiedClick, resolveToLocation };
+export { createLocationState, formatPath, isModifiedClick, resolveToLocation, routeName };
