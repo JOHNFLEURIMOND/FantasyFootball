@@ -113,8 +113,9 @@ const Main = styled.main`
   max-width: 1200px;
   margin: 0 auto;
   padding: 6rem 1rem 3rem;
-  select { padding: 0.5rem; }
-  select:focus-visible { outline: 3px solid ${fleurimondColors.blueSapphire}; outline-offset: 2px; }
+  min-height: 100dvh;
+  select { padding: 0.65rem; border-radius: 0.5rem; }
+  select:focus-visible { outline: 3px solid ${fleurimondColors.accent}; outline-offset: 2px; }
   &:focus { outline: none; }
 `;
 const Identity = styled.section`
@@ -122,22 +123,34 @@ const Identity = styled.section`
   align-items: center;
   gap: 1rem;
   margin: 1.5rem 0;
+  padding: 1.5rem;
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  border-radius: 1rem;
+  background: ${fleurimondColors.surface};
 `;
 const Status = styled.p`
   padding: 1rem;
-  border: 1px solid ${fleurimondColors.grey};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.5rem;
+  background: ${fleurimondColors.surface};
 `;
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 2rem;
-  th, td { padding: 0.65rem; border-bottom: 1px solid ${fleurimondColors.grey}; text-align: left; }
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  background: ${fleurimondColors.surface};
+  th, td { padding: 0.75rem; border-bottom: 1px solid ${fleurimondColors.surfaceBorder}; text-align: left; }
+  thead { background: ${fleurimondColors.accentHover}; }
+  tbody tr:nth-child(even) { background: ${fleurimondColors.rowAlt}; }
 `;
 const Metadata = styled.section`
   padding: 1rem;
-  border: 1px solid ${fleurimondColors.grey};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.5rem;
+  background: ${fleurimondColors.surface};
+
+  p { color: ${fleurimondColors.textMuted}; }
 `;
 
 export { freshness };

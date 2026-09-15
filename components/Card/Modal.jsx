@@ -48,7 +48,8 @@ const ModalWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: ${fleurimondColors.white};
+  background: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

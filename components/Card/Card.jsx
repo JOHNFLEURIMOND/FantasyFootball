@@ -60,7 +60,7 @@ const CardWrapper = styled.div`
   height: 400px;
   perspective: 1000px;
   cursor: pointer;
-  border: 1px solid ${fleurimondColors.graySmoke};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.75rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -93,7 +93,7 @@ const CardFront = styled.div`
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.surface};
 `;
 
 const CardBack = styled.div`
@@ -107,7 +107,7 @@ const CardBack = styled.div`
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.rowAlt};
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 

@@ -4,6 +4,8 @@ import { buildLeaderboard } from './playerResearch';
 import { TableRegion } from '../accessibility/Accessibility';
 import { NavLink } from '../routing/SimpleRouter';
 import Pagination from '../Pagination/Pagination';
+import styled from 'styled-components';
+import { fleurimondColors } from '../CSS/theme';
 
 const SORTS = [
   ['fantasyPointsPpr', 'PPR points'],
@@ -35,9 +37,9 @@ const Leaderboards = () => {
   }), [state.players, state.weeklyStats, season, week, position, sortBy, page]);
 
   return (
-    <main id='main-content' tabIndex='-1' style={{ maxWidth: 1200, margin: '0 auto', padding: '6rem 1rem 3rem' }}>
+    <Main id='main-content' tabIndex='-1'>
       <h1>Statistical Leaderboards</h1>
-      <div>
+      <Controls>
         <label htmlFor='leaderboard-season'>Season</label>{' '}
         <input id='leaderboard-season' type='number' min='1999' max='2100' value={season} onChange={event => setSeason(Number(event.target.value))} />{' '}
         <label htmlFor='leaderboard-week'>Week</label>{' '}
@@ -48,7 +50,7 @@ const Leaderboards = () => {
         <select id='leaderboard-scoring' value='ppr' disabled><option value='ppr'>Full PPR</option></select>{' '}
         <label htmlFor='leaderboard-sort'>Sort by</label>{' '}
         <select id='leaderboard-sort' value={sortBy} onChange={event => setSortBy(event.target.value)}>{SORTS.map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select>
-      </div>
+      </Controls>
 
       {state.loading ? <p role='status'>Loading leaderboard…</p> : null}
       {!state.loading && state.error ? <p role='alert'>Unable to load leaderboard: {state.error.message}</p> : null}
@@ -59,7 +61,7 @@ const Leaderboards = () => {
       {!state.loading && !state.error && leaderboard.totalItems > 0 ? (
         <>
           <TableRegion label='Statistical leaderboard table'>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <Table>
               <caption>{season}{week ? ` week ${week}` : ' season-to-date'} leaderboard</caption>
               <thead><tr><th scope='col'>Rank</th><th scope='col'>Player</th><th scope='col'>Pos</th><th scope='col'>Team</th><th scope='col'>PPR</th><th scope='col'>Pass yds</th><th scope='col'>Rush yds</th><th scope='col'>Rec yds</th><th scope='col'>Rec</th></tr></thead>
               <tbody>{leaderboard.items.map((row, index) => (
@@ -70,14 +72,45 @@ const Leaderboards = () => {
                   <td>{row.passingYards}</td><td>{row.rushingYards}</td><td>{row.receivingYards}</td><td>{row.receptions}</td>
                 </tr>
               ))}</tbody>
-            </table>
+            </Table>
           </TableRegion>
           <p role='status' aria-live='polite'>Page {leaderboard.activePage} of {leaderboard.totalPages}.</p>
           <Pagination currentPage={leaderboard.activePage} totalPages={leaderboard.totalPages} onPageChange={(_event, data) => setPage(Number(data.activePage))} />
         </>
       ) : null}
-    </main>
+    </Main>
   );
 };
+
+const Main = styled.main`
+  max-width: 1200px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 6rem 1rem 3rem;
+  &:focus { outline: none; }
+`;
+
+const Controls = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  border-radius: 0.75rem;
+  background: ${fleurimondColors.surface};
+  input, select { padding: 0.55rem; border-radius: 0.4rem; }
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: ${fleurimondColors.surface};
+  th, td { padding: 0.75rem; border-bottom: 1px solid ${fleurimondColors.surfaceBorder}; text-align: left; }
+  thead { background: ${fleurimondColors.accentHover}; }
+  tbody tr:nth-child(even) { background: ${fleurimondColors.rowAlt}; }
+  tbody tr:hover { background: ${fleurimondColors.surfaceBorder}; }
+`;
 
 export default Leaderboards;

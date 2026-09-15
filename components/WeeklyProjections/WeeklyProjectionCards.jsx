@@ -178,7 +178,7 @@ export const LoaderWrapper = styled.div`
 
 export const Loader = styled.div`
   border: 8px solid ${fleurimondColors.grey};
-  border-top: 8px solid ${fleurimondColors.blue};
+  border-top: 8px solid ${fleurimondColors.accent};
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -190,12 +190,12 @@ export const StyledSelect = styled.select`
   max-width: 420px;
   padding: 0.75rem;
   border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.black};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   font-size: 1rem;
   box-sizing: border-box;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blue};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -236,14 +236,16 @@ export const SelectDiv = styled.div`
 `;
 
 export const Card = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 8px;
+  background: ${fleurimondColors.surface};
   overflow: hidden;
   width: min(100%, 320px);
 `;
 
 export const CardHeader = styled.div`
-  background-color: #f4f4f4;
+  background-color: ${fleurimondColors.rowAlt};
+  border-bottom: 1px solid ${fleurimondColors.surfaceBorder};
   padding: 1rem;
   font-weight: bold;
 `;
@@ -254,7 +256,7 @@ export const CardBody = styled.div`
   cursor: pointer;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blue};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: -3px;
   }
 `;
@@ -265,6 +267,7 @@ export const NameFieldset = styled.div`
 
 export const Description = styled.div`
   margin-bottom: 0.5rem;
+  color: ${fleurimondColors.textMuted};
 `;
 
 export const HeaderTitle = styled.h3`

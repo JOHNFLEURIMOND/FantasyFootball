@@ -95,7 +95,7 @@ const FooterGrid = styled.div`
   gap: 1rem;
   grid-template-columns: 1fr 1fr 1fr;
 
-  @media ${media.tablet} {
+  @media (max-width: ${media.tablet}) {
     grid-template-columns: 1fr;
   }
 `;
