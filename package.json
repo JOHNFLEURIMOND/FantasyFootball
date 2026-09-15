@@ -28,6 +28,7 @@
     "kill": "pkill -f node",
     "ingest:nflverse": "node scripts/ingest-nflverse.js",
     "lint": "node scripts/lint.js",
+    "test:a11y": "node --test test/accessibilityBaseline.test.js",
     "prettier": "npx prettier --write .",
     "server": "node server.js",
     "test": "node --test"
