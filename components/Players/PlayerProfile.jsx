@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { TableRegion } from '../accessibility/Accessibility';
 import { useParams } from '../routing/SimpleRouter';
 import { buildPlayerProfile } from './playerResearch';
 import usePlayerData from './usePlayerData';
@@ -20,21 +21,20 @@ const PlayerProfile = () => {
   const [season, setSeason] = useState(new Date().getFullYear());
   const state = usePlayerData(season);
   const profile = useMemo(
-    () =>
-      buildPlayerProfile({
-        playerId: id,
-        players: state.players,
-        teams: state.teams,
-        weeklyStats: state.weeklyStats,
-        seasonalStats: state.seasonalStats,
-      }),
+    () => buildPlayerProfile({
+      playerId: id,
+      players: state.players,
+      teams: state.teams,
+      weeklyStats: state.weeklyStats,
+      seasonalStats: state.seasonalStats,
+    }),
     [id, state.players, state.teams, state.weeklyStats, state.seasonalStats]
   );
   const seasons = [];
   for (let value = new Date().getFullYear(); value >= FIRST_SEASON; value -= 1) seasons.push(value);
 
   return (
-    <Main>
+    <Main id='main-content' tabIndex='-1'>
       <h1>Player Profile</h1>
       <label htmlFor='profile-season'>Season</label>{' '}
       <select id='profile-season' value={season} onChange={event => setSeason(Number(event.target.value))}>
@@ -61,36 +61,40 @@ const PlayerProfile = () => {
           <section aria-labelledby='weekly-heading'>
             <h2 id='weekly-heading'>Weekly game logs</h2>
             {profile.weekly.length === 0 ? <p>No weekly statistics are available for this season.</p> : (
-              <Table><thead><tr><th>Week</th><th>Team</th><th>Passing yds</th><th>Rushing yds</th><th>Receiving yds</th><th>Receptions</th></tr></thead><tbody>
-                {profile.weekly.map(stat => (
-                  <tr key={stat.statId}>
-                    <th scope='row'>{stat.week}</th>
-                    <td>{stat.teamId || '—'}</td>
-                    <td>{stat.metrics?.passing_yards ?? '—'}</td>
-                    <td>{stat.metrics?.rushing_yards ?? '—'}</td>
-                    <td>{stat.metrics?.receiving_yards ?? '—'}</td>
-                    <td>{stat.metrics?.receptions ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody></Table>
+              <TableRegion label={`${profile.player.displayName} weekly game logs`}>
+                <Table><thead><tr><th scope='col'>Week</th><th scope='col'>Team</th><th scope='col'>Passing yds</th><th scope='col'>Rushing yds</th><th scope='col'>Receiving yds</th><th scope='col'>Receptions</th></tr></thead><tbody>
+                  {profile.weekly.map(stat => (
+                    <tr key={stat.statId}>
+                      <th scope='row'>{stat.week}</th>
+                      <td>{stat.teamId || '—'}</td>
+                      <td>{stat.metrics?.passing_yards ?? '—'}</td>
+                      <td>{stat.metrics?.rushing_yards ?? '—'}</td>
+                      <td>{stat.metrics?.receiving_yards ?? '—'}</td>
+                      <td>{stat.metrics?.receptions ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody></Table>
+              </TableRegion>
             )}
           </section>
 
           <section aria-labelledby='seasonal-heading'>
             <h2 id='seasonal-heading'>Season totals</h2>
             {profile.seasonal.length === 0 ? <p>No seasonal totals are available for this season.</p> : (
-              <Table><thead><tr><th>Season</th><th>Team</th><th>Passing yds</th><th>Rushing yds</th><th>Receiving yds</th><th>Receptions</th></tr></thead><tbody>
-                {profile.seasonal.map(stat => (
-                  <tr key={stat.statId}>
-                    <th scope='row'>{stat.season}</th>
-                    <td>{stat.teamId || '—'}</td>
-                    <td>{stat.metrics?.passing_yards ?? '—'}</td>
-                    <td>{stat.metrics?.rushing_yards ?? '—'}</td>
-                    <td>{stat.metrics?.receiving_yards ?? '—'}</td>
-                    <td>{stat.metrics?.receptions ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody></Table>
+              <TableRegion label={`${profile.player.displayName} season totals`}>
+                <Table><thead><tr><th scope='col'>Season</th><th scope='col'>Team</th><th scope='col'>Passing yds</th><th scope='col'>Rushing yds</th><th scope='col'>Receiving yds</th><th scope='col'>Receptions</th></tr></thead><tbody>
+                  {profile.seasonal.map(stat => (
+                    <tr key={stat.statId}>
+                      <th scope='row'>{stat.season}</th>
+                      <td>{stat.teamId || '—'}</td>
+                      <td>{stat.metrics?.passing_yards ?? '—'}</td>
+                      <td>{stat.metrics?.rushing_yards ?? '—'}</td>
+                      <td>{stat.metrics?.receiving_yards ?? '—'}</td>
+                      <td>{stat.metrics?.receptions ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody></Table>
+              </TableRegion>
             )}
           </section>
 
@@ -111,6 +115,7 @@ const Main = styled.main`
   padding: 6rem 1rem 3rem;
   select { padding: 0.5rem; }
   select:focus-visible { outline: 3px solid ${fleurimondColors.blueSapphire}; outline-offset: 2px; }
+  &:focus { outline: none; }
 `;
 const Identity = styled.section`
   display: flex;
