@@ -92,15 +92,16 @@ function WeeklyProjections() {
 }
 
 export const MainContainer = styled.main`
-  padding: 2rem;
-  background-color: ${fleurimondColors.white};
+  padding: 3rem clamp(1rem, 4vw, 3rem);
+  background-color: ${fleurimondColors.background};
+  min-height: 60dvh;
 
   &:focus { outline: none; }
 `;
 
 export const Title = styled.h1`
   font-size: 2rem;
-  color: ${fleurimondColors.primary};
+  color: ${fleurimondColors.text};
   margin-bottom: 1rem;
 `;
 
@@ -108,6 +109,7 @@ const DataNotice = styled.p`
   max-width: 72ch;
   line-height: 1.5;
   margin-bottom: 1.5rem;
+  color: ${fleurimondColors.textMuted};
 `;
 
 const ControlRow = styled.div`
@@ -119,18 +121,20 @@ const ControlRow = styled.div`
   select {
     min-width: 7rem;
     padding: 0.5rem;
+    border-radius: 0.5rem;
   }
 
   select:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
 
 const Status = styled.p`
   padding: 1rem;
-  border: 1px solid ${fleurimondColors.grey};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.25rem;
+  background: ${fleurimondColors.surface};
 `;
 
 export default WeeklyProjections;

@@ -17,18 +17,18 @@ const HeroSection = styled.div`
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
-  min-height: 100vh;
+  min-height: min(100dvh, 62rem);
   box-sizing: border-box;
   font-size: 1.25rem; /* 20px */
   background-color: ${fleurimondColors.midnight};
-  margin-bottom: 20px;
-  z-index: 999; /* Temporarily high value for testing */
+  margin-bottom: 0;
+  z-index: 0;
 
   @media only screen and (max-width: 800px) {
-    min-height: 50vh;
+    min-height: 56vh;
   }
   @media only screen and (max-width: 420px) {
-    min-height: 50vh;
+    min-height: 48vh;
   }
 `;
 

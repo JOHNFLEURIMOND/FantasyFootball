@@ -208,11 +208,12 @@ const PPRPageContainer = styled.div`
   font-weight: 500;
   margin: 0;
   line-height: 1.5;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.background};
 `;
 
 const MainContent = styled.main`
   width: 100%;
+  min-height: 60dvh;
 
   &:focus { outline: none; }
 `;
@@ -222,12 +223,12 @@ const StyledSelect = styled.select`
   max-width: 420px;
   padding: 0.75rem;
   border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.black};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   box-sizing: border-box;
   font-size: 1rem;
 
   &:focus-visible {
-    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -237,19 +238,19 @@ const StyledInput = styled.input`
   max-width: 420px;
   padding: 0.75rem;
   border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.black};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   box-sizing: border-box;
   font-size: 1rem;
 
   &:focus-visible {
-    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
 
 const SortFieldset = styled.fieldset`
   width: min(100%, 720px);
-  border: 1px solid ${fleurimondColors.gray};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.25rem;
   padding: 1rem;
   display: grid;
@@ -265,7 +266,7 @@ const SortFieldset = styled.fieldset`
   }
 
   input:focus-visible {
-    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -287,7 +288,8 @@ const FilterContainer = styled.div`
   width: 100%;
   padding: 1.5rem;
   box-sizing: border-box;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.surface};
+  border-block: 1px solid ${fleurimondColors.surfaceBorder};
 `;
 
 const Title = styled.h1`
@@ -300,14 +302,16 @@ const DataNotice = styled.p`
   max-width: 76ch;
   margin: 0 auto 1.5rem;
   padding: 0 1rem;
+  color: ${fleurimondColors.textMuted};
 `;
 
 const Status = styled.p`
   max-width: 76ch;
   margin: 1.5rem auto;
   padding: 1rem;
-  border: 1px solid ${fleurimondColors.gray};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.25rem;
+  background: ${fleurimondColors.surface};
 `;
 
 const PageStatus = styled.p`

@@ -91,7 +91,6 @@ video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
-  overflow-x: hidden;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -111,6 +110,7 @@ section {
 
 body {
   line-height: 1;
+  overflow-x: hidden;
 }
 
 ol,
@@ -169,8 +169,10 @@ i {
 }
 
 .ui.pagination.menu {
-  font-size: 3em;
-  padding: 1em;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  background: #14162b;
+  border: 1px solid #232742;
 }
 
 /* Pagination.css */
@@ -189,21 +191,25 @@ i {
   line-height: 40px; /* Centered text vertically */
   text-align: center;
   padding: 0;
-  border: 1px solid #6e6558; /* Example border color */
+  border: 1px solid #232742;
+  color: #ffffff;
+  background: #0e1022;
 }
 
 .pagination > .item.active {
-  color: #eb3745 !important;
+  color: #ffffff !important;
+  background: #ff3b56 !important;
 }
 
 .pagination > .item:hover {
-  color: #01002e; /* Example border color on hover */
+  color: #ffffff;
+  background: #e62e45;
 }
 
 .custom-pagination .pagination > .item.ellipsis {
   margin: 0 8px;
   font-size: 1.2rem; /* Adjusted font size for ellipses */
-  color: #01002e;
+  color: #a0a5c0;
 }
 
 .custom-pagination .ui.pagination.menu {

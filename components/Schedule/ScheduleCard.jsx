@@ -101,7 +101,8 @@ const ScheduleCardWithModal = ({ data }) => {
 };
 
 const CardWrapper = styled.div`
-  background: ${fleurimondColors.white};
+  background: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -113,7 +114,7 @@ const CardWrapper = styled.div`
   gap: 0.75rem;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 3px;
   }
 `;
@@ -128,7 +129,7 @@ const TeamRow = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-weight: 700;
-  color: ${fleurimondColors.deepBlue};
+  color: ${fleurimondColors.text};
 `;
 
 const TeamLogo = styled.img`
@@ -144,7 +145,7 @@ const ScoreLine = styled.p`
 
 const CardDetails = styled.div`
   font-size: 1rem;
-  color: ${fleurimondColors.gray};
+  color: ${fleurimondColors.textMuted};
 `;
 
 const DetailItem = styled.div`
@@ -163,7 +164,8 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: ${fleurimondColors.white};
+  background: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   padding: 2rem;
   border-radius: 12px;
   max-width: 600px;
@@ -178,11 +180,11 @@ const CloseButton = styled.button`
   background: transparent;
   border: none;
   font-size: 1.5rem;
-  color: ${fleurimondColors.deepBlue};
+  color: ${fleurimondColors.text};
   cursor: pointer;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -194,7 +196,7 @@ const ModalTitle = styled.h3`
 
 const ModalDetails = styled.div`
   font-size: 1rem;
-  color: ${fleurimondColors.gray};
+  color: ${fleurimondColors.textMuted};
 `;
 
 const Label = styled.span`

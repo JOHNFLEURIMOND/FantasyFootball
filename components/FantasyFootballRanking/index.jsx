@@ -10,7 +10,7 @@ export const MainContainer = styled.div`
   font-size: 1rem;
   text-align: center;
   font-weight: 500;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.background};
 
   @media (max-width: 800px) {
     padding: 64px 15px;
@@ -55,7 +55,8 @@ export const Header = styled.p`
 
 export const SearchDiv = styled.div`
   padding: 80px;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.surface};
+  border-block: 1px solid ${fleurimondColors.surfaceBorder};
 
   @media (max-width: 800px) {
     padding: 40px;
@@ -89,9 +90,9 @@ export const StyledButton = styled(Button)`
   border-style: solid;
   border-width: 1px;
   padding: 10px;
-  color: ${fleurimondColors.graySmoke};
-  background-color: ${fleurimondColors.white};
-  border-color: ${fleurimondColors.graySmoke};
+  color: ${fleurimondColors.backgroundDeep};
+  background-color: ${fleurimondColors.accent};
+  border-color: ${fleurimondColors.accent};
   cursor: pointer;
   display: inline-block;
   letter-spacing: 0.02em;
@@ -100,8 +101,8 @@ export const StyledButton = styled(Button)`
   &:hover,
   &:active,
   &:focus {
-    background-color: ${fleurimondColors.graySmoke};
-    border-color: ${fleurimondColors.graySmoke};
+    background-color: ${fleurimondColors.accentHover};
+    border-color: ${fleurimondColors.accentHover};
     color: ${fleurimondColors.white};
     text-decoration: none;
   }

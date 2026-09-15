@@ -130,7 +130,8 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: ${fleurimondColors.white};
+  background: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   padding: 2rem;
   border-radius: 8px;
   max-width: 600px;
@@ -142,7 +143,7 @@ const CloseButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
-  background: ${fleurimondColors.blueSapphire};
+  background: ${fleurimondColors.accent};
   color: ${fleurimondColors.white};
   border: none;
   border-radius: 50%;
@@ -154,7 +155,7 @@ const CloseButton = styled.button`
 const SectionTitle = styled.h4`
   margin-top: 1rem;
   font-size: 1.125rem;
-  color: ${fleurimondColors.blueSapphire};
+  color: ${fleurimondColors.accent};
 `;
 
 export default Modal;
