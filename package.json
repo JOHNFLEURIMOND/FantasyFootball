@@ -43,7 +43,7 @@
     "concurrently": "^8.2.2",
     "core-js": "^3.38.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
+    "express": "^4.22.3",
     "formik": "^2.4.6",
     "graphql": "^16.9.0",
     "gulp": "^5.0.0",
