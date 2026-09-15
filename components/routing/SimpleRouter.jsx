@@ -200,16 +200,19 @@ export const Routes = ({ children, fallback = null }) => {
   return wildcardMatch ? wildcardMatch.props.element : fallback;
 };
 
-export const NavLink = ({
-  to,
-  className,
-  onClick,
-  children,
-  target,
-  download,
-  rel,
-  ...rest
-}) => {
+export const NavLink = React.forwardRef(function NavLink(
+  {
+    to,
+    className,
+    onClick,
+    children,
+    target,
+    download,
+    rel,
+    ...rest
+  },
+  ref
+) {
   const { location, navigate } = useContext(RouterContext);
   const resolved = resolveToLocation(to);
   const isActive = !resolved.external && location.pathname === resolved.pathname;
@@ -235,6 +238,7 @@ export const NavLink = ({
   return (
     <a
       {...rest}
+      ref={ref}
       href={resolved.external ? resolved.href : formatPath(resolved)}
       target={target}
       download={download}
@@ -246,6 +250,6 @@ export const NavLink = ({
       {children}
     </a>
   );
-};
+});
 
 export { createLocationState, formatPath, isModifiedClick, resolveToLocation, routeName };
