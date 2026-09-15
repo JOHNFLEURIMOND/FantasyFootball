@@ -13,12 +13,14 @@ const {
   projectionSchema,
   rankingSchema,
   scheduleGameSchema,
+  sortItems,
   standingsSchema,
   statSchema,
   teamSchema,
   validateCollection,
   validateOne,
 } = require('../lib/canonicalApi');
+const { gameSchema } = require('../lib/domainSchemas');
 
 function asyncHandler(fn) {
   return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -102,8 +104,12 @@ function createNflverseRouter({ nflverseProvider }) {
       if (position && normalizeText(player.position) !== position) return false;
       return true;
     });
+    players = sortItems(players, req.query, {
+      name: player => player.displayName,
+      position: player => player.position,
+      team: player => player.teamId,
+    }, 'name');
 
-    players.sort((a, b) => a.displayName.localeCompare(b.displayName) || a.playerId.localeCompare(b.playerId));
     return res.json(listResponse(players, req, providerMeta('players', null, [result.meta])));
   }));
 
@@ -122,7 +128,12 @@ function createNflverseRouter({ nflverseProvider }) {
     if (query) {
       teams = teams.filter(team => [team.teamId, team.abbreviation, team.city, team.name].some(value => normalizeText(value).includes(query)));
     }
-    teams.sort((a, b) => a.teamId.localeCompare(b.teamId));
+    teams = sortItems(teams, req.query, {
+      id: team => team.teamId,
+      name: team => `${team.city || ''} ${team.name}`.trim(),
+      conference: team => team.conference,
+      division: team => team.division,
+    }, 'id');
     return res.json(listResponse(teams, req, providerMeta('teams', null, [result.meta])));
   }));
 
@@ -143,8 +154,14 @@ function createNflverseRouter({ nflverseProvider }) {
     ]);
     const players = unwrap(playersResult);
     const stats = unwrap(statsResult);
-    const projections = validateCollection(projectionSchema, buildWeeklyProjections({ players: players.data, weeklyStats: stats.data, season }), 'projections');
+    let projections = validateCollection(projectionSchema, buildWeeklyProjections({ players: players.data, weeklyStats: stats.data, season }), 'projections');
     const throughWeek = projections.reduce((max, item) => Math.max(max, ...item.sourceWeeks, 0), 0);
+    projections = sortItems(projections, req.query, {
+      fantasyPointsPpr: item => item.fantasyPointsPpr,
+      name: item => item.displayName,
+      week: item => item.week,
+    }, 'fantasyPointsPpr');
+    if (!req.query.order) req.query.order = 'desc';
     return res.json(listResponse(projections, req, providerMeta('projections', season, [players.meta, stats.meta], {
       week: throughWeek + 1,
       dataType: 'estimated-projection',
@@ -165,8 +182,13 @@ function createNflverseRouter({ nflverseProvider }) {
     ]);
     const players = unwrap(playersResult);
     const stats = unwrap(statsResult);
-    const rankings = validateCollection(rankingSchema, buildPprRankings({ players: players.data, weeklyStats: stats.data, season }), 'rankings');
+    let rankings = validateCollection(rankingSchema, buildPprRankings({ players: players.data, weeklyStats: stats.data, season }), 'rankings');
     const week = rankings.reduce((max, item) => Math.max(max, item.throughWeek), 0);
+    rankings = sortItems(rankings, req.query, {
+      rank: item => item.rank,
+      fantasyPointsPpr: item => item.fantasyPointsPpr,
+      name: item => item.displayName,
+    }, 'rank');
     return res.json(listResponse(rankings, req, providerMeta('rankings', season, [players.meta, stats.meta], {
       week,
       dataType: 'observed-ranking',
@@ -187,9 +209,13 @@ function createNflverseRouter({ nflverseProvider }) {
     const teams = unwrap(teamsResult);
     const validatedTeams = validateCollection(teamSchema, teams.data, 'teams');
     const teamsById = new Map(validatedTeams.map(team => [team.teamId, team]));
-    const games = validateCollection(scheduleGameSchema, schedule.data
+    let games = validateCollection(scheduleGameSchema, schedule.data
       .filter(game => week === null || Number(game.week) === week)
       .map(game => ({ ...game, homeTeam: teamsById.get(game.homeTeamId) || null, awayTeam: teamsById.get(game.awayTeamId) || null })), 'schedule');
+    games = sortItems(games, req.query, {
+      week: game => game.week,
+      startTime: game => game.startTime,
+    }, 'startTime');
     return res.json(listResponse(games, req, providerMeta('schedule', season, [schedule.meta, teams.meta], { week })));
   }));
 
@@ -202,7 +228,13 @@ function createNflverseRouter({ nflverseProvider }) {
     ]);
     const schedule = unwrap(scheduleResult);
     const teams = unwrap(teamsResult);
-    const standings = validateCollection(standingsSchema, buildStandings(schedule.data, teams.data), 'standings');
+    let standings = validateCollection(standingsSchema, buildStandings(schedule.data, teams.data), 'standings');
+    standings = sortItems(standings, req.query, {
+      winPercentage: item => item.winPercentage,
+      wins: item => item.wins,
+      team: item => item.teamId,
+    }, 'winPercentage');
+    if (!req.query.order) req.query.order = 'desc';
     return res.json(listResponse(standings, req, providerMeta('standings', season, [schedule.meta, teams.meta])));
   }));
 
@@ -215,6 +247,11 @@ function createNflverseRouter({ nflverseProvider }) {
     let stats = validateCollection(statSchema, result.data, 'weekly-stats');
     if (week !== null) stats = stats.filter(stat => stat.week === week);
     if (req.query.playerId) stats = stats.filter(stat => stat.playerId === String(req.query.playerId));
+    stats = sortItems(stats, req.query, {
+      player: stat => stat.playerId,
+      week: stat => stat.week,
+      team: stat => stat.teamId,
+    }, 'player');
     return res.json(listResponse(stats, req, providerMeta('weekly-stats', season, [result.meta], { week, scope: 'week' })));
   }));
 
@@ -224,6 +261,10 @@ function createNflverseRouter({ nflverseProvider }) {
     const result = unwrap(await nflverseProvider.getSeasonalStats(season));
     let stats = validateCollection(statSchema, result.data, 'seasonal-stats');
     if (req.query.playerId) stats = stats.filter(stat => stat.playerId === String(req.query.playerId));
+    stats = sortItems(stats, req.query, {
+      player: stat => stat.playerId,
+      team: stat => stat.teamId,
+    }, 'player');
     return res.json(listResponse(stats, req, providerMeta('seasonal-stats', season, [result.meta], { scope: 'season' })));
   }));
 
@@ -231,7 +272,7 @@ function createNflverseRouter({ nflverseProvider }) {
     const season = parseSeason(req.params.season, null);
     if (season === null) throw invalidRequest('Invalid season parameter.');
     const result = unwrap(await nflverseProvider.getSchedules(season));
-    return res.json({ data: validateCollection(require('../lib/domainSchemas').gameSchema, result.data, 'schedules'), provenance: { provider: 'nflverse', dataset: 'schedules', season } });
+    return res.json({ data: validateCollection(gameSchema, result.data, 'schedules'), provenance: { provider: 'nflverse', dataset: 'schedules', season } });
   }));
 
   router.get('/stats/weekly/:season', asyncHandler(async (req, res) => {
