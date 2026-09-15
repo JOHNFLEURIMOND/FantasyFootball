@@ -105,6 +105,14 @@ function createIngestionStore({ database, now = () => new Date(), id = randomUUI
     SELECT * FROM ingestion_snapshots
     WHERE dataset = ? AND COALESCE(season, -1) = COALESCE(?, -1) AND is_current = 1
   `);
+  const snapshotHistory = database.prepare(`
+    SELECT snapshot_id, run_id, dataset, season, dataset_version, source_url,
+           source_updated_at, fetched_at, row_count, checksum, is_current, created_at
+    FROM ingestion_snapshots
+    WHERE dataset = ? AND COALESCE(season, -1) = COALESCE(?, -1)
+    ORDER BY created_at DESC, snapshot_id DESC
+    LIMIT ?
+  `);
   const runById = database.prepare('SELECT * FROM ingestion_runs WHERE run_id = ?');
 
   function isoNow() {
@@ -182,8 +190,16 @@ function createIngestionStore({ database, now = () => new Date(), id = randomUUI
     };
   }
 
+  function listSnapshots(dataset, season = null, { limit = 50 } = {}) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 500) {
+      throw new Error('Snapshot history limit must be an integer from 1 through 500.');
+    }
+    return snapshotHistory.all(dataset, season, limit);
+  }
+
   return Object.freeze({
     getCurrentSnapshot,
+    listSnapshots,
     markFailed,
     markSucceeded,
     recordSnapshot,
