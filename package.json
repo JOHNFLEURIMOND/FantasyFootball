@@ -17,6 +17,7 @@
   "proxy": "http://localhost:8080",
   "scripts": {
     "babel-node": "babel-node --presets='@babel/preset-env' --ignore='foo|bar|baz'",
+    "prebuild": "npm run validate:env",
     "build": "webpack",
     "dev": "webpack-dev-server --open",
     "build2": "webpack",
@@ -29,6 +30,7 @@
     "ingest:nflverse": "node scripts/ingest-nflverse.js",
     "lint": "node scripts/lint.js",
     "test:a11y": "node --test test/accessibilityBaseline.test.js",
+    "validate:env": "node scripts/validate-env.js",
     "prettier": "npx prettier --write .",
     "server": "node server.js",
     "test": "node --test"
