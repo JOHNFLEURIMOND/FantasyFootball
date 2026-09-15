@@ -7,23 +7,30 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 const BUILD_DIR = path.resolve(__dirname, 'build');
-const APP_DIR = path.resolve(__dirname, 'components'); // Ensure this points to the correct directory
+const APP_DIR = path.resolve(__dirname, 'components');
 const DEFAULT_PORT = 5000;
+const API_PORT = Number(process.env.PORT || 8080);
 
-const isProduction = process.env.NODE_ENV === 'production';
-
-module.exports = async (env, argv) => {
+module.exports = async (env, argv = {}) => {
   try {
     const port = await portfinder.getPortPromise({ port: DEFAULT_PORT });
+    const isProduction =
+      argv.mode === 'production' || process.env.NODE_ENV === 'production';
 
     return {
-      entry: path.resolve(APP_DIR, 'Main.js'), // Ensure Main.js is in the correct path
+      entry: path.resolve(APP_DIR, 'Main.js'),
       mode: isProduction ? 'production' : 'development',
       devServer: {
         static: { directory: BUILD_DIR },
-        port: port,
+        port,
         hot: true,
         historyApiFallback: true,
+        proxy: [
+          {
+            context: ['/api'],
+            target: `http://localhost:${API_PORT}`,
+          },
+        ],
       },
       output: {
         path: BUILD_DIR,
