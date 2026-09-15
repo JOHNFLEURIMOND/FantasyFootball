@@ -542,11 +542,12 @@ const SecondaryColumn = styled.div`
 `;
 
 const Panel = styled.section`
-  background: ${fleurimondColors.white};
-  color: ${fleurimondColors.midnight};
+  background: ${fleurimondColors.surface};
+  color: ${fleurimondColors.text};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 1.2rem;
   padding: 1.5rem;
-  box-shadow: 0 18px 45px rgba(1, 0, 46, 0.15);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
 `;
 
 const PanelHeader = styled.header`
@@ -559,7 +560,7 @@ const PanelTitle = styled.h2`
 `;
 
 const PanelSubtitle = styled.p`
-  color: ${fleurimondColors.smoke};
+  color: ${fleurimondColors.textMuted};
   line-height: 1.5;
 `;
 

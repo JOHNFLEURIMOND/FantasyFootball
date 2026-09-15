@@ -138,7 +138,7 @@ const Schedule = () => {
 
 const ContentWrapper = styled.main`
   padding: 2rem 1rem;
-  background-color: ${fleurimondColors.lightGray};
+  background-color: ${fleurimondColors.background};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -163,10 +163,11 @@ const ControlRow = styled.div`
   select {
     min-width: 7rem;
     padding: 0.5rem;
+    border-radius: 0.5rem;
   }
 
   select:focus-visible {
-    outline: 2px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -190,9 +191,10 @@ const PaginationWrapper = styled.div`
 const Status = styled.p`
   width: min(100%, 72ch);
   text-align: center;
-  color: ${fleurimondColors.darkGray};
+  color: ${fleurimondColors.textMuted};
   padding: 1rem;
-  background-color: ${fleurimondColors.white};
+  background-color: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.25rem;
 `;
 

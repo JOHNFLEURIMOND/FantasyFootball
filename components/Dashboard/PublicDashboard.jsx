@@ -197,6 +197,7 @@ const Main = styled.main`
   max-width: 1200px;
   margin: 0 auto;
   padding: 6rem 1rem 3rem;
+  min-height: 100dvh;
 
   &:focus { outline: none; }
 `;
@@ -206,19 +207,22 @@ const Hero = styled.section`
   gap: 1rem;
   padding: clamp(1.5rem, 4vw, 3rem);
   border-radius: 1rem;
-  background: ${fleurimondColors.white};
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  background: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+
+  p, label { color: ${fleurimondColors.textMuted}; }
 `;
 
 const SearchInput = styled.input`
   width: min(100%, 680px);
   padding: 0.9rem 1rem;
-  border: 1px solid ${fleurimondColors.gray};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.5rem;
   font: inherit;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -234,13 +238,14 @@ const ResultLink = styled(NavLink)`
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem;
-  border: 1px solid ${fleurimondColors.grey};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  background: ${fleurimondColors.rowAlt};
   border-radius: 0.5rem;
   color: inherit;
   text-decoration: none;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -248,7 +253,8 @@ const ResultLink = styled(NavLink)`
 const Status = styled.p`
   margin: 1rem 0;
   padding: 1rem;
-  border: 1px solid ${fleurimondColors.grey};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  background: ${fleurimondColors.surface};
   border-radius: 0.5rem;
 `;
 
@@ -267,13 +273,18 @@ const DestinationCard = styled(NavLink)`
   gap: 0.4rem;
   padding: 1.25rem;
   border-radius: 0.75rem;
-  background: ${fleurimondColors.white};
+  background: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   color: inherit;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+
+  span { color: ${fleurimondColors.textMuted}; }
+
+  &:hover { border-color: ${fleurimondColors.accent}; }
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;
@@ -288,10 +299,12 @@ const SummaryCard = styled.div`
   display: grid;
   gap: 0.25rem;
   padding: 1.25rem;
-  border: 1px solid ${fleurimondColors.grey};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  background: ${fleurimondColors.surface};
   border-radius: 0.75rem;
 
   strong { font-size: 2rem; }
+  span { color: ${fleurimondColors.textMuted}; }
 `;
 
 export { fulfilledValue, searchItems };

@@ -22,7 +22,9 @@ const Nav = styled.nav`
   width: 100%;
   top: 0;
   left: 0;
-  background-color: ${fleurimondColors.midnight};
+  background-color: rgba(10, 11, 26, 0.96);
+  border-bottom: 1px solid ${fleurimondColors.surfaceBorder};
+  backdrop-filter: blur(12px);
   color: ${fleurimondColors.white};
   font-family: 'Exo 2', sans-serif;
   padding: 0.75rem clamp(1rem, 4vw, 3rem);
@@ -48,16 +50,22 @@ const Nav = styled.nav`
     color: ${fleurimondColors.white};
     padding: 0.6rem 0.75rem;
     border-radius: 999px;
+    border: 1px solid transparent;
+    transition: background-color 160ms ease, border-color 160ms ease;
 
-    &:hover,
-    &:focus,
+    &:hover {
+      background-color: ${fleurimondColors.surface};
+      border-color: ${fleurimondColors.surfaceBorder};
+    }
+
     &.active {
-      color: ${fleurimondColors.infrared};
-      background-color: rgba(255, 255, 255, 0.2);
+      color: ${fleurimondColors.backgroundDeep};
+      background-color: ${fleurimondColors.accent};
+      border-color: ${fleurimondColors.accent};
     }
 
     &:focus-visible {
-      outline: 3px solid ${fleurimondColors.sassySaffron};
+      outline: 3px solid ${fleurimondColors.accent};
       outline-offset: 2px;
     }
   }
@@ -69,7 +77,7 @@ const Nav = styled.nav`
     color: ${fleurimondColors.white};
 
     &:focus-visible {
-      outline: 3px solid ${fleurimondColors.sassySaffron};
+      outline: 3px solid ${fleurimondColors.accent};
       outline-offset: 2px;
     }
   }

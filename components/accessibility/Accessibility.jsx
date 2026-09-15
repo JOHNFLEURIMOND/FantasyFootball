@@ -10,14 +10,14 @@ const SkipAnchor = styled.a`
   transform: translateY(-200%);
   padding: 0.75rem 1rem;
   border-radius: 0.375rem;
-  background: ${fleurimondColors.white};
-  color: ${fleurimondColors.midnight};
+  background: ${fleurimondColors.accent};
+  color: ${fleurimondColors.white};
   font-weight: 700;
   text-decoration: none;
 
   &:focus-visible {
     transform: translateY(0);
-    outline: 3px solid ${fleurimondColors.sassySaffron};
+    outline: 3px solid ${fleurimondColors.white};
     outline-offset: 2px;
   }
 `;
@@ -28,7 +28,7 @@ const ScrollRegion = styled.div`
   border-radius: 0.25rem;
 
   &:focus-visible {
-    outline: 3px solid ${fleurimondColors.blueSapphire};
+    outline: 3px solid ${fleurimondColors.accent};
     outline-offset: 2px;
   }
 `;

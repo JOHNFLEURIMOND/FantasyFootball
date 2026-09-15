@@ -182,7 +182,7 @@ const Wrapper = styled.div`
 
 const Title = styled.h1`
   text-align: center;
-  color: ${fleurimondColors.blueSapphire};
+  color: ${fleurimondColors.text};
 `;
 
 const Section = styled.div`
@@ -204,6 +204,7 @@ const FlipCard = styled.div`
   height: 400px;
   perspective: 1000px;
   cursor: pointer;
+  &:focus-visible { outline: 3px solid ${fleurimondColors.accent}; outline-offset: 3px; }
   @media (max-width: 600px) {
     width: 100%;
     height: auto;
@@ -229,8 +230,8 @@ const CardFront = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: ${fleurimondColors.white};
-  border: 1px solid ${fleurimondColors.gray};
+  background-color: ${fleurimondColors.surface};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.5rem;
 `;
 
@@ -244,8 +245,8 @@ const CardBack = styled.div`
   justify-content: center;
   align-items: center;
   transform: rotateY(180deg);
-  background-color: ${fleurimondColors.lightGray};
-  border: 1px solid ${fleurimondColors.gray};
+  background-color: ${fleurimondColors.rowAlt};
+  border: 1px solid ${fleurimondColors.surfaceBorder};
   border-radius: 0.5rem;
 `;
 
@@ -261,7 +262,7 @@ const ExpandedCard = styled.div`
 const SectionTitle = styled.h4`
   font-size: 1rem;
   margin: 1rem 0;
-  color: ${fleurimondColors.darkSlateGray};
+  color: ${fleurimondColors.text};
 `;
 
 export default PlayerCards;

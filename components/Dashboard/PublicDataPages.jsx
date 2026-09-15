@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { fetchPlayers, fetchSeasonalStats, fetchStandings, fetchTeams } from '../api/nflverseApi';
 import { TableRegion } from '../accessibility/Accessibility';
 import { NavLink } from '../routing/SimpleRouter';
+import { fleurimondColors } from '../CSS/theme';
 
 const DEFAULT_SEASON = new Date().getFullYear();
 
@@ -110,22 +111,51 @@ const Main = styled.main`
   max-width: 1200px;
   margin: 0 auto;
   padding: 6rem 1rem 3rem;
+  min-height: 100dvh;
 
   &:focus { outline: none; }
 `;
 const List = styled.ul`
   display: grid;
   gap: 0.65rem;
+
+  li {
+    padding: 1rem;
+    border: 1px solid ${fleurimondColors.surfaceBorder};
+    border-radius: 0.75rem;
+    background: ${fleurimondColors.surface};
+  }
+
+  span { color: ${fleurimondColors.textMuted}; }
+  a:hover { color: ${fleurimondColors.accent}; }
 `;
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
+
+  article {
+    padding: 1.5rem;
+    border: 1px solid ${fleurimondColors.surfaceBorder};
+    border-radius: 1rem;
+    background: ${fleurimondColors.surface};
+  }
+
+  p { color: ${fleurimondColors.textMuted}; }
 `;
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  th, td { padding: 0.65rem; border-bottom: 1px solid #ccc; text-align: left; }
+  overflow: hidden;
+  border: 1px solid ${fleurimondColors.surfaceBorder};
+  border-radius: 0.75rem;
+  background: ${fleurimondColors.surface};
+
+  th, td { padding: 0.8rem; border-bottom: 1px solid ${fleurimondColors.surfaceBorder}; text-align: left; }
+  thead { background: ${fleurimondColors.accentHover}; }
+  tbody tr:nth-child(even) { background: ${fleurimondColors.rowAlt}; }
+  tbody tr:hover { background: ${fleurimondColors.surfaceBorder}; }
+  a:hover { color: ${fleurimondColors.accent}; }
 `;
 
 export { ResourcePage };

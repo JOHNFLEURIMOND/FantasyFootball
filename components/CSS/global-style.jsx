@@ -5,7 +5,7 @@ import theme from '../CSS/theme'; // Correct import for theme
 const GlobalStyle = createGlobalStyle`
   :root {
     --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    --font-body: Georgia, "Times New Roman", Times, serif;
+    --font-body: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-size-base: 62.5%;
     --font-size-heading: 3rem;
     --font-size-body: 1.6rem;
@@ -13,13 +13,19 @@ const GlobalStyle = createGlobalStyle`
     --line-height-body: 2.6rem;
     --font-weight-heading: 700;
     --font-weight-body: 400;
-    --color-background: ${theme.fleurimondColors.white};
-    --color-primary-text: ${theme.fleurimondColors.smoke};
-    --color-accent: ${theme.fleurimondColors.tartBlue}; // Updated to tartBlue
-    --color-border: ${theme.fleurimondColors.graySmoke}; // Adjusted to graySmoke
-    --color-button-primary-bg: ${theme.fleurimondColors.buttons.blue}; // Updated to theme button color
-    --color-button-primary-text: ${theme.fleurimondColors.white}; // Updated to white
-    --color-shadow: ${theme.fleurimondColors.black}; // Example shadow color
+    --color-background: ${theme.fleurimondColors.background};
+    --color-background-deep: ${theme.fleurimondColors.backgroundDeep};
+    --color-surface: ${theme.fleurimondColors.surface};
+    --color-surface-border: ${theme.fleurimondColors.surfaceBorder};
+    --color-row-alt: ${theme.fleurimondColors.rowAlt};
+    --color-primary-text: ${theme.fleurimondColors.text};
+    --color-muted-text: ${theme.fleurimondColors.textMuted};
+    --color-accent: ${theme.fleurimondColors.accent};
+    --color-accent-hover: ${theme.fleurimondColors.accentHover};
+    --color-border: ${theme.fleurimondColors.surfaceBorder};
+    --color-button-primary-bg: ${theme.fleurimondColors.accent};
+    --color-button-primary-text: ${theme.fleurimondColors.white};
+    --color-shadow: rgba(0, 0, 0, 0.35);
     --scrollbar-width: 1.5rem;
   }
 
@@ -30,6 +36,7 @@ const GlobalStyle = createGlobalStyle`
   html {
     font-size: var(--font-size-base);
     overflow-x: hidden;
+    min-height: 100%;
   }
 
   body {
@@ -39,7 +46,34 @@ const GlobalStyle = createGlobalStyle`
     font-weight: var(--font-weight-body);
     line-height: var(--line-height-body);
     font-size: var(--font-size-body);
+    min-height: 100%;
+    margin: 0;
   }
+
+  #root { min-height: 100dvh; }
+
+  a { color: inherit; }
+
+  p, li, label, small, span { color: inherit; }
+
+  input, select, textarea, button {
+    font: inherit;
+  }
+
+  input, select, textarea {
+    color: var(--color-primary-text);
+    background: var(--color-row-alt);
+    border: 1px solid var(--color-surface-border);
+  }
+
+  ::placeholder { color: var(--color-muted-text); opacity: 1; }
+
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  ::selection { color: var(--color-primary-text); background: var(--color-accent-hover); }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
@@ -69,7 +103,7 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 
-  @media (max-width: ${theme.media.tab}) {
+  @media (max-width: ${theme.media.tablet}) {
     body {
       font-size: 1.6rem;
     }
@@ -88,7 +122,7 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 
-  @media (min-width: ${theme.media.tab}) and (max-width: 979px) {
+  @media (min-width: ${theme.media.tablet}) and (max-width: 979px) {
     body {
       font-size: 1.8rem;
     }
