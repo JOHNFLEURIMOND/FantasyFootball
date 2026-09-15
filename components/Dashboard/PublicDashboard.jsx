@@ -134,7 +134,7 @@ const PublicDashboard = () => {
   );
 
   return (
-    <Main id='main-content'>
+    <Main id='main-content' tabIndex='-1'>
       <Hero>
         <h1>NFL & Fantasy Football Dashboard</h1>
         <p>Browse public NFL data, fantasy rankings, projections, schedules, and player research without an account.</p>
@@ -197,6 +197,8 @@ const Main = styled.main`
   max-width: 1200px;
   margin: 0 auto;
   padding: 6rem 1rem 3rem;
+
+  &:focus { outline: none; }
 `;
 
 const Hero = styled.section`
