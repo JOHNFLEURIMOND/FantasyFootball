@@ -159,7 +159,11 @@ function createNflverseClient({
     };
   }
 
-  return { getDataset };
+  function clearCache() {
+    cache.clear();
+  }
+
+  return { clearCache, getDataset };
 }
 
 module.exports = {
