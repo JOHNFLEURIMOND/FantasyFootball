@@ -2,31 +2,29 @@
   "name": "fantasyfootball",
   "version": "0.1.0",
   "private": true,
+  "description": "Public NFL and fantasy football dashboard backed by canonical nflverse data APIs.",
   "author": "John Fleurimond",
-  "website": "https://johnfleurimond.netlify.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JOHNFLEURIMOND/FantasyFootball.git"
+  },
   "keywords": [
-    "John",
-    "Fleurimond",
-    "BasquiatFPV"
+    "fantasy-football",
+    "nfl",
+    "nflverse",
+    "react",
+    "express"
   ],
   "engines": {
     "node": ">=20 <21",
     "npm": ">=10 <11"
   },
-  "main": "./src/components/Main.js",
-  "proxy": "http://localhost:8080",
   "scripts": {
-    "babel-node": "babel-node --presets='@babel/preset-env' --ignore='foo|bar|baz'",
     "prebuild": "npm run validate:env",
-    "build": "webpack",
-    "dev": "webpack-dev-server --open",
-    "build2": "webpack",
+    "build": "webpack --mode production",
+    "dev": "webpack-dev-server --mode development --open",
     "serve": "concurrently \"npm run dev\" \"npm run server\"",
     "start": "node server.js",
-    "clean": "npm run build && npm run build2",
-    "restart": "npm run prettier && rm -rvf package-lock.json && rm -rvf node_modules && rm -rf .cache && ncu -u && npm i && npm run clean",
-    "push": "npm run prettier && rm -rf package-lock.json && rm -rf node_modules && git add . && git commit -m 'fix news/ home page' && git push --force origin main",
-    "kill": "pkill -f node",
     "ingest:nflverse": "node scripts/ingest-nflverse.js",
     "lint": "node scripts/lint.js",
     "test:a11y": "node --test test/accessibilityBaseline.test.js",
