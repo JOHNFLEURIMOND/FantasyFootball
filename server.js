@@ -1,10 +1,13 @@
 require('dotenv').config();
 
 const { createApp } = require('./server/createApp');
+const { parseRuntimeConfig } = require('./server/lib/runtimeConfig');
 
-const PORT = process.env.PORT || 8080;
+const config = parseRuntimeConfig(process.env);
+process.env.NFL_DATA_DB_PATH = config.nflDataDbPath;
+
 const app = createApp();
 
-app.listen(PORT, () => {
-  console.log(`Fantasy Football Command Center server is running on port ${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Fantasy Football server is running on port ${config.port}`);
 });
