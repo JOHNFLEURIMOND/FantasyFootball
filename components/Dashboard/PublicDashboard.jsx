@@ -146,7 +146,7 @@ const PublicDashboard = () => {
           onChange={event => setQuery(event.target.value)}
           placeholder='Search by player, position, team, or abbreviation'
         />
-        <Results aria-live='polite' aria-label='Search results'>
+        <Results role='region' aria-live='polite' aria-label='Search results'>
           {query && results.length === 0 ? <p>No matching players or teams.</p> : null}
           {results.map(result => (
             <ResultLink key={`${result.type}-${result.id}`} to={result.href}>
