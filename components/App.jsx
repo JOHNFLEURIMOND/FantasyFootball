@@ -13,6 +13,7 @@ import {
   StatsPage,
 } from './Dashboard/PublicDataPages';
 
+const MainHero = lazy(() => import('./MainHero/MainHero'));
 const Nav = lazy(() => import('./Navbar/Nav'));
 const Footer = lazy(() => import('./Footer/Footer'));
 const PublicDashboard = lazy(() => import('./Dashboard/PublicDashboard'));
@@ -45,6 +46,7 @@ const App = () => (
                         content='Browse public NFL players, teams, schedules, statistics, projections, rankings, comparisons, and leaderboards without an account.'
                       />
                     </ReactHelmet>
+                    <div style={{ paddingTop: '4rem' }}><MainHero /></div>
                     <PublicDashboard />
                   </Shell>
                 }
@@ -52,6 +54,7 @@ const App = () => (
               <Route path='/players' element={<Shell><PlayersPage /></Shell>} />
               <Route path='/players/:id' element={<Shell><PlayerProfile /></Shell>} />
               <Route path='/teams' element={<Shell><TeamsPage /></Shell>} />
+              <Route path='/teams/:id' element={<Shell><PlayersPage /></Shell>} />
               <Route path='/standings' element={<Shell><StandingsPage /></Shell>} />
               <Route path='/stats' element={<Shell><StatsPage /></Shell>} />
               <Route path='/compare' element={<Shell><ComparePlayers /></Shell>} />

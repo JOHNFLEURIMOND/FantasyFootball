@@ -92,7 +92,9 @@ function createNflverseRouter({ nflverseProvider }) {
   if (!nflverseProvider) throw new Error('nflverseProvider dependency is required');
 
   router.get('/players', asyncHandler(async (req, res) => {
-    const result = unwrap(await nflverseProvider.getPlayers());
+    const season = req.query.season === undefined ? null : parseSeason(req.query.season);
+    if (req.query.season !== undefined && season === null) throw invalidRequest('Invalid season parameter.');
+    const result = unwrap(await (season === null ? nflverseProvider.getPlayers() : nflverseProvider.getRosters(season)));
     let players = validateCollection(playerSchema, result.data, 'players');
     const query = normalizeText(req.query.q);
     const team = normalizeText(req.query.team);
@@ -110,7 +112,7 @@ function createNflverseRouter({ nflverseProvider }) {
       team: player => player.teamId,
     }, 'name');
 
-    return res.json(listResponse(players, req, providerMeta('players', null, [result.meta])));
+    return res.json(listResponse(players, req, providerMeta('players', season, [result.meta])));
   }));
 
   router.get('/players/:id', asyncHandler(async (req, res) => {

@@ -74,36 +74,59 @@ export function isPartialMeta(meta) {
   return meta?.partial === true || meta?.status === 'partial';
 }
 
-export async function fetchPlayers(options) {
-  return unwrapResource(await requestJson('/players', options));
+export async function fetchPlayerPage({ page = 1, pageSize = 50, q, team, position, season, signal } = {}) {
+  return unwrapResource(await requestJson(`/players${queryString({ page, pageSize, q, team, position, season })}`, { signal }));
+}
+
+export async function fetchPlayer(id, options) {
+  const payload = await requestJson(`/players/${encodeURIComponent(id)}`, options);
+  return { data: [payload.data], meta: payload.meta || payload.provenance || null };
+}
+
+// Existing research views need complete collections, not the API's first page.
+async function fetchCollection(path, options) {
+  const separator = path.includes('?') ? '&' : '?';
+  const first = unwrapResource(await requestJson(`${path}${separator}pageSize=100&page=1`, options));
+  const pages = first.meta?.totalPages || 1;
+  if (!Number.isInteger(pages) || pages > 1000) throw new Error('Invalid pagination metadata.');
+  const data = [...first.data];
+  let stale = isStaleMeta(first.meta);
+  let partial = isPartialMeta(first.meta);
+  for (let page = 2; page <= pages; page += 4) {
+    const batch = await Promise.all(Array.from({ length: Math.min(4, pages - page + 1) }, (_, offset) =>
+      requestJson(`${path}${separator}pageSize=100&page=${page + offset}`, options).then(unwrapResource)
+    ));
+    for (const result of batch) {
+      data.push(...result.data);
+      stale ||= isStaleMeta(result.meta);
+      partial ||= isPartialMeta(result.meta);
+    }
+  }
+  return { data, meta: { ...first.meta, stale, partial } };
+}
+
+export async function fetchPlayers(options = {}) {
+  return fetchCollection(`/players${queryString({ season: options.season })}`, options);
 }
 
 export async function fetchTeams(options) {
-  return unwrapResource(await requestJson('/teams', options));
+  return fetchCollection('/teams', options);
 }
 
 export async function fetchProjections(season, options) {
-  return unwrapResource(
-    await requestJson(`/projections${queryString({ season })}`, options)
-  );
+  return fetchCollection(`/projections${queryString({ season })}`, options);
 }
 
 export async function fetchRankings(season, format = 'ppr', options) {
-  return unwrapResource(
-    await requestJson(`/rankings${queryString({ season, format })}`, options)
-  );
+  return fetchCollection(`/rankings${queryString({ season, format })}`, options);
 }
 
 export async function fetchSchedule(season, week, options) {
-  return unwrapResource(
-    await requestJson(`/schedule${queryString({ season, week })}`, options)
-  );
+  return fetchCollection(`/schedule${queryString({ season, week })}`, options);
 }
 
 export async function fetchStandings(season, options) {
-  return unwrapResource(
-    await requestJson(`/standings${queryString({ season })}`, options)
-  );
+  return fetchCollection(`/standings${queryString({ season })}`, options);
 }
 
 export async function fetchWeeklyStats(season, options) {

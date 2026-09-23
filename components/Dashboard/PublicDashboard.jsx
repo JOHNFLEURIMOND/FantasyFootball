@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { NavLink } from '../routing/SimpleRouter';
 import {
-  fetchPlayers,
+  fetchPlayerPage,
   fetchStandings,
   fetchTeams,
   isPartialMeta,
@@ -54,7 +54,7 @@ function searchItems(players, teams, query) {
       type: 'Team',
       title: [team.city, team.name].filter(Boolean).join(' '),
       detail: team.abbreviation,
-      href: '/teams',
+      href: `/teams/${encodeURIComponent(team.teamId)}`,
     }));
 
   return [...playerResults, ...teamResults].slice(0, 12);
@@ -66,6 +66,9 @@ function fulfilledValue(result, fallback = { data: [], meta: null }) {
 
 const PublicDashboard = () => {
   const [players, setPlayers] = useState([]);
+  const [playerTotal, setPlayerTotal] = useState(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(null);
   const [teams, setTeams] = useState([]);
   const [standings, setStandings] = useState([]);
   const [query, setQuery] = useState('');
@@ -82,7 +85,7 @@ const PublicDashboard = () => {
       setError(null);
       try {
         const results = await Promise.allSettled([
-          fetchPlayers({ signal: controller.signal }),
+          fetchPlayerPage({ season: DEFAULT_SEASON, signal: controller.signal }),
           fetchTeams({ signal: controller.signal }),
           fetchStandings(DEFAULT_SEASON, { signal: controller.signal }),
         ]);
@@ -104,7 +107,7 @@ const PublicDashboard = () => {
           .filter(result => result.status === 'fulfilled')
           .map(result => result.value.meta);
 
-        setPlayers(playerFeed.data);
+        setPlayerTotal(playerFeed.meta?.total ?? playerFeed.data.length);
         setTeams(teamFeed.data);
         setStandings(standingsFeed.data);
         setStale(fulfilledMeta.some(isStaleMeta));
@@ -128,6 +131,21 @@ const PublicDashboard = () => {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    if (!query.trim()) return undefined;
+    const controller = new AbortController();
+    setSearching(true);
+    setSearchError(null);
+    const timer = setTimeout(() => {
+      fetchPlayerPage({ season: DEFAULT_SEASON, q: query.trim(), signal: controller.signal }).then(result => {
+        if (!controller.signal.aborted) setPlayers(result.data);
+      }).catch(error => {
+        if (!controller.signal.aborted) { setPlayers([]); setSearchError(error); }
+      }).finally(() => { if (!controller.signal.aborted) setSearching(false); });
+    }, 300);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [query]);
+
   const results = useMemo(
     () => searchItems(players, teams, query),
     [players, teams, query]
@@ -136,7 +154,7 @@ const PublicDashboard = () => {
   return (
     <Main id='main-content' tabIndex='-1'>
       <Hero>
-        <h1>NFL & Fantasy Football Dashboard</h1>
+        <h2>Find your next advantage</h2>
         <p>Browse public NFL data, fantasy rankings, projections, schedules, and player research without an account.</p>
         <label htmlFor='global-nfl-search'>Search players and teams</label>
         <SearchInput
@@ -144,11 +162,13 @@ const PublicDashboard = () => {
           type='search'
           value={query}
           onChange={event => setQuery(event.target.value)}
-          placeholder='Search by player, position, team, or abbreviation'
+          placeholder='Search by player name or team'
         />
         <Results role='region' aria-live='polite' aria-label='Search results'>
-          {query && results.length === 0 ? <p>No matching players or teams.</p> : null}
-          {results.map(result => (
+          {query && searching ? <p>Searching the NFL directory…</p> : null}
+          {query && searchError ? <p role='alert'>Player search unavailable. Try again.</p> : null}
+          {query && !searching && !searchError && results.length === 0 ? <p>No matching players or teams.</p> : null}
+          {(!searching ? results : []).map(result => (
             <ResultLink key={`${result.type}-${result.id}`} to={result.href}>
               <strong>{result.title}</strong>
               <span>{result.type}{result.detail ? ` · ${result.detail}` : ''}</span>
@@ -184,7 +204,7 @@ const PublicDashboard = () => {
       <Section aria-labelledby='dashboard-summary'>
         <h2 id='dashboard-summary'>Current data summary</h2>
         <SummaryGrid>
-          <SummaryCard><strong>{players.length}</strong><span>Players</span></SummaryCard>
+          <SummaryCard><strong>{playerTotal ?? '—'}</strong><span>Players in season rosters</span></SummaryCard>
           <SummaryCard><strong>{teams.length}</strong><span>Teams</span></SummaryCard>
           <SummaryCard><strong>{standings.length}</strong><span>Teams with completed-game standings</span></SummaryCard>
         </SummaryGrid>
@@ -196,7 +216,7 @@ const PublicDashboard = () => {
 const Main = styled.main`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 6rem 1rem 3rem;
+  padding: 1rem 1rem 3rem;
   min-height: 100dvh;
 
   &:focus { outline: none; }
