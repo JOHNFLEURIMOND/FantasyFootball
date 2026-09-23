@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react';
 import WeeklyProjectionCards from './WeeklyProjectionCards';
 import { StatsContext } from '../context';
 import { resolveDataRouteState } from '../routing/dataRouteState';
-import MainHero from '../MainHero/MainHero';
 import Nav from '../Navbar/Nav.jsx';
 import Footer from '../Footer/Footer';
 import GlobalStyle from '../CSS/global-style';
@@ -44,7 +43,6 @@ function WeeklyProjections() {
     <>
       <GlobalStyle />
       <Nav />
-      <MainHero />
       <MainContainer id='main-content' tabIndex='-1'>
         <Title>Weekly Fantasy Football Projections</Title>
         <DataNotice>

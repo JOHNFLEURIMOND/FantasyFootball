@@ -19,7 +19,7 @@ function freshness(meta = []) {
 const PlayerProfile = () => {
   const { id } = useParams();
   const [season, setSeason] = useState(new Date().getFullYear());
-  const state = usePlayerData(season);
+  const state = usePlayerData(season, id);
   const profile = useMemo(
     () => buildPlayerProfile({
       playerId: id,

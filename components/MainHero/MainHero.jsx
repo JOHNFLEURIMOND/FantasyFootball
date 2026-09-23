@@ -15,7 +15,7 @@ const SimpleHeroSection = () => {
         </HeroCopy>
         <HeroActions>
           <HeroLink href="/players">Explore players</HeroLink>
-          <SecondaryLink href="/projections">View projections</SecondaryLink>
+          <SecondaryLink href="/WeeklyProjections">View projections</SecondaryLink>
         </HeroActions>
       </HeroContent>
     </HeroSection>

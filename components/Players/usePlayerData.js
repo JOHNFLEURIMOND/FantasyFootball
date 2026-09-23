@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   fetchPlayers,
+  fetchPlayer,
   fetchSeasonalStats,
   fetchTeams,
   fetchWeeklyStats,
@@ -8,7 +9,7 @@ import {
   isStaleMeta,
 } from '../api/nflverseApi';
 
-export default function usePlayerData(season) {
+export default function usePlayerData(season, playerId) {
   const [state, setState] = useState({
     players: [],
     teams: [],
@@ -27,13 +28,15 @@ export default function usePlayerData(season) {
     async function load() {
       setState(current => ({ ...current, loading: true, error: null }));
       try {
-        const results = await Promise.all([
-          fetchPlayers({ signal: controller.signal }),
+        const settled = await Promise.allSettled([
+          playerId ? fetchPlayer(playerId, { signal: controller.signal }) : fetchPlayers({ season, signal: controller.signal }),
           fetchTeams({ signal: controller.signal }),
           fetchWeeklyStats(season, { signal: controller.signal }),
           fetchSeasonalStats(season, { signal: controller.signal }),
         ]);
         if (controller.signal.aborted) return;
+        if (settled[0].status === 'rejected') throw settled[0].reason;
+        const results = settled.map(result => result.status === 'fulfilled' ? result.value : { data: [], meta: null });
         const metas = results.map(result => result.meta);
         setState({
           players: results[0].data,
@@ -44,7 +47,7 @@ export default function usePlayerData(season) {
           loading: false,
           error: null,
           stale: metas.some(isStaleMeta),
-          partial: metas.some(isPartialMeta),
+          partial: settled.some(result => result.status === 'rejected') || metas.some(isPartialMeta),
         });
       } catch (error) {
         if (controller.signal.aborted) return;
@@ -64,7 +67,7 @@ export default function usePlayerData(season) {
 
     load();
     return () => controller.abort();
-  }, [season]);
+  }, [season, playerId]);
 
   return state;
 }
