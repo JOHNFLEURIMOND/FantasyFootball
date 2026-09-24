@@ -307,3 +307,19 @@ The HTML shell provides default metadata, while route metadata requires JavaScri
 Netlify Prerender must be configured and verified separately for crawlers that
 do not execute JavaScript. Disable the Netlify Drawer in project settings;
 do not hide the injected overlay with application CSS or JavaScript.
+
+## Public data controls
+
+- Standings: search team names, filter conference/division, and sort by win
+  percentage, wins, losses, or team name.
+- Seasonal statistics: search player names, filter team/position, and sort player
+  names or passing, rushing, and receiving yards.
+- PPR: retain season/search/position controls, with team filtering, ascending or
+  descending numeric sorting, and a reset button. Reset retains the selected season.
+- Filters and sorting apply to the full loaded collection before pagination.
+  Missing numeric values sort last; zero remains a valid value.
+
+The analytics consent panel is intentionally hidden when production analytics
+configuration or hostname gating disables analytics, including localhost and
+Netlify deploy previews. Test production-enabled consent controls independently
+from preview UI checks; a hidden preview banner does not indicate a broken button.

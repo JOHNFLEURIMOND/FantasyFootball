@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { fetchPlayerPage, fetchPlayers, fetchSeasonalStats, fetchStandings, fetchTeams, isStaleMeta, isPartialMeta } from '../api/nflverseApi';
 import { TableRegion } from '../accessibility/Accessibility';
 import { NavLink, useParams } from '../routing/SimpleRouter';
+import FilteredCollection from '../DataControls/FilteredCollection';
 import { fleurimondColors } from '../CSS/theme';
 
 const DEFAULT_SEASON = new Date().getFullYear();
@@ -120,14 +121,18 @@ export const StandingsPage = () => (
     title={`${DEFAULT_SEASON} Standings`}
     loader={() => fetchStandings(DEFAULT_SEASON)}
     render={rows => (
+      <FilteredCollection rows={rows} name={row => row.name} searchLabel='Search teams'
+        filterFields={[{ label: 'Conference', allLabel: 'All conferences', get: row => row.conference }, { label: 'Division', allLabel: 'All divisions', get: row => row.division }]}
+        sortOptions={[{ value: 'winPercentage', label: 'Win percentage', get: row => row.winPercentage }, { value: 'wins', label: 'Wins', get: row => row.wins }, { value: 'losses', label: 'Losses', get: row => row.losses }, { value: 'name', label: 'Team name', get: row => row.name }]}>{visible => (
       <TableRegion label={`${DEFAULT_SEASON} NFL standings table`}>
         <Table>
           <thead><tr><th scope='col'>Team</th><th scope='col'>W</th><th scope='col'>L</th><th scope='col'>T</th><th scope='col'>Win %</th></tr></thead>
           <tbody>
-            {rows.map(row => <tr key={row.teamId}><th scope='row'>{row.name}</th><td>{row.wins}</td><td>{row.losses}</td><td>{row.ties}</td><td>{row.winPercentage}</td></tr>)}
+            {visible.map(row => <tr key={row.teamId}><th scope='row'>{row.name}</th><td>{row.wins}</td><td>{row.losses}</td><td>{row.ties}</td><td>{row.winPercentage}</td></tr>)}
           </tbody>
         </Table>
       </TableRegion>
+      )}</FilteredCollection>
     )}
   />
 );
@@ -136,9 +141,9 @@ export async function loadSeasonalStatistics() {
   const stats = await fetchSeasonalStats(DEFAULT_SEASON);
   try {
     const players = await fetchPlayers({ season: DEFAULT_SEASON });
-    const names = new Map(players.data.map(player => [player.playerId, player.displayName]));
+    const names = new Map(players.data.map(player => [player.playerId, player]));
     return {
-      data: stats.data.map(row => ({ ...row, displayName: names.get(row.playerId) || 'Player profile' })),
+      data: stats.data.map(row => ({ ...row, displayName: names.get(row.playerId)?.displayName || 'Player profile', position: row.position || names.get(row.playerId)?.position })),
       meta: { ...stats.meta, stale: isStaleMeta(stats.meta) || isStaleMeta(players.meta), partial: isPartialMeta(stats.meta) || isPartialMeta(players.meta) },
     };
   } catch (_error) {
@@ -151,14 +156,18 @@ export const StatsPage = () => (
     title={`${DEFAULT_SEASON} Seasonal Statistics`}
     loader={loadSeasonalStatistics}
     render={rows => (
+      <FilteredCollection rows={rows} name={row => row.displayName} searchLabel='Search players'
+        filterFields={[{ label: 'Team', allLabel: 'All teams', get: row => row.teamId }, { label: 'Position', allLabel: 'All positions', get: row => row.position }]}
+        sortOptions={[{ value: 'passing', label: 'Passing yards', get: row => row.metrics?.passing_yards }, { value: 'rushing', label: 'Rushing yards', get: row => row.metrics?.rushing_yards }, { value: 'receiving', label: 'Receiving yards', get: row => row.metrics?.receiving_yards }, { value: 'name', label: 'Player name', get: row => row.displayName }]}>{visible => (
       <TableRegion label={`${DEFAULT_SEASON} seasonal player statistics table`}>
         <Table>
           <thead><tr><th scope='col'>Player</th><th scope='col'>Team</th><th scope='col'>Passing yards</th><th scope='col'>Rushing yards</th><th scope='col'>Receiving yards</th></tr></thead>
           <tbody>
-            {rows.map(row => <tr key={row.statId}><th scope='row'><NavLink to={`/players/${encodeURIComponent(row.playerId)}`}>{row.displayName || 'Player profile'}</NavLink></th><td>{row.teamId || '—'}</td><td>{row.metrics?.passing_yards ?? '—'}</td><td>{row.metrics?.rushing_yards ?? '—'}</td><td>{row.metrics?.receiving_yards ?? '—'}</td></tr>)}
+            {visible.map(row => <tr key={row.statId}><th scope='row'><NavLink to={`/players/${encodeURIComponent(row.playerId)}`}>{row.displayName || 'Player profile'}</NavLink></th><td>{row.teamId || '—'}</td><td>{row.metrics?.passing_yards ?? '—'}</td><td>{row.metrics?.rushing_yards ?? '—'}</td><td>{row.metrics?.receiving_yards ?? '—'}</td></tr>)}
           </tbody>
         </Table>
       </TableRegion>
+      )}</FilteredCollection>
     )}
   />
 );

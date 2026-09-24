@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 import {
   fetchProjections,
@@ -32,6 +33,7 @@ function normalizeError(error, fallbackMessage) {
 }
 
 export const StatsProvider = ({ children }) => {
+  const latestRequest = useRef(0);
   const [stats, setStats] = useState([]);
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,7 @@ export const StatsProvider = ({ children }) => {
 
   const fetchStats = useCallback(
     async (mode = 'ppr') => {
+      const requestId = ++latestRequest.current;
       setLoading(true);
       setError(null);
       setPartial(false);
@@ -57,6 +60,7 @@ export const StatsProvider = ({ children }) => {
           mode === 'projection'
             ? await fetchProjections(selectedSeason)
             : await fetchRankings(selectedSeason, 'ppr');
+        if (requestId !== latestRequest.current) return;
         const nextStats = mapCanonicalFantasyRows(
           result.data,
           mode === 'projection' ? 'projection' : 'ranking'
@@ -71,6 +75,7 @@ export const StatsProvider = ({ children }) => {
         setDataKind(mode === 'projection' ? 'estimated' : 'observed');
         setMeta(result.meta);
       } catch (caughtError) {
+        if (requestId !== latestRequest.current) return;
         setStats([]);
         setScores([]);
         setTotalPages(1);
@@ -84,7 +89,7 @@ export const StatsProvider = ({ children }) => {
           )
         );
       } finally {
-        setLoading(false);
+        if (requestId === latestRequest.current) setLoading(false);
       }
     },
     [selectedSeason]

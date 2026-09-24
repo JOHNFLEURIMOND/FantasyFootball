@@ -4,6 +4,8 @@ export function derivePprPage({
   stats = [],
   search = '',
   position = '',
+  team = '',
+  direction = 'desc',
   sortBy = '',
   currentPage = 1,
   pageSize = PPR_PAGE_SIZE,
@@ -16,18 +18,15 @@ export function derivePprPage({
         player.Name?.toLowerCase().includes(normalizedSearch);
       const matchesPosition = !position || player.Position === position;
 
-      return matchesSearch && matchesPosition;
+      return matchesSearch && matchesPosition && (!team || player.Team === team);
     })
     .sort((a, b) => {
-      if (
-        sortBy &&
-        a[sortBy] !== undefined &&
-        b[sortBy] !== undefined
-      ) {
-        return Number(b[sortBy]) - Number(a[sortBy]);
-      }
+      if (!sortBy) return 0;
+      const left = a[sortBy], right = b[sortBy];
+      const missing = value => value === null || value === undefined || value === '' || !Number.isFinite(Number(value));
+      if (missing(left) || missing(right)) return Number(missing(left)) - Number(missing(right));
+      return (Number(left) - Number(right)) * (direction === 'asc' ? 1 : -1);
 
-      return 0;
     });
 
   const totalPages = Math.max(1, Math.ceil(filteredStats.length / pageSize));

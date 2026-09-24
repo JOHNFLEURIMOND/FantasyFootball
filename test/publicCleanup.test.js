@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+require.extensions['.css'] = () => {};
 require.extensions['.jpeg'] = module => { module.exports = '/assets/football.jpeg'; };
 require('@babel/register')({ extensions: ['.js', '.jsx'], presets: ['@babel/preset-env', '@babel/preset-react'], ignore: [/node_modules/], cache: false });
 const React = require('react');
