@@ -64,3 +64,8 @@ test('session denial overrides an older persistent grant', () => {
   assert.equal(tracker.getConsent(), 'denied');
   assert.equal(window.dataLayer, undefined);
 });
+
+test('both Schedule routes have the schedule analytics classification', () => {
+  assert.equal(pageType('/schedule'), 'schedule');
+  assert.equal(pageType('/Schedule'), 'schedule');
+});

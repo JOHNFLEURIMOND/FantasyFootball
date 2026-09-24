@@ -12,7 +12,7 @@ const Footer = () => (
       <nav aria-label='Footer navigation'>
         <NavLink to='/players'>Players</NavLink>
         <NavLink to='/teams'>Teams</NavLink>
-        <NavLink to='/Schedule'>Schedule</NavLink>
+        <NavLink to='/schedule'>Schedule</NavLink>
         <a href='https://github.com/JOHNFLEURIMOND/FantasyFootball'>Project on GitHub</a>
       </nav>
       <small>© {new Date().getFullYear()} John Fleurimond</small>

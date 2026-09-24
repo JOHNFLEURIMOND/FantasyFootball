@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme';
 import Nav from '../Navbar/Nav';
 import Footer from '../Footer/Footer';
-import MainHero from '../MainHero/MainHero';
 
 const FIRST_SCHEDULE_SEASON = 1920;
 const WEEKS = Array.from({ length: 22 }, (_, index) => index + 1);
@@ -62,7 +61,6 @@ const Schedule = () => {
   return (
     <>
       <Nav />
-      <MainHero />
       <ContentWrapper id='main-content' tabIndex='-1'>
         <Title>NFL Schedule & Results</Title>
         <ControlRow>
@@ -112,7 +110,7 @@ const Schedule = () => {
           <Status role='status'>Showing stale cached schedule data while the source refreshes.</Status>
         )}
         {routeState.primary === 'success' && routeState.partial && (
-          <Status role='status'>Some provider schedule records were skipped because they did not satisfy the canonical contract.</Status>
+          <Status role='status'>Some schedule records were skipped because they are incomplete.</Status>
         )}
         {routeState.primary === 'success' && (
           <>
@@ -137,7 +135,7 @@ const Schedule = () => {
 };
 
 const ContentWrapper = styled.main`
-  padding: 2rem 1rem;
+  padding: 6rem 1rem 3rem;
   background-color: ${fleurimondColors.background};
   display: flex;
   flex-direction: column;
@@ -174,7 +172,7 @@ const ControlRow = styled.div`
 
 const CardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 1rem;
   width: 100%;
   max-width: 1200px;

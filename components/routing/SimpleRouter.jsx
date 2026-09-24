@@ -119,6 +119,7 @@ const routeNames = {
   '/stats': 'Statistics',
   '/WeeklyProjections': 'Weekly Projections',
   '/PPR': 'PPR Rankings',
+  '/schedule': 'Schedule',
   '/Schedule': 'Schedule',
   '/compare': 'Player comparison',
   '/leaderboards': 'Leaderboards',
@@ -126,6 +127,7 @@ const routeNames = {
 
 function routeName(pathname) {
   if (routeNames[pathname]) return routeNames[pathname];
+  if (matchPath('/teams/:id', pathname).matched) return 'Team players';
   if (matchPath('/players/:id', pathname).matched) return 'Player profile';
   return 'Page not found';
 }
@@ -210,7 +212,8 @@ export const NavLink = React.forwardRef(function NavLink(
 ) {
   const { location, navigate } = useContext(RouterContext);
   const resolved = resolveToLocation(to);
-  const isActive = !resolved.external && location.pathname === resolved.pathname;
+  const isActive = !resolved.external && (location.pathname === '/Schedule' ? '/schedule' : location.pathname) ===
+    (resolved.pathname === '/Schedule' ? '/schedule' : resolved.pathname);
   const resolvedClassName =
     typeof className === 'function'
       ? className({ isActive })

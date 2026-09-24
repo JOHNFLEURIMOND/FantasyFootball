@@ -14,7 +14,7 @@ const DEFAULT_SEASON = new Date().getFullYear();
 const DESTINATIONS = [
   ['Players', '/players'],
   ['Teams', '/teams'],
-  ['Schedule', '/Schedule'],
+  ['Schedule', '/schedule'],
   ['Standings', '/standings'],
   ['Stats', '/stats'],
   ['Weekly Projections', '/WeeklyProjections'],

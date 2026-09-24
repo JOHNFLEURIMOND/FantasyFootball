@@ -5,10 +5,9 @@ import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
 import Nav from '../Navbar/Nav';
 import Footer from '../Footer/Footer';
-import MainHero from '../MainHero/MainHero';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme.js';
-import { Helmet } from 'react-helmet';
+import DataControls from '../DataControls/DataControls';
 import { derivePprPage } from './pagination';
 
 const FIRST_STATS_SEASON = 1999;
@@ -38,6 +37,8 @@ const PPR = () => {
     partial,
   } = useContext(StatsContext);
 
+  const [teamFilter, setTeamFilter] = useState('');
+  const [direction, setDirection] = useState('desc');
   const [search, setSearch] = useState('');
   const [positionFilter, setPositionFilter] = useState('');
   const [sortOption, setSortOption] = useState('FantasyPointsPPR');
@@ -48,17 +49,19 @@ const PPR = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, positionFilter, sortOption, setCurrentPage]);
+  }, [search, positionFilter, teamFilter, direction, sortOption, selectedSeason, setCurrentPage]);
 
   const page = useMemo(
     () => derivePprPage({
       stats,
       search,
       position: positionFilter,
+      team: teamFilter,
+      direction,
       sortBy: sortOption,
       currentPage,
     }),
-    [stats, search, positionFilter, sortOption, currentPage]
+    [stats, search, positionFilter, teamFilter, direction, sortOption, currentPage]
   );
 
   const routeState = resolveDataRouteState({
@@ -78,28 +81,14 @@ const PPR = () => {
     seasons.push(season);
   }
 
-  const handlePositionChange = event => {
-    const { value } = event.target;
-    setPositionFilter(value);
-    setSelectedPosition(value);
-  };
-
   const handlePageChange = (_event, { activePage }) => {
     setCurrentPage(Number(activePage));
   };
 
   return (
     <>
-      <Helmet>
-        <title>PPR Rankings</title>
-        <meta
-          name='description'
-          content='Full-PPR rankings calculated from observed canonical NFL statistics.'
-        />
-      </Helmet>
       <PPRPageContainer>
         <Nav />
-        <MainHero />
         <MainContent id='main-content' tabIndex='-1'>
           <Title>PPR Rankings</Title>
           <DataNotice>
@@ -108,56 +97,19 @@ const PPR = () => {
             yard, 0.04 per passing yard, 6 per rushing or receiving touchdown, and
             4 per passing touchdown. These are rankings, not projections.
           </DataNotice>
-          <FilterContainer>
-            <SearchDiv>
-              <StyledInput
-                type='search'
-                name='search'
-                aria-label='Search players'
-                placeholder='Search For Players'
-                value={search}
-                onChange={event => setSearch(event.target.value)}
-              />
-              <StyledSelect
-                value={selectedSeason}
-                onChange={event => setSelectedSeason(Number(event.target.value))}
-                aria-label='Select NFL season'
-              >
-                {seasons.map(season => (
-                  <option key={season} value={season}>
-                    {season} season
-                  </option>
-                ))}
-              </StyledSelect>
-              <StyledSelect
-                value={positionFilter}
-                onChange={handlePositionChange}
-                aria-label='Filter Players By Position'
-              >
-                <option value=''>All positions</option>
-                {['QB', 'RB', 'WR', 'TE'].map(position => (
-                  <option key={position} value={position}>
-                    {position}
-                  </option>
-                ))}
-              </StyledSelect>
-              <SortFieldset>
-                <legend>Sort rankings</legend>
-                {SORT_OPTIONS.map(option => (
-                  <label key={option}>
-                    <input
-                      type='radio'
-                      name='sortOption'
-                      value={option}
-                      checked={sortOption === option}
-                      onChange={event => setSortOption(event.target.value)}
-                    />
-                    <span>{option.replace(/([A-Z])/g, ' $1').trim()}</span>
-                  </label>
-                ))}
-              </SortFieldset>
-            </SearchDiv>
-          </FilterContainer>
+          <DataControls search={search} onSearch={setSearch}
+            filters={[
+              { label: 'Position', allLabel: 'All positions', value: positionFilter, options: ['QB', 'RB', 'WR', 'TE'], onChange: value => { setPositionFilter(value); setSelectedPosition(value); } },
+              { label: 'Team', allLabel: 'All teams', value: teamFilter, options: [...new Set(stats.map(player => player.Team).filter(Boolean))].sort(), onChange: setTeamFilter },
+            ]}
+            sort={sortOption} onSort={setSortOption}
+            sortOptions={SORT_OPTIONS.map(value => ({ value, label: value === 'FantasyPointsPPR' ? 'PPR points' : value.replace(/([A-Z])/g, ' $1').trim() }))}
+            direction={direction} onDirection={setDirection}
+            onReset={() => { setSearch(''); setPositionFilter(''); setSelectedPosition(''); setTeamFilter(''); setSortOption('FantasyPointsPPR'); setDirection('desc'); setCurrentPage(1); }}>
+            <label>Season<select value={selectedSeason} onChange={event => setSelectedSeason(Number(event.target.value))}>
+              {seasons.map(season => <option key={season} value={season}>{season}</option>)}
+            </select></label>
+          </DataControls>
 
           {routeState.primary === 'loading' && (
             <Status role='status'>Loading PPR rankings…</Status>
@@ -214,82 +166,9 @@ const PPRPageContainer = styled.div`
 const MainContent = styled.main`
   width: 100%;
   min-height: 60dvh;
+  padding-top: 6rem;
 
   &:focus { outline: none; }
-`;
-
-const StyledSelect = styled.select`
-  width: 100%;
-  max-width: 420px;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.surfaceBorder};
-  box-sizing: border-box;
-  font-size: 1rem;
-
-  &:focus-visible {
-    outline: 3px solid ${fleurimondColors.accent};
-    outline-offset: 2px;
-  }
-`;
-
-const StyledInput = styled.input`
-  width: 100%;
-  max-width: 420px;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid ${fleurimondColors.surfaceBorder};
-  box-sizing: border-box;
-  font-size: 1rem;
-
-  &:focus-visible {
-    outline: 3px solid ${fleurimondColors.accent};
-    outline-offset: 2px;
-  }
-`;
-
-const SortFieldset = styled.fieldset`
-  width: min(100%, 720px);
-  border: 1px solid ${fleurimondColors.surfaceBorder};
-  border-radius: 0.25rem;
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.75rem;
-  text-align: left;
-
-  label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-  }
-
-  input:focus-visible {
-    outline: 3px solid ${fleurimondColors.accent};
-    outline-offset: 2px;
-  }
-`;
-
-const SearchDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
-const FilterContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  background-color: ${fleurimondColors.surface};
-  border-block: 1px solid ${fleurimondColors.surfaceBorder};
 `;
 
 const Title = styled.h1`

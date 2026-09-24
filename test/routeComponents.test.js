@@ -97,6 +97,7 @@ for (const [name, overrides, expected] of statsCases) {
   test(`PPR Rankings renders ${name} state`, () => {
     const html = renderWithContext(StatsContext, statsValue(overrides), PPR);
     assert.match(html, expected);
+    assert.doesNotMatch(html, /id="hero-title"/);
   });
 }
 
@@ -113,5 +114,6 @@ for (const [name, overrides, expected] of scheduleCases) {
   test(`Schedule renders ${name} state`, () => {
     const html = renderWithContext(NewsContext, newsValue(overrides), Schedule);
     assert.match(html, expected);
+    assert.doesNotMatch(html, /id="hero-title"/);
   });
 }

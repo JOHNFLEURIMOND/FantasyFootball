@@ -139,7 +139,8 @@ async function handleNflverse(path, method, query = {}) {
   }
 
   if (path === '/nflverse/players') {
-    const result = unwrap(await nflverseProvider.getPlayers());
+    const season = query.season === undefined ? null : parseSeason(query.season);
+    const result = unwrap(await (season === null ? nflverseProvider.getPlayers() : nflverseProvider.getRosters(season)));
     let players = validateCollection(playerSchema, result.data, 'players');
     const q = normalizeText(query.q);
     const team = normalizeText(query.team);
@@ -151,7 +152,7 @@ async function handleNflverse(path, method, query = {}) {
       return true;
     });
     players.sort((a, b) => a.displayName.localeCompare(b.displayName) || a.playerId.localeCompare(b.playerId));
-    return jsonResponse(200, listBody(players, query, derivedMeta('players', null, [result.meta])));
+    return jsonResponse(200, listBody(players, query, derivedMeta('players', season, [result.meta])));
   }
 
   let match = path.match(/^\/nflverse\/players\/([^/]+)$/);
