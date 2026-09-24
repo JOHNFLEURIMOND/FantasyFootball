@@ -1,4 +1,5 @@
 const path = require('path');
+const { DefinePlugin } = require('webpack');
 const portfinder = require('portfinder');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -41,6 +42,11 @@ module.exports = async (env, argv = {}) => {
           : 'js/[name].chunk.js',
       },
       plugins: [
+        new DefinePlugin({
+          'process.env.GTM_CONTAINER_ID': JSON.stringify(process.env.GTM_CONTAINER_ID || ''),
+          'process.env.GA4_MEASUREMENT_ID': JSON.stringify(process.env.GA4_MEASUREMENT_ID || ''),
+          'process.env.ANALYTICS_HOSTNAME': JSON.stringify(process.env.ANALYTICS_HOSTNAME || ''),
+        }),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
           template: path.resolve(__dirname, 'public/index.html'),

@@ -18,3 +18,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Public identifiers for the dedicated FantasyFootball property.
+# Only production builds receive these values; previews remain disabled.
+[context.production.environment]
+  GTM_CONTAINER_ID = "GTM-W899JSKK"
+  GA4_MEASUREMENT_ID = "G-QPJEV5XHES"
+  ANALYTICS_HOSTNAME = "fantasyfootball24.netlify.app"
