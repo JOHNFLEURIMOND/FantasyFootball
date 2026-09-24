@@ -144,6 +144,11 @@ categories; URLs, queries, hashes, player IDs, and search text are not forwarded
 Player/team visits are page views; click and search-success events are not yet
 implemented and must not be inferred from these events.
 
+Before GTM initializes, the adapter sets generic page URL/title/referrer defaults
+for Google-generated events and disables Google signals and ad personalization.
+Explicit page-view events override the generic defaults with fixed page categories.
+Verify the actual outgoing payloads before treating this as validated sanitization.
+
 ### Release acceptance
 
 Run `node --test test/browserAnalytics.test.js`, `npm test`, `npm run lint`, and
