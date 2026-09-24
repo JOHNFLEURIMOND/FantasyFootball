@@ -5,10 +5,8 @@ import Pagination from '../Pagination/Pagination';
 import PlayerCards from './PlayerCards';
 import Nav from '../Navbar/Nav';
 import Footer from '../Footer/Footer';
-import MainHero from '../MainHero/MainHero';
 import styled from 'styled-components';
 import { fleurimondColors } from '../CSS/theme.js';
-import { Helmet } from 'react-helmet';
 import { derivePprPage } from './pagination';
 
 const FIRST_STATS_SEASON = 1999;
@@ -90,16 +88,8 @@ const PPR = () => {
 
   return (
     <>
-      <Helmet>
-        <title>PPR Rankings</title>
-        <meta
-          name='description'
-          content='Full-PPR rankings calculated from observed canonical NFL statistics.'
-        />
-      </Helmet>
       <PPRPageContainer>
         <Nav />
-        <MainHero />
         <MainContent id='main-content' tabIndex='-1'>
           <Title>PPR Rankings</Title>
           <DataNotice>
@@ -214,6 +204,7 @@ const PPRPageContainer = styled.div`
 const MainContent = styled.main`
   width: 100%;
   min-height: 60dvh;
+  padding-top: 6rem;
 
   &:focus { outline: none; }
 `;

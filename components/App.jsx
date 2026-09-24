@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import theme from './CSS/theme';
 import Loading from './Loading';
 import AnalyticsConsent from './Analytics/AnalyticsConsent';
-import ReactHelmet from 'react-helmet';
+import RouteMetadata from './routing/RouteMetadata';
 import { NewsProvider, StatsProvider } from './context';
 import { SkipLink } from './accessibility/Accessibility';
 import {
@@ -34,6 +34,7 @@ const App = () => (
         <Router>
           <SkipLink />
           <RouteAnnouncer />
+          <RouteMetadata />
           <AnalyticsConsent />
           <Suspense fallback={<Loading percentage={100} />}>
             <Routes>
@@ -41,13 +42,6 @@ const App = () => (
                 path='/'
                 element={
                   <Shell>
-                    <ReactHelmet>
-                      <title>NFL & Fantasy Football Dashboard</title>
-                      <meta
-                        name='description'
-                        content='Browse public NFL players, teams, schedules, statistics, projections, rankings, comparisons, and leaderboards without an account.'
-                      />
-                    </ReactHelmet>
                     <div style={{ paddingTop: '4rem' }}><MainHero /></div>
                     <PublicDashboard />
                   </Shell>
@@ -63,6 +57,7 @@ const App = () => (
               <Route path='/leaderboards' element={<Shell><Leaderboards /></Shell>} />
               <Route path='/WeeklyProjections' element={<WeeklyProjections />} />
               <Route path='/PPR' element={<PPR />} />
+              <Route path='/schedule' element={<Schedule />} />
               <Route path='/Schedule' element={<Schedule />} />
             </Routes>
           </Suspense>

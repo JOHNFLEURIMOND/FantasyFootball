@@ -42,7 +42,8 @@ Branding assets included in the repository:
 | `/players` | Player directory |
 | `/players/:id` | Player profile and statistics |
 | `/teams` | Team directory |
-| `/Schedule` | Schedules and results |
+| `/schedule` | Schedules and results (canonical route) |
+| `/Schedule` | Backwards-compatible Schedule alias |
 | `/standings` | Season standings derived from completed games |
 | `/stats` | Seasonal player statistics |
 | `/WeeklyProjections` | Estimated weekly projections |
@@ -296,3 +297,13 @@ smoke-test procedure.
 - [GitHub repository](https://github.com/JOHNFLEURIMOND/FantasyFootball)
 - [John Fleurimond on GitHub](https://github.com/JOHNFLEURIMOND)
 - [John Fleurimond on LinkedIn](https://www.linkedin.com/in/john-fleurimond/)
+
+## Public page metadata
+
+Public routes use route-specific titles, descriptions, Open Graph metadata, and
+production canonical URLs. The Schedule alias canonicalizes to `/schedule`;
+query strings and fragments are excluded from canonical URLs.
+The HTML shell provides default metadata, while route metadata requires JavaScript.
+Netlify Prerender must be configured and verified separately for crawlers that
+do not execute JavaScript. Disable the Netlify Drawer in project settings;
+do not hide the injected overlay with application CSS or JavaScript.

@@ -8,7 +8,7 @@ const navItems = [
   ['Home', '/'],
   ['Players', '/players'],
   ['Teams', '/teams'],
-  ['Schedule', '/Schedule'],
+  ['Schedule', '/schedule'],
   ['Standings', '/standings'],
   ['Stats', '/stats'],
   ['Projections', '/WeeklyProjections'],
@@ -30,7 +30,9 @@ const Nav = styled.nav`
   padding: 0.75rem clamp(1rem, 4vw, 3rem);
   z-index: 9999;
   transition: transform 0.3s ease-in-out;
-  transform: ${({ $visible }) => $visible ? 'translateY(0)' : 'translateY(-100%)'};
+  transform: ${({ $visible, $openMenu }) => ($visible || $openMenu) ? 'translateY(0)' : 'translateY(-100%)'};
+
+  &:focus-within { transform: translateY(0); }
 
   .navbar-list {
     display: flex;
@@ -89,14 +91,17 @@ const Nav = styled.nav`
   @media (max-width: 900px) {
     .navbar-list {
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
+      overflow-y: auto;
+      padding: 6rem 1rem 2rem;
       position: fixed;
       inset: 0;
       background-color: ${fleurimondColors.midnight};
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
-      align-content: center;
+      align-content: start;
       flex-direction: column;
+      flex-wrap: nowrap;
       transform: ${({ $openMenu }) => $openMenu ? 'translateX(0)' : 'translateX(100%)'};
       visibility: ${({ $openMenu }) => $openMenu ? 'visible' : 'hidden'};
       opacity: ${({ $openMenu }) => $openMenu ? 1 : 0};

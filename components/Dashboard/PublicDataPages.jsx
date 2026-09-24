@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { fetchPlayerPage, fetchSeasonalStats, fetchStandings, fetchTeams } from '../api/nflverseApi';
+import { fetchPlayerPage, fetchPlayers, fetchSeasonalStats, fetchStandings, fetchTeams, isStaleMeta, isPartialMeta } from '../api/nflverseApi';
 import { TableRegion } from '../accessibility/Accessibility';
 import { NavLink, useParams } from '../routing/SimpleRouter';
 import { fleurimondColors } from '../CSS/theme';
@@ -9,6 +9,7 @@ const DEFAULT_SEASON = new Date().getFullYear();
 
 function ResourcePage({ title, loader, render }) {
   const [data, setData] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,7 +19,7 @@ function ResourcePage({ title, loader, render }) {
     setError(null);
     loader()
       .then(result => {
-        if (active) setData(result.data || []);
+        if (active) { setData(result.data || []); setMeta(result.meta); }
       })
       .catch(caught => {
         if (active) setError(caught);
@@ -37,6 +38,8 @@ function ResourcePage({ title, loader, render }) {
       {loading ? <p role='status'>Loading…</p> : null}
       {!loading && error ? <p role='alert'>Unable to load data: {error.message}</p> : null}
       {!loading && !error && data.length === 0 ? <p role='status'>No data is available.</p> : null}
+      {!loading && !error && isStaleMeta(meta) ? <p role='status'>Showing cached data while the latest source refreshes.</p> : null}
+      {!loading && !error && isPartialMeta(meta) ? <p role='status'>Some records are unavailable; available data is shown.</p> : null}
       {!loading && !error && data.length > 0 ? render(data) : null}
     </Main>
   );
@@ -77,6 +80,8 @@ export const PlayersPage = () => {
       {state.loading ? <p role='status'>Loading players…</p> : null}
       {state.error ? <p role='alert'>Unable to load players. <button onClick={() => setRetry(value => value + 1)}>Try again</button></p> : null}
       {!state.loading && !state.error ? <>
+        {isStaleMeta(state.meta) ? <p role='status'>Showing cached player data while the source refreshes.</p> : null}
+        {isPartialMeta(state.meta) ? <p role='status'>Some player records are unavailable; available data is shown.</p> : null}
         <p role='status'>{state.meta?.total ?? state.data.length} players found</p>
         {state.data.length === 0 ? <p>No players match these filters.</p> : null}
         <List>{state.data.map(player => <li key={player.playerId}>
@@ -127,16 +132,30 @@ export const StandingsPage = () => (
   />
 );
 
+export async function loadSeasonalStatistics() {
+  const stats = await fetchSeasonalStats(DEFAULT_SEASON);
+  try {
+    const players = await fetchPlayers({ season: DEFAULT_SEASON });
+    const names = new Map(players.data.map(player => [player.playerId, player.displayName]));
+    return {
+      data: stats.data.map(row => ({ ...row, displayName: names.get(row.playerId) || 'Player profile' })),
+      meta: { ...stats.meta, stale: isStaleMeta(stats.meta) || isStaleMeta(players.meta), partial: isPartialMeta(stats.meta) || isPartialMeta(players.meta) },
+    };
+  } catch (_error) {
+    return { data: stats.data, meta: { ...stats.meta, partial: true } };
+  }
+}
+
 export const StatsPage = () => (
   <ResourcePage
     title={`${DEFAULT_SEASON} Seasonal Statistics`}
-    loader={() => fetchSeasonalStats(DEFAULT_SEASON)}
+    loader={loadSeasonalStatistics}
     render={rows => (
       <TableRegion label={`${DEFAULT_SEASON} seasonal player statistics table`}>
         <Table>
-          <thead><tr><th scope='col'>Player</th><th scope='col'>Team</th><th scope='col'>Passing</th><th scope='col'>Rushing</th><th scope='col'>Receiving</th></tr></thead>
+          <thead><tr><th scope='col'>Player</th><th scope='col'>Team</th><th scope='col'>Passing yards</th><th scope='col'>Rushing yards</th><th scope='col'>Receiving yards</th></tr></thead>
           <tbody>
-            {rows.map(row => <tr key={row.statId}><th scope='row'><NavLink to={`/players/${encodeURIComponent(row.playerId)}`}>{row.playerId}</NavLink></th><td>{row.teamId || '—'}</td><td>{row.metrics?.passing_yards ?? '—'}</td><td>{row.metrics?.rushing_yards ?? '—'}</td><td>{row.metrics?.receiving_yards ?? '—'}</td></tr>)}
+            {rows.map(row => <tr key={row.statId}><th scope='row'><NavLink to={`/players/${encodeURIComponent(row.playerId)}`}>{row.displayName || 'Player profile'}</NavLink></th><td>{row.teamId || '—'}</td><td>{row.metrics?.passing_yards ?? '—'}</td><td>{row.metrics?.rushing_yards ?? '—'}</td><td>{row.metrics?.receiving_yards ?? '—'}</td></tr>)}
           </tbody>
         </Table>
       </TableRegion>
@@ -173,7 +192,7 @@ const List = styled.ul`
 `;
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 1rem;
 
   article {
@@ -209,6 +228,7 @@ const Controls = styled.div`
   gap: 1rem;
   margin: 1.5rem 0;
   label { display: grid; gap: 0.5rem; flex: 1; min-width: min(100%, 220px); }
+  input, select { min-width: 0; max-width: 100%; }
   input, select, button { font: inherit; padding: 0.8rem 1rem; border-radius: 0.5rem; border: 1px solid ${fleurimondColors.surfaceBorder}; }
   button { cursor: pointer; background: ${fleurimondColors.surface}; color: inherit; }
   button:disabled { opacity: 0.5; cursor: default; }
