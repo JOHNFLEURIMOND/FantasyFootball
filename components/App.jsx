@@ -3,6 +3,7 @@ import { Router, Route, RouteAnnouncer, Routes } from './routing/SimpleRouter';
 import { ThemeProvider } from 'styled-components';
 import theme from './CSS/theme';
 import Loading from './Loading';
+import AnalyticsConsent from './Analytics/AnalyticsConsent';
 import ReactHelmet from 'react-helmet';
 import { NewsProvider, StatsProvider } from './context';
 import { SkipLink } from './accessibility/Accessibility';
@@ -33,6 +34,7 @@ const App = () => (
         <Router>
           <SkipLink />
           <RouteAnnouncer />
+          <AnalyticsConsent />
           <Suspense fallback={<Loading percentage={100} />}>
             <Routes>
               <Route
