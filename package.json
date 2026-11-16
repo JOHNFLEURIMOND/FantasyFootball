@@ -16,7 +16,7 @@
     "express"
   ],
   "engines": {
-    "node": ">=20 <21",
+    "node": ">=22.23.4 <23",
     "npm": ">=10 <11"
   },
   "scripts": {
